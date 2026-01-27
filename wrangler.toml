@@ -1,0 +1,19 @@
+name = "bakes-by-coral"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "bakes-coral-db"
+database_id = "57ab17b8-90c6-42e9-ad56-490be1859387"
+
+# R2 Bucket for file uploads
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "bakes-coral-uploads"
+
+# Environment variables (secrets set via `wrangler secret put`)
+[vars]
+NEXT_PUBLIC_SITE_URL = "https://bakesbycoral.com"

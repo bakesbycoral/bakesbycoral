@@ -6,21 +6,33 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy": "npx wrangler pages deploy",
+    "db:init": "node scripts/init-local-db.js",
+    "db:init:seed": "node scripts/init-local-db.js --seed",
+    "db:migrate": "npx wrangler d1 execute bakes-coral-db --file=src/lib/db/schema.sql --remote",
+    "db:seed:remote": "npx wrangler d1 execute bakes-coral-db --file=src/lib/db/seed.sql --remote"
   },
   "dependencies": {
-    "next": "16.1.3",
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "@cloudflare/next-on-pages": "1.13.16",
+    "@opennextjs/cloudflare": "^1.14.9",
+    "next": "15.5.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "stripe": "^20.2.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260117.0",
     "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "better-sqlite3": "^12.6.2",
     "eslint": "^9",
     "eslint-config-next": "16.1.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "4.59.2"
   }
 }

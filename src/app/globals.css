@@ -1,26 +1,43 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+@source "../**/*.{ts,tsx}";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #541409;
+  --foreground: #f7f3ed;
+  --primary: #ead6d6;
+  --primary-dark: #4a2c21;
+  --accent: #f7f3ed;
+  --accent-dark: #4a2c21;
+  --color-maroon: #541409;
+  --color-cream: #EAD6D6;
+  --color-background: #F7F3ED;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Font classes */
+.font-playfair {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-pt-serif {
+  font-family: var(--font-pt-serif), Georgia, serif;
+}
+
+.font-script {
+  font-family: 'Great Vibes', cursive;
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+/* Body text styles */
+p, button, a {
+  font-family: var(--font-pt-serif), Georgia, serif;
 }
