@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { cookies } from 'next/headers';
 
+interface CreateOrderRequest {
+  order_type?: string;
+  customer_name?: string;
+  customer_email?: string;
+  customer_phone?: string;
+  pickup_date?: string;
+  pickup_time?: string;
+  total_amount?: number;
+  notes?: string;
+}
+
 function generateOrderNumber(): string {
   const now = new Date();
   const year = now.getFullYear().toString().slice(-2);
@@ -21,7 +32,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await request.json() as CreateOrderRequest;
     const {
       order_type,
       customer_name,

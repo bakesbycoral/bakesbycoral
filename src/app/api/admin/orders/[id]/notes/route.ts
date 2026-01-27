@@ -25,7 +25,7 @@ export async function POST(
 ) {
   try {
     const { id: orderId } = await params;
-    const body = await request.json();
+    const body = await request.json() as { note?: string };
     const { note } = body;
 
     if (!note || typeof note !== 'string' || !note.trim()) {

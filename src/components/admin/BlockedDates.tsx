@@ -34,7 +34,7 @@ export function BlockedDates() {
   const fetchBlackoutDates = async () => {
     try {
       const response = await fetch('/api/admin/blackout');
-      const data = await response.json();
+      const data = await response.json() as { blackoutDates?: BlackoutDate[] };
       if (data.blackoutDates) {
         // Filter to only show future dates
         const today = new Date().toISOString().split('T')[0];
@@ -73,7 +73,7 @@ export function BlockedDates() {
         body: JSON.stringify({ date: newDate, reason: newReason || null }),
       });
 
-      const data = await response.json();
+      const data = await response.json() as { success?: boolean; error?: string };
 
       if (data.success) {
         setNewDate('');
@@ -95,7 +95,7 @@ export function BlockedDates() {
         method: 'DELETE',
       });
 
-      const data = await response.json();
+      const data = await response.json() as { success?: boolean };
 
       if (data.success) {
         fetchBlackoutDates();

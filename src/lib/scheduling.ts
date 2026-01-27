@@ -24,6 +24,7 @@ const DEFAULT_LEAD_TIMES: Record<OrderType, number> = {
   cookies_large: 14,
   cake: 14,
   wedding: 30,
+  tasting: 14,
 };
 
 // Generate time slots with configurable duration

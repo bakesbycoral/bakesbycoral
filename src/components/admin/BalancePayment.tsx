@@ -27,7 +27,7 @@ export function BalancePayment({ orderId, balanceDue }: BalancePaymentProps) {
         method: 'POST',
       });
 
-      const data = await response.json();
+      const data = await response.json() as { error?: string; invoiceUrl?: string };
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to create invoice');

@@ -53,7 +53,8 @@ export async function PUT(request: NextRequest) {
     });
 
     // Execute all updates in a batch
-    await db.batch(statements);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await db.batch(statements as any);
 
     return NextResponse.json({ success: true });
   } catch (error) {

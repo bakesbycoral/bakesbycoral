@@ -29,7 +29,8 @@ export async function addOrderNote(
     .prepare('INSERT INTO order_notes (order_id, note, created_by) VALUES (?, ?, ?)')
     .bind(orderId, note, createdBy ?? null)
     .run();
-  return result.meta?.last_row_id ?? 0;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (result.meta as any)?.last_row_id ?? 0;
 }
 
 // Delete a note

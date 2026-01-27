@@ -108,6 +108,7 @@ export function getOrderTypeDisplayName(orderType: OrderType): string {
     cookies_large: 'Large Cookie Order (4+ Dozen)',
     cake: 'Custom Cake',
     wedding: 'Wedding & Event',
+    tasting: 'Tasting Box',
   };
   return names[orderType] || orderType;
 }

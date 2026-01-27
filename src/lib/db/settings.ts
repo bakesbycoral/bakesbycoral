@@ -76,7 +76,8 @@ export async function updateSettings(settings: Record<string, string>): Promise<
 
   // Use batch for efficiency
   const batch = Object.entries(settings).map(([key, value]) => stmt.bind(value, key));
-  await db.batch(batch);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await db.batch(batch as any);
 }
 
 // Pricing getters

@@ -87,7 +87,7 @@ export default function CakeOrderPage() {
       });
 
       if (!response.ok) {
-        const data = await response.json();
+        const data = await response.json() as { error?: string };
         throw new Error(data.error || 'Failed to submit inquiry');
       }
 

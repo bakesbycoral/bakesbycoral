@@ -1,5 +1,5 @@
 // Order types (match database values)
-export type OrderType = 'cookies' | 'cookies_large' | 'cake' | 'wedding';
+export type OrderType = 'cookies' | 'cookies_large' | 'cake' | 'wedding' | 'tasting';
 
 export type OrderStatus =
   | 'inquiry'

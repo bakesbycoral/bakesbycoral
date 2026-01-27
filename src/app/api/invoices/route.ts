@@ -85,10 +85,9 @@ export async function POST(request: NextRequest) {
     // Create invoice item for deposit
     await stripe.invoiceItems.create({
       customer: customer.id,
+      amount: depositAmount,
       currency: 'usd',
       description: body.description || `Deposit for ${order.order_number}`,
-      unit_amount: depositAmount,
-      quantity: 1,
     });
 
     const invoice = await stripe.invoices.create({
