@@ -7,7 +7,7 @@ pages_build_output_dir = ".vercel/output/static"
 [[d1_databases]]
 binding = "DB"
 database_name = "bakes-coral-db"
-database_id = "57ab17b8-90c6-42e9-ad56-490be1859387"
+database_id = "2ea77357-2926-4597-8fae-d5f3646cf1ab"
 
 # R2 Bucket for file uploads
 [[r2_buckets]]
