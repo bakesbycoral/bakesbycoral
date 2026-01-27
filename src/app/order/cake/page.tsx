@@ -9,17 +9,21 @@ export default function CakeOrderPage() {
     name: '',
     email: '',
     phone: '',
-    eventDate: '',
     pickupSlot: null as { date: string; time: string } | null,
     eventType: '',
     cakeSize: '',
+    cakeShape: '',
     cakeFlavor: '',
     filling: '',
-    frosting: '',
-    design: '',
-    inspiration: '',
+    baseColor: '',
+    pipingColors: '',
+    customMessaging: '',
+    messageStyle: '',
+    toppings: [] as string[],
+    inspirationFiles: [] as File[],
     allergies: '',
     message: '',
+    howDidYouHear: '',
     acknowledgeDeposit: false,
     acknowledgeAllergens: false,
     acknowledgeLeadTime: false,
@@ -32,31 +36,44 @@ export default function CakeOrderPage() {
     e.preventDefault();
     setSubmitError(null);
 
+    if (formData.inspirationFiles.length === 0) {
+      setSubmitError('Please upload at least one inspiration image.');
+      return;
+    }
+
     setSubmitting(true);
     try {
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('email', formData.email);
+      submitData.append('phone', formData.phone);
+      submitData.append('pickup_date', formData.pickupSlot?.date || '');
+      submitData.append('pickup_time', formData.pickupSlot?.time || '');
+      submitData.append('event_type', formData.eventType);
+      submitData.append('cake_size', formData.cakeSize);
+      submitData.append('cake_shape', formData.cakeShape);
+      submitData.append('cake_flavor', formData.cakeFlavor);
+      submitData.append('filling', formData.filling);
+      submitData.append('base_color', formData.baseColor);
+      submitData.append('piping_colors', formData.pipingColors);
+      submitData.append('custom_messaging', formData.customMessaging);
+      submitData.append('message_style', formData.messageStyle);
+      submitData.append('toppings', JSON.stringify(formData.toppings));
+      submitData.append('allergies', formData.allergies);
+      submitData.append('notes', formData.message);
+      submitData.append('how_did_you_hear', formData.howDidYouHear);
+      submitData.append('acknowledge_deposit', String(formData.acknowledgeDeposit));
+      submitData.append('acknowledge_allergens', String(formData.acknowledgeAllergens));
+      submitData.append('acknowledge_lead_time', String(formData.acknowledgeLeadTime));
+
+      // Append inspiration images
+      formData.inspirationFiles.forEach((file) => {
+        submitData.append('inspiration_images', file);
+      });
+
       const response = await fetch('/api/orders/cake', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          event_date: formData.eventDate,
-          pickup_date: formData.pickupSlot?.date || null,
-          pickup_time: formData.pickupSlot?.time || null,
-          event_type: formData.eventType,
-          cake_size: formData.cakeSize,
-          cake_flavor: formData.cakeFlavor,
-          filling: formData.filling,
-          frosting: formData.frosting,
-          design: formData.design,
-          inspiration: formData.inspiration,
-          allergies: formData.allergies,
-          notes: formData.message,
-          acknowledge_deposit: formData.acknowledgeDeposit,
-          acknowledge_allergens: formData.acknowledgeAllergens,
-          acknowledge_lead_time: formData.acknowledgeLeadTime,
-        }),
+        body: submitData,
       });
 
       if (!response.ok) {
@@ -89,7 +106,7 @@ export default function CakeOrderPage() {
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <h1 className="text-4xl sm:text-5xl font-serif text-[#4A2C21] font-bold">
-            Cake Inquiry Form
+            <em>Custom Cake</em> Inquiry Form
           </h1>
           <p className="mt-4 text-lg text-[#4A2C21]/80">
             Tell me about your dream cake
@@ -100,6 +117,13 @@ export default function CakeOrderPage() {
       {/* Form Section */}
       <section className="py-16 sm:py-24 bg-[#F7F3ED]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
+          {/* Info */}
+          <div className="bg-[#EAD6D6] rounded-lg p-6 mb-8">
+            <p className="text-[#541409] text-sm font-medium">
+              Rush orders may be available for an additional fee—just ask!
+            </p>
+          </div>
+
           <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Contact Info */}
@@ -145,19 +169,6 @@ export default function CakeOrderPage() {
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
                   </div>
-                  <div>
-                    <label htmlFor="eventDate" className="block text-sm font-medium text-[#541409] mb-2">
-                      Event Date <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      id="eventDate"
-                      required
-                      className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent ${formData.eventDate ? 'text-[#541409]' : 'text-[#541409]/50'}`}
-                      value={formData.eventDate}
-                      onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                    />
-                  </div>
                 </div>
               </div>
 
@@ -177,29 +188,32 @@ export default function CakeOrderPage() {
               {/* Event Details */}
               <div>
                 <h2 className="text-xl font-serif text-[#541409] mb-4">Event Details</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="eventType" className="block text-sm font-medium text-[#541409] mb-2">
-                      Event Type <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      id="eventType"
-                      required
-                      className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.eventType ? 'text-[#541409]' : 'text-[#541409]/50'}`}
-                      value={formData.eventType}
-                      onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
-                    >
-                      <option value="">Select an option</option>
-                      <option value="birthday">Birthday</option>
-                      <option value="wedding">Wedding</option>
-                      <option value="baby-shower">Baby Shower</option>
-                      <option value="bridal-shower">Bridal Shower</option>
-                      <option value="anniversary">Anniversary</option>
-                      <option value="graduation">Graduation</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
+                <div>
+                  <label htmlFor="eventType" className="block text-sm font-medium text-[#541409] mb-2">
+                    Event Type <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="eventType"
+                    required
+                    className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.eventType ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                    value={formData.eventType}
+                    onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
+                  >
+                    <option value="">Select an option</option>
+                    <option value="birthday">Birthday</option>
+                    <option value="baby-shower">Baby Shower</option>
+                    <option value="bridal-shower">Bridal Shower</option>
+                    <option value="anniversary">Anniversary</option>
+                    <option value="graduation">Graduation</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
 
+              {/* Cake Details */}
+              <div>
+                <h2 className="text-xl font-serif text-[#541409] mb-4">Cake Details</h2>
+                <div className="space-y-4">
                   <div>
                     <label htmlFor="cakeSize" className="block text-sm font-medium text-[#541409] mb-2">
                       Cake Size <span className="text-red-500">*</span>
@@ -209,23 +223,42 @@ export default function CakeOrderPage() {
                       required
                       className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.cakeSize ? 'text-[#541409]' : 'text-[#541409]/50'}`}
                       value={formData.cakeSize}
-                      onChange={(e) => setFormData({ ...formData, cakeSize: e.target.value })}
+                      onChange={(e) => {
+                        const newSize = e.target.value;
+                        // If switching to 10-inch and heart was selected, reset shape
+                        if (newSize === '10-inch' && formData.cakeShape === 'heart') {
+                          setFormData({ ...formData, cakeSize: newSize, cakeShape: '' });
+                        } else {
+                          setFormData({ ...formData, cakeSize: newSize });
+                        }
+                      }}
                     >
                       <option value="">Select an option</option>
-                      <option value="6-inch">6" Round (serves 8-10) - $50</option>
-                      <option value="8-inch">8" Round (serves 14-18) - $70</option>
-                      <option value="10-inch">10" Round (serves 24-30) - $90</option>
-                      <option value="tiered">Tiered Cake - Starting at $120</option>
+                      <option value="4-inch">4" (serves 2-4) - Starting at $60</option>
+                      <option value="6-inch">6" (serves 6-12) - Starting at $100</option>
+                      <option value="8-inch">8" (serves 14-20) - Starting at $140</option>
+                      <option value="10-inch">10" (serves 24-30) - Starting at $180</option>
                       <option value="unsure">Not sure - need guidance</option>
                     </select>
                   </div>
-                </div>
-              </div>
 
-              {/* Cake Details */}
-              <div>
-                <h2 className="text-xl font-serif text-[#541409] mb-4">Cake Details</h2>
-                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="cakeShape" className="block text-sm font-medium text-[#541409] mb-2">
+                      Cake Shape <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      id="cakeShape"
+                      required
+                      className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.cakeShape ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                      value={formData.cakeShape}
+                      onChange={(e) => setFormData({ ...formData, cakeShape: e.target.value })}
+                    >
+                      <option value="">Select an option</option>
+                      <option value="round">Round</option>
+                      {formData.cakeSize !== '10-inch' && <option value="heart">Heart</option>}
+                    </select>
+                  </div>
+
                   <div>
                     <label htmlFor="cakeFlavor" className="block text-sm font-medium text-[#541409] mb-2">
                       Cake Flavor <span className="text-red-500">*</span>
@@ -238,13 +271,13 @@ export default function CakeOrderPage() {
                       onChange={(e) => setFormData({ ...formData, cakeFlavor: e.target.value })}
                     >
                       <option value="">Select an option</option>
-                      <option value="vanilla">Vanilla</option>
+                      <option value="vanilla-bean">Vanilla Bean</option>
                       <option value="chocolate">Chocolate</option>
-                      <option value="funfetti">Funfetti</option>
+                      <option value="confetti">Confetti</option>
                       <option value="red-velvet">Red Velvet</option>
                       <option value="lemon">Lemon</option>
-                      <option value="strawberry">Strawberry</option>
-                      <option value="other">Other (specify in notes)</option>
+                      <option value="vanilla-latte">Vanilla Latte (+$5)</option>
+                      <option value="marble">Marble (vanilla & chocolate)</option>
                     </select>
                   </div>
 
@@ -259,31 +292,12 @@ export default function CakeOrderPage() {
                       onChange={(e) => setFormData({ ...formData, filling: e.target.value })}
                     >
                       <option value="">Select an option (or leave blank)</option>
-                      <option value="vanilla-buttercream">Vanilla Buttercream</option>
-                      <option value="chocolate-buttercream">Chocolate Buttercream</option>
-                      <option value="cream-cheese">Cream Cheese Frosting</option>
-                      <option value="strawberry-jam">Strawberry Jam</option>
-                      <option value="lemon-curd">Lemon Curd</option>
-                      <option value="raspberry-jam">Raspberry Jam</option>
-                      <option value="other">Other (specify in notes)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="frosting" className="block text-sm font-medium text-[#541409] mb-2">
-                      Frosting
-                    </label>
-                    <select
-                      id="frosting"
-                      className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.frosting ? 'text-[#541409]' : 'text-[#541409]/50'}`}
-                      value={formData.frosting}
-                      onChange={(e) => setFormData({ ...formData, frosting: e.target.value })}
-                    >
-                      <option value="">Select an option (or leave blank)</option>
-                      <option value="vanilla-buttercream">Vanilla Buttercream</option>
-                      <option value="chocolate-buttercream">Chocolate Buttercream</option>
-                      <option value="cream-cheese">Cream Cheese Frosting</option>
-                      <option value="other">Other (specify in notes)</option>
+                      <option value="chocolate-ganache">Chocolate Ganache (+$10)</option>
+                      <option value="cookies-and-cream">Cookies & Cream (+$5)</option>
+                      <option value="vanilla-bean-ganache">Vanilla Bean Ganache (+$10)</option>
+                      <option value="fresh-strawberries">Fresh Strawberries (+$8)</option>
+                      <option value="lemon-curd">Lemon Curd (+$5)</option>
+                      <option value="raspberry">Raspberry (+$8)</option>
                     </select>
                   </div>
                 </div>
@@ -294,32 +308,155 @@ export default function CakeOrderPage() {
                 <h2 className="text-xl font-serif text-[#541409] mb-4">Design</h2>
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="design" className="block text-sm font-medium text-[#541409] mb-2">
-                      Describe Your Vision <span className="text-red-500">*</span>
+                    <label htmlFor="baseColor" className="block text-sm font-medium text-[#541409] mb-2">
+                      Base Color <span className="text-red-500">*</span>
                     </label>
-                    <textarea
-                      id="design"
-                      rows={4}
+                    <input
+                      type="text"
+                      id="baseColor"
                       required
-                      placeholder="Tell me about the design you're envisioning. Include colors, theme, any text you want on the cake, etc."
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.design}
-                      onChange={(e) => setFormData({ ...formData, design: e.target.value })}
+                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                      value={formData.baseColor}
+                      onChange={(e) => setFormData({ ...formData, baseColor: e.target.value })}
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="inspiration" className="block text-sm font-medium text-[#541409] mb-2">
-                      Inspiration Image Links
+                    <label htmlFor="pipingColors" className="block text-sm font-medium text-[#541409] mb-2">
+                      Piping Color(s) <span className="text-red-500">*</span>
                     </label>
-                    <textarea
-                      id="inspiration"
-                      rows={2}
-                      placeholder="Paste any Pinterest or Instagram links for inspiration"
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.inspiration}
-                      onChange={(e) => setFormData({ ...formData, inspiration: e.target.value })}
+                    <input
+                      type="text"
+                      id="pipingColors"
+                      required
+                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                      value={formData.pipingColors}
+                      onChange={(e) => setFormData({ ...formData, pipingColors: e.target.value })}
                     />
+                  </div>
+
+                  <div>
+                    <label htmlFor="customMessaging" className="block text-sm font-medium text-[#541409] mb-2">
+                      What would you like your custom messaging to say? <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="customMessaging"
+                      required
+                      placeholder="If no messaging, type N/A"
+                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                      value={formData.customMessaging}
+                      onChange={(e) => setFormData({ ...formData, customMessaging: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="messageStyle" className="block text-sm font-medium text-[#541409] mb-2">
+                      How would you like your message to be written? <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      id="messageStyle"
+                      required
+                      className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.messageStyle ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                      value={formData.messageStyle}
+                      onChange={(e) => setFormData({ ...formData, messageStyle: e.target.value })}
+                    >
+                      <option value="">Select an option</option>
+                      <option value="piped">Piped</option>
+                      <option value="piped-cursive">Piped Cursive</option>
+                      <option value="block">Block</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#541409] mb-2">
+                      Toppings
+                    </label>
+                    <div className="space-y-2">
+                      {[
+                        { value: 'light-beading', label: 'Light Beading (+$8)' },
+                        { value: 'moderate-beading', label: 'Moderate Beading (+$15)' },
+                        { value: 'heavy-beading', label: 'Heavy Beading (+$20)' },
+                        { value: 'ribbon-bows', label: 'Ribbon Bows (+$8)' },
+                        { value: 'cherries', label: 'Cherries (+$8)' },
+                        { value: 'glitter-cherries', label: 'Glitter Cherries (+$15)' },
+                        { value: 'disco-balls', label: 'Disco Balls (+$10)' },
+                        { value: 'balloons', label: 'Balloons (+$10)' },
+                        { value: 'fresh-florals', label: 'Fresh Florals (starting at +$15)' },
+                        { value: 'faux-florals', label: 'Faux Florals (starting at +$15)' },
+                        { value: 'edible-image', label: 'Edible Image (starting at +$10)' },
+                        { value: 'other', label: 'Other (starting at +$8)' },
+                      ].map((topping) => (
+                        <label key={topping.value} className="flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.toppings.includes(topping.value)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFormData({ ...formData, toppings: [...formData.toppings, topping.value] });
+                              } else {
+                                setFormData({ ...formData, toppings: formData.toppings.filter(t => t !== topping.value) });
+                              }
+                            }}
+                            className="w-5 h-5 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                          />
+                          <span className="ml-3 text-sm text-stone-700">{topping.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#541409] mb-2">
+                      Inspiration Images <span className="text-red-500">*</span>
+                    </label>
+                    <p className="text-xs text-stone-500 mb-2">Upload up to 10 images for inspiration</p>
+                    <input
+                      type="file"
+                      id="inspirationFiles"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        const totalFiles = formData.inspirationFiles.length + files.length;
+                        if (totalFiles > 10) {
+                          alert('You can upload a maximum of 10 images');
+                          return;
+                        }
+                        setFormData({ ...formData, inspirationFiles: [...formData.inspirationFiles, ...files] });
+                        e.target.value = '';
+                      }}
+                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:bg-[#541409] file:text-[#EAD6D6] file:cursor-pointer"
+                      disabled={formData.inspirationFiles.length >= 10}
+                    />
+                    {formData.inspirationFiles.length > 0 && (
+                      <div className="mt-4 grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        {formData.inspirationFiles.map((file, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={`Inspiration ${index + 1}`}
+                              className="w-full h-20 object-cover rounded-sm"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFormData({
+                                  ...formData,
+                                  inspirationFiles: formData.inspirationFiles.filter((_, i) => i !== index)
+                                });
+                              }}
+                              className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-xs text-stone-500 mt-2">
+                      {formData.inspirationFiles.length}/10 images uploaded
+                    </p>
                   </div>
                 </div>
               </div>
@@ -330,12 +467,12 @@ export default function CakeOrderPage() {
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="allergies" className="block text-sm font-medium text-[#541409] mb-2">
-                      Allergies or Dietary Restrictions
+                      Allergies to Note
                     </label>
                     <input
                       type="text"
                       id="allergies"
-                      placeholder="Besides gluten, any other allergies I should know about?"
+                      placeholder="Any allergies I should be aware of?"
                       className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
                       value={formData.allergies}
                       onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
@@ -344,15 +481,29 @@ export default function CakeOrderPage() {
 
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-[#541409] mb-2">
-                      Anything Else?
+                      Special Requests & Anything Else I Need to Know
                     </label>
                     <textarea
                       id="message"
                       rows={3}
-                      placeholder="Any other details or questions..."
+                      placeholder="Be specific! Color scheme, theme, inspo, certain details, etc"
                       className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none text-[#541409] placeholder:text-[#541409]/50"
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="howDidYouHear" className="block text-sm font-medium text-[#541409] mb-2">
+                      How did you hear about me? :)
+                    </label>
+                    <input
+                      type="text"
+                      id="howDidYouHear"
+                      placeholder="Instagram, friend, Google, etc."
+                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                      value={formData.howDidYouHear}
+                      onChange={(e) => setFormData({ ...formData, howDidYouHear: e.target.value })}
                     />
                   </div>
                 </div>

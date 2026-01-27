@@ -17,6 +17,7 @@ interface QueryResult<T> {
 // D1-compatible interface for local SQLite
 interface LocalDB {
   prepare(sql: string): LocalStatement;
+  batch(statements: LocalStatement[]): Promise<unknown[]>;
 }
 
 interface LocalStatement {
@@ -24,6 +25,9 @@ interface LocalStatement {
   first<T>(): Promise<T | null>;
   all<T>(): Promise<QueryResult<T>>;
   run(): Promise<{ success: boolean; meta: { changes: number } }>;
+  // Internal properties for batch execution
+  _sql?: string;
+  _params?: unknown[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,8 +54,12 @@ function getLocalDatabase(): LocalDB {
       let boundParams: unknown[] = [];
 
       const statement = {
+        _sql: sql,
+        _params: [] as unknown[],
+
         bind(...params: unknown[]) {
           boundParams = params;
+          statement._params = params;
           return statement;
         },
 
@@ -93,6 +101,29 @@ function getLocalDatabase(): LocalDB {
       };
 
       return statement;
+    },
+
+    async batch(statements: LocalStatement[]): Promise<unknown[]> {
+      const results: unknown[] = [];
+      try {
+        // Run all statements in a transaction for consistency
+        sqliteInstance.exec('BEGIN TRANSACTION');
+        for (const stmt of statements) {
+          // Access the internal SQL and params
+          const stmtAny = stmt as { _sql?: string; _params?: unknown[] };
+          if (stmtAny._sql) {
+            const prepared = sqliteInstance.prepare(stmtAny._sql);
+            const result = prepared.run(...(stmtAny._params || []));
+            results.push({ success: true, meta: { changes: result.changes } });
+          }
+        }
+        sqliteInstance.exec('COMMIT');
+      } catch (error) {
+        console.error('DB batch() error:', error);
+        sqliteInstance.exec('ROLLBACK');
+        throw error;
+      }
+      return results;
     },
   };
 }

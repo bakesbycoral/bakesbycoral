@@ -80,9 +80,9 @@ export async function GET(request: NextRequest) {
     minDate.setDate(minDate.getDate() + leadTimeDays);
     const minDateStr = minDate.toISOString().split('T')[0];
 
-    // Parse date range
-    const start = new Date(startDate);
-    const end = endDate ? new Date(endDate) : new Date(start);
+    // Parse date range (add time to avoid timezone issues)
+    const start = new Date(startDate + 'T12:00:00');
+    const end = endDate ? new Date(endDate + 'T12:00:00') : new Date(start);
     end.setDate(end.getDate() + 14); // Default to 2 weeks
 
     // Get blackout dates
@@ -150,11 +150,11 @@ export async function GET(request: NextRequest) {
 
     // Generate available slots
     const slots: SlotAvailability[] = [];
-    const current = new Date(start);
+    const current = new Date(start); // Copy the start date
 
     while (current <= end) {
       const dateStr = current.toISOString().split('T')[0];
-      const dayOfWeek = current.getDay();
+      const dayOfWeek = current.getUTCDay(); // Use UTC to match the date string
       const dayName = DAY_NAMES[dayOfWeek];
 
       // Skip if before minimum date

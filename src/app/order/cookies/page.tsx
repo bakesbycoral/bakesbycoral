@@ -13,13 +13,14 @@ export default function CookieOrderPage() {
     quantity: '',
     flavors: {
       chocolateChip: 0,
-      doubleChocolate: 0,
-      snickerdoodle: 0,
-      peanutButter: 0,
-      oatmealRaisin: 0,
-      sugarCookie: 0,
+      vanillaBeanSugar: 0,
+      cherryAlmond: 0,
+      espressoButterscotch: 0,
+      lemonSugar: 0,
     },
+    packaging: '',
     allergies: '',
+    howDidYouHear: '',
     message: '',
     acknowledgePayment: false,
     acknowledgeAllergens: false,
@@ -43,11 +44,10 @@ export default function CookieOrderPage() {
       // Map flavor keys to API format and build array
       const flavorKeyMap: Record<string, string> = {
         chocolateChip: 'chocolate_chip',
-        doubleChocolate: 'double_chocolate',
-        snickerdoodle: 'snickerdoodle',
-        peanutButter: 'peanut_butter',
-        oatmealRaisin: 'oatmeal_raisin',
-        sugarCookie: 'sugar_cookie',
+        vanillaBeanSugar: 'vanilla_bean_sugar',
+        cherryAlmond: 'cherry_almond',
+        espressoButterscotch: 'espresso_butterscotch',
+        lemonSugar: 'lemon_sugar',
       };
       const selectedFlavors = Object.entries(formData.flavors)
         .filter(([, count]) => count > 0)
@@ -64,6 +64,9 @@ export default function CookieOrderPage() {
           pickup_time: formData.pickupSlot.time,
           quantity: formData.quantity,
           flavors: selectedFlavors,
+          packaging: formData.packaging,
+          allergies: formData.allergies,
+          how_did_you_hear: formData.howDidYouHear,
           notes: formData.message,
           acknowledge_payment: formData.acknowledgePayment,
           acknowledge_allergy: formData.acknowledgeAllergens,
@@ -91,6 +94,8 @@ export default function CookieOrderPage() {
   };
 
   const totalCookies = Object.values(formData.flavors).reduce((a, b) => a + b, 0);
+  const maxCookies = formData.quantity ? parseInt(formData.quantity) * 12 : 0;
+  const remainingCookies = maxCookies - totalCookies;
 
   return (
     <>
@@ -109,7 +114,7 @@ export default function CookieOrderPage() {
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <h1 className="text-4xl sm:text-5xl font-serif text-[#4A2C21] font-bold">
-            Cookie Order Form
+            <em>Cookie</em> Order Form
           </h1>
           <p className="mt-4 text-lg text-[#4A2C21]/80">
             Soft, chewy, gluten-free goodness
@@ -196,15 +201,34 @@ export default function CookieOrderPage() {
                   required
                   className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.quantity ? 'text-[#541409]' : 'text-[#541409]/50'}`}
                   value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                  onChange={(e) => {
+                    const newQuantity = e.target.value;
+                    const newMax = newQuantity ? parseInt(newQuantity) * 12 : 0;
+                    // Reset flavors if current total exceeds new max
+                    if (totalCookies > newMax) {
+                      setFormData({
+                        ...formData,
+                        quantity: newQuantity,
+                        flavors: {
+                          chocolateChip: 0,
+                          vanillaBeanSugar: 0,
+                          cherryAlmond: 0,
+                          espressoButterscotch: 0,
+                          lemonSugar: 0,
+                        }
+                      });
+                    } else {
+                      setFormData({ ...formData, quantity: newQuantity });
+                    }
+                  }}
                 >
                   <option value="">Select an option</option>
-                  <option value="1">1 Dozen - $30</option>
-                  <option value="2">2 Dozen - $60</option>
-                  <option value="3">3 Dozen - $90</option>
+                  <option value="1">1 Dozen (12 cookies) - $30</option>
+                  <option value="2">2 Dozen (24 cookies) - $60</option>
+                  <option value="3">3 Dozen (36 cookies) - $90</option>
                 </select>
                 <p className="text-xs text-stone-500 mt-1">
-                  For 5+ dozen, please use the <Link href="/order/cookies-large" className="text-[#541409] underline">large order form</Link>.
+                  For 4+ dozen, please use the <Link href="/order/cookies-large" className="text-[#541409] underline">large order form</Link>.
                 </p>
               </div>
 
@@ -212,39 +236,92 @@ export default function CookieOrderPage() {
               <div>
                 <h2 className="text-xl font-serif text-[#541409] mb-4">Choose Your Flavors</h2>
                 <p className="text-sm text-stone-600 mb-4">
-                  Select how many of each flavor you'd like. Total should equal {formData.quantity ? parseInt(formData.quantity) * 12 : 'your dozen count x 12'}.
+                  {formData.quantity
+                    ? `Select how many of each flavor you'd like (total must equal ${parseInt(formData.quantity) * 12} cookies).`
+                    : 'Please select how many dozen above first.'}
                 </p>
                 <div className="space-y-4">
                   {[
                     { key: 'chocolateChip', label: 'Chocolate Chip' },
-                    { key: 'doubleChocolate', label: 'Double Chocolate' },
-                    { key: 'snickerdoodle', label: 'Snickerdoodle' },
-                    { key: 'peanutButter', label: 'Peanut Butter' },
-                    { key: 'oatmealRaisin', label: 'Oatmeal Raisin' },
-                    { key: 'sugarCookie', label: 'Sugar Cookie' },
-                  ].map((flavor) => (
-                    <div key={flavor.key} className="flex items-center justify-between">
-                      <label className="text-stone-700">{flavor.label}</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="48"
-                        className="w-20 px-3 py-2 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-center text-[#541409]"
-                        value={formData.flavors[flavor.key as keyof typeof formData.flavors]}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          flavors: {
-                            ...formData.flavors,
-                            [flavor.key]: parseInt(e.target.value) || 0
-                          }
-                        })}
-                      />
+                    { key: 'vanillaBeanSugar', label: 'Vanilla Bean Sugar' },
+                    { key: 'cherryAlmond', label: 'Cherry Almond' },
+                    { key: 'espressoButterscotch', label: 'Espresso Butterscotch' },
+                    { key: 'lemonSugar', label: 'Lemon Sugar' },
+                  ].map((flavor) => {
+                    const currentValue = formData.flavors[flavor.key as keyof typeof formData.flavors];
+                    // Max for this flavor is current value + remaining cookies (rounded down to nearest 6)
+                    const maxForFlavor = currentValue + Math.floor(remainingCookies / 6) * 6;
+                    return (
+                      <div key={flavor.key} className="flex items-center justify-between">
+                        <label className="text-stone-700">{flavor.label}</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max={maxForFlavor}
+                          step="6"
+                          disabled={!formData.quantity}
+                          className="w-20 px-3 py-2 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-center text-[#541409] disabled:bg-stone-100 disabled:cursor-not-allowed"
+                          value={currentValue}
+                          onChange={(e) => {
+                            // Round to nearest 6
+                            const value = parseInt(e.target.value) || 0;
+                            const rounded = Math.round(value / 6) * 6;
+                            // Cap at max allowed
+                            const capped = Math.max(0, Math.min(maxForFlavor, rounded));
+                            setFormData({
+                              ...formData,
+                              flavors: {
+                                ...formData.flavors,
+                                [flavor.key]: capped
+                              }
+                            });
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-stone-500 mt-2">
+                  Quantities must be in increments of 6 (half dozen)
+                </p>
+                <div className="mt-4 p-3 bg-[#EAD6D6] rounded text-center space-y-1">
+                  <div className="font-medium text-[#541409]">
+                    Total: {totalCookies} / {maxCookies || '—'} cookies
+                  </div>
+                  {formData.quantity && remainingCookies > 0 && (
+                    <div className="text-sm text-[#541409]/70">
+                      {remainingCookies} cookies remaining to select
                     </div>
-                  ))}
+                  )}
+                  {formData.quantity && remainingCookies < 0 && (
+                    <div className="text-sm text-red-600">
+                      Over by {Math.abs(remainingCookies)} cookies
+                    </div>
+                  )}
+                  {formData.quantity && totalCookies === maxCookies && (
+                    <div className="text-sm text-green-600">
+                      ✓ Perfect!
+                    </div>
+                  )}
                 </div>
-                <div className="mt-4 p-3 bg-[#EAD6D6] rounded text-center">
-                  <span className="font-medium text-[#541409]">Total cookies: {totalCookies}</span>
-                </div>
+              </div>
+
+              {/* Packaging */}
+              <div>
+                <label htmlFor="packaging" className="block text-sm font-medium text-[#541409] mb-2">
+                  Packaging Preference <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="packaging"
+                  required
+                  className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.packaging ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                  value={formData.packaging}
+                  onChange={(e) => setFormData({ ...formData, packaging: e.target.value })}
+                >
+                  <option value="">Select an option</option>
+                  <option value="standard">Standard</option>
+                  <option value="heat-sealed">Individually Heat Sealed (+$5/dozen)</option>
+                </select>
               </div>
 
               {/* Additional Info */}
@@ -253,15 +330,29 @@ export default function CookieOrderPage() {
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="allergies" className="block text-sm font-medium text-[#541409] mb-2">
-                      Allergies (besides gluten)
+                      Allergies to Note
                     </label>
                     <input
                       type="text"
                       id="allergies"
-                      placeholder="e.g., nut allergy, dairy-free, etc."
+                      placeholder="Any allergies I should be aware of?"
                       className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
                       value={formData.allergies}
                       onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="howDidYouHear" className="block text-sm font-medium text-[#541409] mb-2">
+                      How did you hear about me? :)
+                    </label>
+                    <input
+                      type="text"
+                      id="howDidYouHear"
+                      placeholder="Instagram, friend, Google, etc."
+                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                      value={formData.howDidYouHear}
+                      onChange={(e) => setFormData({ ...formData, howDidYouHear: e.target.value })}
                     />
                   </div>
 

@@ -94,14 +94,6 @@ export default function Header() {
               )}
             </div>
 
-            <Link
-              href="/admin/login"
-              className={`text-sm font-medium text-[#EAD6D6] hover:text-white transition-colors ${
-                pathname === '/admin/login' ? 'underline underline-offset-4 decoration-[#EAD6D6]' : ''
-              }`}
-            >
-              Login
-            </Link>
           </nav>
 
           {/* CTA Button */}
@@ -174,14 +166,6 @@ export default function Header() {
                   {link.label}
                 </Link>
               ))}
-
-              <Link
-                href="/admin/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-3 text-[#EAD6D6] hover:text-white hover:bg-[#541409]/70 rounded-lg transition-colors"
-              >
-                Login
-              </Link>
 
               <Link
                 href="/order/cake"

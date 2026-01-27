@@ -239,29 +239,55 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       {/* Pickup Schedule */}
       <section className="bg-white rounded-xl shadow-sm p-6">
         <h2 className="text-lg font-semibold text-neutral-900 mb-6">Pickup Hours</h2>
-        <p className="text-sm text-neutral-500 mb-4">Set available pickup hours for each day. Leave blank for closed days.</p>
+        <p className="text-sm text-neutral-500 mb-4">Set available pickup hours for each day. Toggle off for closed days.</p>
 
         <div className="space-y-4">
           {DAYS.map((day) => {
             const hours = parsePickupHours(settings[`pickup_hours_${day}`]);
+            const isClosed = !hours.start && !hours.end;
             return (
               <div key={day} className="flex items-center gap-4">
                 <div className="w-28 font-medium text-neutral-700 capitalize">{day}</div>
-                <div className="flex items-center gap-2">
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
-                    type="time"
-                    value={hours.start}
-                    onChange={(e) => handleHoursChange(day, 'start', e.target.value)}
-                    className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409]"
+                    type="checkbox"
+                    checked={!isClosed}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        // Opening - set default hours
+                        handleHoursChange(day, 'start', '09:00');
+                        setTimeout(() => handleHoursChange(day, 'end', '17:00'), 0);
+                      } else {
+                        // Closing - clear hours
+                        setSettings((prev) => ({
+                          ...prev,
+                          [`pickup_hours_${day}`]: JSON.stringify({ start: '', end: '' }),
+                        }));
+                      }
+                    }}
+                    className="w-5 h-5 rounded border-neutral-300 text-amber-600 focus:ring-amber-500"
                   />
-                  <span className="text-neutral-400">to</span>
-                  <input
-                    type="time"
-                    value={hours.end}
-                    onChange={(e) => handleHoursChange(day, 'end', e.target.value)}
-                    className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409]"
-                  />
-                </div>
+                  <span className={`text-sm ${isClosed ? 'text-red-500 font-medium' : 'text-neutral-500'}`}>
+                    {isClosed ? 'Closed' : 'Open'}
+                  </span>
+                </label>
+                {!isClosed && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="time"
+                      value={hours.start}
+                      onChange={(e) => handleHoursChange(day, 'start', e.target.value)}
+                      className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409]"
+                    />
+                    <span className="text-neutral-400">to</span>
+                    <input
+                      type="time"
+                      value={hours.end}
+                      onChange={(e) => handleHoursChange(day, 'end', e.target.value)}
+                      className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409]"
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
