@@ -125,40 +125,40 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       )}
 
       {/* Pricing */}
-      <section className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 mb-6">Pricing</h2>
+      <section className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+        <h2 className="text-lg font-semibold text-[#541409] mb-6">Pricing</h2>
 
         <div className="space-y-6">
           <div>
-            <h3 className="font-medium text-neutral-700 mb-4">Cookies</h3>
+            <h3 className="font-medium text-[#541409] mb-4">Cookies</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-sm text-neutral-600 mb-1">Price per Dozen ($)</label>
+                <label className="block text-sm text-[#541409]/70 mb-1">Price per Dozen ($)</label>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
                   value={formatCents(settings.cookie_price_per_dozen)}
                   onChange={(e) => handlePriceChange('cookie_price_per_dozen', e.target.value)}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409] placeholder:text-[#541409]/50"
+                  className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
                 />
               </div>
             </div>
           </div>
 
           <div>
-            <h3 className="font-medium text-neutral-700 mb-4">Cake Base Prices</h3>
+            <h3 className="font-medium text-[#541409] mb-4">Cake Base Prices</h3>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {['4', '6', '8', '10'].map((size) => (
                 <div key={size}>
-                  <label className="block text-sm text-neutral-600 mb-1">{size}-inch ($)</label>
+                  <label className="block text-sm text-[#541409]/70 mb-1">{size}-inch ($)</label>
                   <input
                     type="number"
                     step="0.01"
                     min="0"
                     value={formatCents(settings[`cake_price_${size}_inch`])}
                     onChange={(e) => handlePriceChange(`cake_price_${size}_inch`, e.target.value)}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409] placeholder:text-[#541409]/50"
+                    className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
                   />
                 </div>
               ))}
@@ -166,19 +166,19 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
           </div>
 
           <div>
-            <h3 className="font-medium text-neutral-700 mb-4">Design Style Multipliers</h3>
-            <p className="text-sm text-neutral-500 mb-4">Enter as decimal (e.g., 1.25 for 25% increase)</p>
+            <h3 className="font-medium text-[#541409] mb-4">Design Style Multipliers</h3>
+            <p className="text-sm text-[#541409]/60 mb-4">Enter as decimal (e.g., 1.25 for 25% increase)</p>
             <div className="grid gap-4 sm:grid-cols-3">
               {['simple', 'moderate', 'intricate'].map((style) => (
                 <div key={style}>
-                  <label className="block text-sm text-neutral-600 mb-1 capitalize">{style}</label>
+                  <label className="block text-sm text-[#541409]/70 mb-1 capitalize">{style}</label>
                   <input
                     type="number"
                     step="0.01"
                     min="1"
                     value={settings[`design_multiplier_${style}`]}
                     onChange={(e) => handleNumberChange(`design_multiplier_${style}`, e.target.value)}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409] placeholder:text-[#541409]/50"
+                    className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
                   />
                 </div>
               ))}
@@ -188,58 +188,58 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       </section>
 
       {/* Lead Times */}
-      <section className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 mb-6">Lead Times</h2>
-        <p className="text-sm text-neutral-500 mb-4">Minimum days notice required for each order type</p>
+      <section className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+        <h2 className="text-lg font-semibold text-[#541409] mb-6">Lead Times</h2>
+        <p className="text-sm text-[#541409]/60 mb-4">Minimum days notice required for each order type</p>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="block text-sm text-neutral-600 mb-1">Small Cookies (days)</label>
+            <label className="block text-sm text-[#541409]/70 mb-1">Small Cookies (days)</label>
             <input
               type="number"
               min="1"
               value={settings.lead_time_small_cookie}
               onChange={(e) => handleNumberChange('lead_time_small_cookie', e.target.value)}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409] placeholder:text-[#541409]/50"
+              className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-600 mb-1">Large Cookies (days)</label>
+            <label className="block text-sm text-[#541409]/70 mb-1">Large Cookies (days)</label>
             <input
               type="number"
               min="1"
               value={settings.lead_time_large_cookie}
               onChange={(e) => handleNumberChange('lead_time_large_cookie', e.target.value)}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409] placeholder:text-[#541409]/50"
+              className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-600 mb-1">Custom Cakes (days)</label>
+            <label className="block text-sm text-[#541409]/70 mb-1">Custom Cakes (days)</label>
             <input
               type="number"
               min="1"
               value={settings.lead_time_cake}
               onChange={(e) => handleNumberChange('lead_time_cake', e.target.value)}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409] placeholder:text-[#541409]/50"
+              className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-600 mb-1">Weddings (days)</label>
+            <label className="block text-sm text-[#541409]/70 mb-1">Weddings (days)</label>
             <input
               type="number"
               min="1"
               value={settings.lead_time_wedding}
               onChange={(e) => handleNumberChange('lead_time_wedding', e.target.value)}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409] placeholder:text-[#541409]/50"
+              className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
             />
           </div>
         </div>
       </section>
 
       {/* Pickup Schedule */}
-      <section className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 mb-6">Pickup Hours</h2>
-        <p className="text-sm text-neutral-500 mb-4">Set available pickup hours for each day. Toggle off for closed days.</p>
+      <section className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+        <h2 className="text-lg font-semibold text-[#541409] mb-6">Pickup Hours</h2>
+        <p className="text-sm text-[#541409]/60 mb-4">Set available pickup hours for each day. Toggle off for closed days.</p>
 
         <div className="space-y-4">
           {DAYS.map((day) => {
@@ -247,7 +247,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             const isClosed = !hours.start && !hours.end;
             return (
               <div key={day} className="flex items-center gap-4">
-                <div className="w-28 font-medium text-neutral-700 capitalize">{day}</div>
+                <div className="w-28 font-medium text-[#541409] capitalize">{day}</div>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -265,9 +265,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                         }));
                       }
                     }}
-                    className="w-5 h-5 rounded border-neutral-300 text-amber-600 focus:ring-amber-500"
+                    className="w-5 h-5 rounded border-[#EAD6D6] text-[#541409] focus:ring-[#541409]"
                   />
-                  <span className={`text-sm ${isClosed ? 'text-red-500 font-medium' : 'text-neutral-500'}`}>
+                  <span className={`text-sm ${isClosed ? 'text-red-500 font-medium' : 'text-[#541409]/60'}`}>
                     {isClosed ? 'Closed' : 'Open'}
                   </span>
                 </label>
@@ -277,14 +277,14 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                       type="time"
                       value={hours.start}
                       onChange={(e) => handleHoursChange(day, 'start', e.target.value)}
-                      className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409]"
+                      className="px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
                     />
-                    <span className="text-neutral-400">to</span>
+                    <span className="text-[#541409]/40">to</span>
                     <input
                       type="time"
                       value={hours.end}
                       onChange={(e) => handleHoursChange(day, 'end', e.target.value)}
-                      className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409]"
+                      className="px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
                     />
                   </div>
                 )}
@@ -295,30 +295,30 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       </section>
 
       {/* Slot Capacity */}
-      <section className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 mb-6">Scheduling</h2>
+      <section className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+        <h2 className="text-lg font-semibold text-[#541409] mb-6">Scheduling</h2>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-sm text-neutral-600 mb-1">Pickups per Time Slot</label>
+            <label className="block text-sm text-[#541409]/70 mb-1">Pickups per Time Slot</label>
             <input
               type="number"
               min="1"
               value={settings.default_slot_capacity}
               onChange={(e) => handleNumberChange('default_slot_capacity', e.target.value)}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409] placeholder:text-[#541409]/50"
+              className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
             />
-            <p className="text-xs text-neutral-500 mt-1">Maximum number of orders that can be scheduled per 30-minute slot</p>
+            <p className="text-xs text-[#541409]/60 mt-1">Maximum number of orders that can be scheduled per 30-minute slot</p>
           </div>
           <div>
-            <label className="block text-sm text-neutral-600 mb-1">Time Slot Interval (minutes)</label>
+            <label className="block text-sm text-[#541409]/70 mb-1">Time Slot Interval (minutes)</label>
             <input
               type="number"
               min="15"
               step="15"
               value={settings.slot_interval_minutes}
               onChange={(e) => handleNumberChange('slot_interval_minutes', e.target.value)}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-[#541409] placeholder:text-[#541409]/50"
+              className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
             />
           </div>
         </div>
@@ -329,7 +329,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="px-6 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 disabled:bg-amber-400 transition-colors"
+          className="px-6 py-3 bg-[#541409] text-[#EAD6D6] font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
         >
           {isSaving ? 'Saving...' : 'Save Settings'}
         </button>

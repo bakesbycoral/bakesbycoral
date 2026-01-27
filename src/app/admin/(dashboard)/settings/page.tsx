@@ -1,5 +1,6 @@
 import { getDB, getEnvVar } from '@/lib/db';
 import { SettingsForm } from '@/components/admin/SettingsForm';
+import { BlockedDates } from '@/components/admin/BlockedDates';
 
 interface Setting {
   key: string;
@@ -27,7 +28,13 @@ export default async function SettingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-neutral-900 mb-8">Settings</h1>
+      <h1 className="text-2xl font-bold text-[#541409] mb-8">Settings</h1>
+
+      {/* Blocked Days - at the top for easy access */}
+      <div className="mb-8">
+        <BlockedDates />
+      </div>
+
       <SettingsForm initialSettings={settings} />
     </div>
   );

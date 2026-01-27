@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { TimeSlotPicker } from '@/components/forms';
+import { TimeSlotPicker, CouponInput } from '@/components/forms';
 
 export default function LargeCookieOrderPage() {
   const [formData, setFormData] = useState({
@@ -33,6 +33,13 @@ export default function LargeCookieOrderPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    description: string | null;
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    minOrderAmount: number;
+  } | null>(null);
 
   const totalCookies = Object.values(formData.flavors).reduce((a, b) => a + b, 0);
   const maxCookies = formData.quantity ? parseInt(formData.quantity) * 12 : 0;
@@ -43,8 +50,10 @@ export default function LargeCookieOrderPage() {
     e.preventDefault();
     setSubmitError(null);
 
-    if (formData.pickupOrDelivery === 'pickup' && !formData.pickupSlot) {
-      setSubmitError('Please select a pickup date and time.');
+    if (!formData.pickupSlot) {
+      setSubmitError(formData.pickupOrDelivery === 'pickup'
+        ? 'Please select a pickup date and time.'
+        : 'Please select a preferred delivery date and time.');
       return;
     }
 
@@ -72,6 +81,7 @@ export default function LargeCookieOrderPage() {
           acknowledge_deposit: formData.acknowledgeDeposit,
           acknowledge_allergens: formData.acknowledgeAllergens,
           acknowledge_lead_time: formData.acknowledgeLeadTime,
+          coupon_code: appliedCoupon?.code || null,
         }),
       });
 
@@ -238,19 +248,31 @@ export default function LargeCookieOrderPage() {
                     />
                   )}
 
-                  <div>
-                    <label htmlFor="eventLocation" className="block text-sm font-medium text-[#541409] mb-2">
-                      Event Location
-                    </label>
-                    <input
-                      type="text"
-                      id="eventLocation"
-                      placeholder="City or venue name"
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.eventLocation}
-                      onChange={(e) => setFormData({ ...formData, eventLocation: e.target.value })}
-                    />
-                  </div>
+                  {formData.pickupOrDelivery === 'delivery' && (
+                    <>
+                      <div>
+                        <label htmlFor="eventLocation" className="block text-sm font-medium text-[#541409] mb-2">
+                          Delivery Location <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          id="eventLocation"
+                          required
+                          placeholder="Full address for delivery"
+                          className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                          value={formData.eventLocation}
+                          onChange={(e) => setFormData({ ...formData, eventLocation: e.target.value })}
+                        />
+                      </div>
+                      <TimeSlotPicker
+                        orderType="cookies_large"
+                        value={formData.pickupSlot ?? undefined}
+                        onChange={(slot) => setFormData({ ...formData, pickupSlot: slot })}
+                        label="Preferred Delivery Date & Time"
+                        required
+                      />
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -445,6 +467,13 @@ export default function LargeCookieOrderPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Coupon Code */}
+              <CouponInput
+                orderType="cookies_large"
+                onCouponApplied={setAppliedCoupon}
+                appliedCoupon={appliedCoupon}
+              />
 
               {/* Acknowledgements */}
               <div>

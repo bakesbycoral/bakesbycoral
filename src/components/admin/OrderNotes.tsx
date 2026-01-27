@@ -62,8 +62,8 @@ export function OrderNotes({ orderId, notes }: OrderNotesProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
-      <h2 className="font-semibold text-neutral-900 mb-4">Internal Notes</h2>
+    <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+      <h2 className="font-semibold text-[#541409] mb-4">Internal Notes</h2>
 
       {/* Add note form */}
       <div className="mb-4">
@@ -72,7 +72,7 @@ export function OrderNotes({ orderId, notes }: OrderNotesProps) {
           onChange={(e) => setNewNote(e.target.value)}
           placeholder="Add an internal note..."
           rows={2}
-          className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none resize-none"
+          className="w-full px-3 py-2 text-sm border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none resize-none text-[#541409]"
         />
         {error && (
           <p className="text-sm text-red-600 mt-1">{error}</p>
@@ -80,7 +80,7 @@ export function OrderNotes({ orderId, notes }: OrderNotesProps) {
         <button
           onClick={handleAddNote}
           disabled={isAdding || isPending || !newNote.trim()}
-          className="mt-2 px-4 py-2 text-sm bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:bg-amber-400 disabled:cursor-not-allowed transition-colors"
+          className="mt-2 px-4 py-2 text-sm bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
         >
           {isAdding ? 'Adding...' : 'Add Note'}
         </button>
@@ -88,7 +88,7 @@ export function OrderNotes({ orderId, notes }: OrderNotesProps) {
 
       {/* Notes list */}
       {notes.length === 0 ? (
-        <p className="text-sm text-neutral-500 text-center py-4">
+        <p className="text-sm text-[#541409]/60 text-center py-4">
           No notes yet.
         </p>
       ) : (
@@ -96,12 +96,12 @@ export function OrderNotes({ orderId, notes }: OrderNotesProps) {
           {notes.map((note) => (
             <div
               key={note.id}
-              className="p-3 bg-neutral-50 rounded-lg"
+              className="p-3 bg-[#EAD6D6]/20 rounded-lg"
             >
-              <p className="text-sm text-neutral-900 whitespace-pre-wrap">
+              <p className="text-sm text-[#541409] whitespace-pre-wrap">
                 {note.note}
               </p>
-              <p className="text-xs text-neutral-500 mt-2">
+              <p className="text-xs text-[#541409]/60 mt-2">
                 {formatDateTime(note.created_at)}
                 {note.created_by && ` by ${note.created_by}`}
               </p>

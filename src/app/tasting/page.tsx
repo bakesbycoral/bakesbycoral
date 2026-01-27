@@ -1,6 +1,34 @@
 'use client';
 
 import { useState } from 'react';
+import { TimeSlotPicker } from '@/components/forms';
+
+const CAKE_FLAVORS = [
+  { value: 'vanilla-bean', label: 'Vanilla Bean' },
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'confetti', label: 'Confetti' },
+  { value: 'red-velvet', label: 'Red Velvet' },
+  { value: 'lemon', label: 'Lemon' },
+  { value: 'vanilla-latte', label: 'Vanilla Latte' },
+  { value: 'marble', label: 'Marble' },
+];
+
+const CAKE_FILLINGS = [
+  { value: 'chocolate-ganache', label: 'Chocolate Ganache' },
+  { value: 'cookies-and-cream', label: 'Cookies & Cream' },
+  { value: 'vanilla-bean-ganache', label: 'Vanilla Bean Ganache' },
+  { value: 'fresh-strawberries', label: 'Fresh Strawberries' },
+  { value: 'lemon-curd', label: 'Lemon Curd' },
+  { value: 'raspberry', label: 'Raspberry' },
+];
+
+const COOKIE_FLAVORS = [
+  { value: 'chocolate-chip', label: 'Chocolate Chip' },
+  { value: 'vanilla-bean-sugar', label: 'Vanilla Bean Sugar' },
+  { value: 'cherry-almond', label: 'Cherry Almond' },
+  { value: 'espresso-butterscotch', label: 'Espresso Butterscotch' },
+  { value: 'lemon-sugar', label: 'Lemon Sugar' },
+];
 
 export default function TastingPage() {
   const [formData, setFormData] = useState({
@@ -9,10 +37,43 @@ export default function TastingPage() {
     phone: '',
     weddingDate: '',
     tastingType: '',
-    cakeFlavors: '',
-    cookieFlavors: '',
-    message: '',
+    selectedCakeFlavors: [] as string[],
+    selectedFillings: [] as string[],
+    selectedCookieFlavors: [] as string[],
+    pickupOrDelivery: 'pickup',
+    deliveryLocation: '',
+    pickupSlot: null as { date: string; time: string } | null,
   });
+
+  const toggleCakeFlavor = (flavor: string) => {
+    setFormData(prev => {
+      if (prev.selectedCakeFlavors.includes(flavor)) {
+        return { ...prev, selectedCakeFlavors: prev.selectedCakeFlavors.filter(f => f !== flavor) };
+      }
+      if (prev.selectedCakeFlavors.length >= 4) return prev;
+      return { ...prev, selectedCakeFlavors: [...prev.selectedCakeFlavors, flavor] };
+    });
+  };
+
+  const toggleFilling = (filling: string) => {
+    setFormData(prev => {
+      if (prev.selectedFillings.includes(filling)) {
+        return { ...prev, selectedFillings: prev.selectedFillings.filter(f => f !== filling) };
+      }
+      if (prev.selectedFillings.length >= 4) return prev;
+      return { ...prev, selectedFillings: [...prev.selectedFillings, filling] };
+    });
+  };
+
+  const toggleCookieFlavor = (flavor: string) => {
+    setFormData(prev => {
+      if (prev.selectedCookieFlavors.includes(flavor)) {
+        return { ...prev, selectedCookieFlavors: prev.selectedCookieFlavors.filter(f => f !== flavor) };
+      }
+      if (prev.selectedCookieFlavors.length >= 4) return prev;
+      return { ...prev, selectedCookieFlavors: [...prev.selectedCookieFlavors, flavor] };
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,18 +88,18 @@ export default function TastingPage() {
         style={{
           background: `repeating-linear-gradient(
             90deg,
-            #541409 0px,
-            #541409 40px,
+            #F7F3ED 0px,
+            #F7F3ED 40px,
             #EAD6D6 40px,
             #EAD6D6 80px
           )`
         }}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h1 className="text-4xl sm:text-5xl font-serif text-white font-bold drop-shadow-lg">
-            Tasting Boxes
+          <h1 className="text-4xl sm:text-5xl font-serif text-[#4A2C21] font-bold">
+            <em>Tasting</em> Boxes
           </h1>
-          <p className="mt-4 text-lg text-white/90 drop-shadow">
+          <p className="mt-4 text-lg text-[#4A2C21]/80">
             Sample flavors before your big day
           </p>
         </div>
@@ -61,17 +122,17 @@ export default function TastingPage() {
             <div className="bg-white rounded-lg p-8 shadow-sm">
               <h2 className="text-2xl font-serif text-[#541409] mb-4">Cake Tasting Box</h2>
               <p className="text-stone-600 mb-6">
-                Each cake tasting box includes individual cake samples in 8oz jars with vanilla
-                buttercream. Fillings are separated for easy mixing and matching.
+                Each cake tasting box includes individual cake samples with vanilla buttercream.
+                Fillings come separately so you can mix and match to find your perfect combination.
               </p>
               <ul className="space-y-2 text-stone-600 text-sm mb-6">
                 <li className="flex items-center">
                   <span className="text-[#541409] mr-2">✓</span>
-                  4 cake flavors
+                  4 cake flavors in 8oz jars
                 </li>
                 <li className="flex items-center">
                   <span className="text-[#541409] mr-2">✓</span>
-                  4 filling options
+                  4 fillings in separate 4oz containers
                 </li>
                 <li className="flex items-center">
                   <span className="text-[#541409] mr-2">✓</span>
@@ -82,7 +143,7 @@ export default function TastingPage() {
                   Mix & match to find your perfect combo
                 </li>
               </ul>
-              <p className="text-2xl font-bold text-[#541409]">$35</p>
+              <p className="text-2xl font-bold text-[#541409]">$70</p>
             </div>
 
             {/* Cookie Tasting Box */}
@@ -110,7 +171,7 @@ export default function TastingPage() {
                   Perfect for sharing with your partner
                 </li>
               </ul>
-              <p className="text-2xl font-bold text-[#541409]">$25</p>
+              <p className="text-2xl font-bold text-[#541409]">$30</p>
             </div>
           </div>
 
@@ -179,7 +240,7 @@ export default function TastingPage() {
                     type="date"
                     id="weddingDate"
                     required
-                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] [&:not(:valid)]:text-[#541409]/50"
                     value={formData.weddingDate}
                     onChange={(e) => setFormData({ ...formData, weddingDate: e.target.value })}
                   />
@@ -193,64 +254,182 @@ export default function TastingPage() {
                 <select
                   id="tastingType"
                   required
-                  className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white"
+                  className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.tastingType ? 'text-[#541409]' : 'text-[#541409]/50'}`}
                   value={formData.tastingType}
                   onChange={(e) => setFormData({ ...formData, tastingType: e.target.value })}
                 >
-                  <option value="">Select an option</option>
-                  <option value="cake">Cake Tasting Box ($35)</option>
-                  <option value="cookie">Cookie Tasting Box ($25)</option>
-                  <option value="both">Both Boxes ($55)</option>
+                  <option value="" className="text-[#541409]/50">Select an option</option>
+                  <option value="cake" className="text-[#541409]">Cake Tasting Box ($70)</option>
+                  <option value="cookie" className="text-[#541409]">Cookie Tasting Box ($30)</option>
+                  <option value="both" className="text-[#541409]">Both Boxes ($100)</option>
                 </select>
               </div>
 
               {(formData.tastingType === 'cake' || formData.tastingType === 'both') && (
-                <div>
-                  <label htmlFor="cakeFlavors" className="block text-sm font-medium text-[#541409] mb-2">
-                    Cake Flavor Preferences
-                  </label>
-                  <input
-                    type="text"
-                    id="cakeFlavors"
-                    placeholder="e.g., Vanilla, Chocolate, Lemon, Red Velvet"
-                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent"
-                    value={formData.cakeFlavors}
-                    onChange={(e) => setFormData({ ...formData, cakeFlavors: e.target.value })}
-                  />
-                  <p className="text-xs text-stone-500 mt-1">Leave blank and I'll choose a variety for you!</p>
-                </div>
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-[#541409] mb-2">
+                      Cake Flavors <span className="text-[#541409]/60 font-normal">(select up to 4)</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {CAKE_FLAVORS.map((flavor) => {
+                        const isSelected = formData.selectedCakeFlavors.includes(flavor.value);
+                        const isDisabled = !isSelected && formData.selectedCakeFlavors.length >= 4;
+                        return (
+                          <label
+                            key={flavor.value}
+                            className={`flex items-center gap-2 p-3 border rounded-sm cursor-pointer transition-colors ${
+                              isSelected
+                                ? 'border-[#541409] bg-[#541409]/5'
+                                : isDisabled
+                                ? 'border-stone-200 bg-stone-50 cursor-not-allowed opacity-50'
+                                : 'border-stone-300 hover:border-[#541409]/50'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              disabled={isDisabled}
+                              onChange={() => toggleCakeFlavor(flavor.value)}
+                              className="w-4 h-4 text-[#541409] border-stone-300 rounded focus:ring-[#541409]"
+                            />
+                            <span className="text-sm text-[#541409]">{flavor.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <p className="text-xs text-stone-500 mt-2">
+                      {formData.selectedCakeFlavors.length}/4 selected
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#541409] mb-2">
+                      Fillings <span className="text-[#541409]/60 font-normal">(select up to 4)</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {CAKE_FILLINGS.map((filling) => {
+                        const isSelected = formData.selectedFillings.includes(filling.value);
+                        const isDisabled = !isSelected && formData.selectedFillings.length >= 4;
+                        return (
+                          <label
+                            key={filling.value}
+                            className={`flex items-center gap-2 p-3 border rounded-sm cursor-pointer transition-colors ${
+                              isSelected
+                                ? 'border-[#541409] bg-[#541409]/5'
+                                : isDisabled
+                                ? 'border-stone-200 bg-stone-50 cursor-not-allowed opacity-50'
+                                : 'border-stone-300 hover:border-[#541409]/50'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              disabled={isDisabled}
+                              onChange={() => toggleFilling(filling.value)}
+                              className="w-4 h-4 text-[#541409] border-stone-300 rounded focus:ring-[#541409]"
+                            />
+                            <span className="text-sm text-[#541409]">{filling.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <p className="text-xs text-stone-500 mt-2">
+                      {formData.selectedFillings.length}/4 selected
+                    </p>
+                  </div>
+                </>
               )}
 
               {(formData.tastingType === 'cookie' || formData.tastingType === 'both') && (
                 <div>
-                  <label htmlFor="cookieFlavors" className="block text-sm font-medium text-[#541409] mb-2">
-                    Cookie Flavor Preferences
+                  <label className="block text-sm font-medium text-[#541409] mb-2">
+                    Cookie Flavors <span className="text-[#541409]/60 font-normal">(select up to 4)</span>
                   </label>
-                  <input
-                    type="text"
-                    id="cookieFlavors"
-                    placeholder="e.g., Chocolate Chip, Snickerdoodle, Peanut Butter"
-                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent"
-                    value={formData.cookieFlavors}
-                    onChange={(e) => setFormData({ ...formData, cookieFlavors: e.target.value })}
-                  />
-                  <p className="text-xs text-stone-500 mt-1">Leave blank and I'll choose a variety for you!</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {COOKIE_FLAVORS.map((flavor) => {
+                      const isSelected = formData.selectedCookieFlavors.includes(flavor.value);
+                      const isDisabled = !isSelected && formData.selectedCookieFlavors.length >= 4;
+                      return (
+                        <label
+                          key={flavor.value}
+                          className={`flex items-center gap-2 p-3 border rounded-sm cursor-pointer transition-colors ${
+                            isSelected
+                              ? 'border-[#541409] bg-[#541409]/5'
+                              : isDisabled
+                              ? 'border-stone-200 bg-stone-50 cursor-not-allowed opacity-50'
+                              : 'border-stone-300 hover:border-[#541409]/50'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            disabled={isDisabled}
+                            onChange={() => toggleCookieFlavor(flavor.value)}
+                            className="w-4 h-4 text-[#541409] border-stone-300 rounded focus:ring-[#541409]"
+                          />
+                          <span className="text-sm text-[#541409]">{flavor.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-stone-500 mt-2">
+                    {formData.selectedCookieFlavors.length}/4 selected
+                  </p>
                 </div>
               )}
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-[#541409] mb-2">
-                  Additional Notes
+                <label htmlFor="pickupOrDelivery" className="block text-sm font-medium text-[#541409] mb-2">
+                  Pickup or Delivery? <span className="text-red-500">*</span>
                 </label>
-                <textarea
-                  id="message"
-                  rows={4}
-                  placeholder="Tell me about your wedding vision, any allergies, or questions you have..."
-                  className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none"
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                />
+                <select
+                  id="pickupOrDelivery"
+                  required
+                  className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white text-[#541409]"
+                  value={formData.pickupOrDelivery}
+                  onChange={(e) => setFormData({ ...formData, pickupOrDelivery: e.target.value, pickupSlot: null })}
+                >
+                  <option value="pickup">Pickup</option>
+                  <option value="delivery">Delivery (fee starting at $20, if available)</option>
+                </select>
               </div>
+
+              {formData.pickupOrDelivery === 'pickup' && (
+                <TimeSlotPicker
+                  orderType="tasting"
+                  value={formData.pickupSlot ?? undefined}
+                  onChange={(slot) => setFormData({ ...formData, pickupSlot: slot })}
+                  label="Preferred Pickup Date & Time"
+                  required
+                />
+              )}
+
+              {formData.pickupOrDelivery === 'delivery' && (
+                <>
+                  <div>
+                    <label htmlFor="deliveryLocation" className="block text-sm font-medium text-[#541409] mb-2">
+                      Delivery Location <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="deliveryLocation"
+                      required
+                      placeholder="Full address for delivery"
+                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                      value={formData.deliveryLocation}
+                      onChange={(e) => setFormData({ ...formData, deliveryLocation: e.target.value })}
+                    />
+                  </div>
+                  <TimeSlotPicker
+                    orderType="tasting"
+                    value={formData.pickupSlot ?? undefined}
+                    onChange={(slot) => setFormData({ ...formData, pickupSlot: slot })}
+                    label="Preferred Delivery Date & Time"
+                    required
+                  />
+                </>
+              )}
 
               <button
                 type="submit"

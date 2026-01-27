@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { TimeSlotPicker } from '@/components/forms';
+import { TimeSlotPicker, CouponInput } from '@/components/forms';
 
 export default function WeddingInquiryPage() {
   const [formData, setFormData] = useState({
@@ -14,25 +14,34 @@ export default function WeddingInquiryPage() {
     pickupOrDelivery: 'pickup',
     pickupSlot: null as { date: string; time: string } | null,
     deliveryTime: '',
+    setupRequirements: '',
     venueName: '',
     venueAddress: '',
     startTime: '',
     onsiteContact: '',
     guestCount: '',
     servicesNeeded: '',
-    cakeTiers: '',
+    cakeShape: '',
+    cakeSize: '',
     cakeFlavor: '',
+    cakeFilling: '',
+    baseColor: '',
+    pipingColors: '',
+    customMessaging: '',
+    messageStyle: '',
+    cakeToppings: [] as string[],
+    inspirationFiles: [] as File[],
     cakeDesignNotes: '',
-    dessertPreferences: '',
-    dessertCount: '',
-    favorCount: '',
-    favorPackaging: '',
-    favorFlavors: '',
-    colorPalette: '',
-    theme: '',
+    cookieQuantity: '',
+    cookieFlavors: {
+      chocolateChip: 0,
+      vanillaBeanSugar: 0,
+      cherryAlmond: 0,
+      espressoButterscotch: 0,
+      lemonSugar: 0,
+    },
+    cookiePackaging: '',
     dietaryRestrictions: '',
-    additionalNotes: '',
-    budgetRange: '',
     howDidYouHear: '',
     acknowledgeLeadTime: false,
     acknowledgeDeposit: false,
@@ -41,53 +50,82 @@ export default function WeddingInquiryPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    description: string | null;
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    minOrderAmount: number;
+  } | null>(null);
 
   const showCakeFields = ['cutting_cake', 'cake_and_cookies'].includes(formData.servicesNeeded);
   const showCookieFields = ['cookies', 'cake_and_cookies'].includes(formData.servicesNeeded);
+
+  // Cookie calculations
+  const totalCookies = Object.values(formData.cookieFlavors).reduce((a, b) => a + b, 0);
+  const maxCookies = formData.cookieQuantity ? parseInt(formData.cookieQuantity) * 12 : 0;
+  const remainingCookies = maxCookies - totalCookies;
+  const hasCookieDiscount = formData.cookieQuantity && parseInt(formData.cookieQuantity) >= 10;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
 
+    // Validate inspiration images if cake is selected
+    if (showCakeFields && formData.inspirationFiles.length === 0) {
+      setSubmitError('Please upload at least one inspiration image for your cake.');
+      return;
+    }
+
     setSubmitting(true);
     try {
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('partner_name', formData.partnerName);
+      submitData.append('email', formData.email);
+      submitData.append('phone', formData.phone);
+      submitData.append('wedding_date', formData.weddingDate);
+      submitData.append('pickup_or_delivery', formData.pickupOrDelivery);
+      submitData.append('pickup_date', formData.pickupSlot?.date || '');
+      submitData.append('pickup_time', formData.pickupSlot?.time || '');
+      submitData.append('delivery_time', formData.deliveryTime);
+      submitData.append('setup_requirements', formData.setupRequirements);
+      submitData.append('venue_name', formData.venueName);
+      submitData.append('venue_address', formData.venueAddress);
+      submitData.append('start_time', formData.startTime);
+      submitData.append('onsite_contact', formData.onsiteContact);
+      submitData.append('guest_count', formData.guestCount);
+      submitData.append('services_needed', formData.servicesNeeded);
+      submitData.append('cake_shape', formData.cakeShape);
+      submitData.append('cake_size', formData.cakeSize);
+      submitData.append('cake_flavor', formData.cakeFlavor);
+      submitData.append('cake_filling', formData.cakeFilling);
+      submitData.append('base_color', formData.baseColor);
+      submitData.append('piping_colors', formData.pipingColors);
+      submitData.append('custom_messaging', formData.customMessaging);
+      submitData.append('message_style', formData.messageStyle);
+      submitData.append('cake_toppings', JSON.stringify(formData.cakeToppings));
+      submitData.append('cake_design_notes', formData.cakeDesignNotes);
+      submitData.append('cookie_quantity', formData.cookieQuantity);
+      submitData.append('cookie_flavors', JSON.stringify(formData.cookieFlavors));
+      submitData.append('cookie_packaging', formData.cookiePackaging);
+      submitData.append('dietary_restrictions', formData.dietaryRestrictions);
+      submitData.append('how_found_us', formData.howDidYouHear);
+      submitData.append('acknowledge_lead_time', String(formData.acknowledgeLeadTime));
+      submitData.append('acknowledge_deposit', String(formData.acknowledgeDeposit));
+      submitData.append('acknowledge_allergy', String(formData.acknowledgeAllergy));
+      if (appliedCoupon) {
+        submitData.append('coupon_code', appliedCoupon.code);
+      }
+
+      // Append inspiration images
+      formData.inspirationFiles.forEach((file) => {
+        submitData.append('inspiration_images', file);
+      });
+
       const response = await fetch('/api/orders/wedding', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          partner_name: formData.partnerName,
-          email: formData.email,
-          phone: formData.phone,
-          wedding_date: formData.weddingDate,
-          pickup_or_delivery: formData.pickupOrDelivery,
-          pickup_date: formData.pickupSlot?.date || null,
-          pickup_time: formData.pickupSlot?.time || null,
-          delivery_time: formData.deliveryTime,
-          venue_name: formData.venueName,
-          venue_address: formData.venueAddress,
-          start_time: formData.startTime,
-          onsite_contact: formData.onsiteContact,
-          guest_count: formData.guestCount,
-          services_needed: formData.servicesNeeded,
-          cake_tiers: formData.cakeTiers,
-          cake_flavor: formData.cakeFlavor,
-          cake_design_notes: formData.cakeDesignNotes,
-          dessert_preferences: formData.dessertPreferences,
-          dessert_count: formData.dessertCount,
-          favor_count: formData.favorCount,
-          favor_packaging: formData.favorPackaging,
-          favor_flavors: formData.favorFlavors,
-          color_palette: formData.colorPalette,
-          theme: formData.theme,
-          dietary_restrictions: formData.dietaryRestrictions,
-          additional_notes: formData.additionalNotes,
-          budget_range: formData.budgetRange,
-          how_found_us: formData.howDidYouHear,
-          acknowledge_lead_time: formData.acknowledgeLeadTime,
-          acknowledge_deposit: formData.acknowledgeDeposit,
-          acknowledge_allergy: formData.acknowledgeAllergy,
-        }),
+        body: submitData,
       });
 
       if (!response.ok) {
@@ -332,22 +370,38 @@ export default function WeddingInquiryPage() {
                   )}
 
                   {formData.pickupOrDelivery === 'delivery' && (
-                    <div>
-                      <label htmlFor="deliveryTime" className="block text-sm font-medium text-[#541409] mb-2">
-                        Preferred Delivery Time <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="time"
-                        id="deliveryTime"
-                        required
-                        className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent ${formData.deliveryTime ? 'text-[#541409]' : 'text-[#541409]/50'}`}
-                        value={formData.deliveryTime}
-                        onChange={(e) => setFormData({ ...formData, deliveryTime: e.target.value })}
-                      />
-                      <p className="text-xs text-stone-500 mt-1">
-                        I will deliver to your venue address. I'll confirm final timing when I reach out!
-                      </p>
-                    </div>
+                    <>
+                      <div>
+                        <label htmlFor="deliveryTime" className="block text-sm font-medium text-[#541409] mb-2">
+                          Preferred Delivery Time <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="time"
+                          id="deliveryTime"
+                          required
+                          className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent ${formData.deliveryTime ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                          value={formData.deliveryTime}
+                          onChange={(e) => setFormData({ ...formData, deliveryTime: e.target.value })}
+                        />
+                        <p className="text-xs text-stone-500 mt-1">
+                          I will deliver to your venue address. I'll confirm final timing when I reach out!
+                        </p>
+                      </div>
+
+                      <div>
+                        <label htmlFor="setupRequirements" className="block text-sm font-medium text-[#541409] mb-2">
+                          Any setup requirements or guidelines?
+                        </label>
+                        <textarea
+                          id="setupRequirements"
+                          rows={3}
+                          placeholder="e.g., specific table location, coordinator instructions, venue access details, etc."
+                          className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none text-[#541409] placeholder:text-[#541409]/50"
+                          value={formData.setupRequirements}
+                          onChange={(e) => setFormData({ ...formData, setupRequirements: e.target.value })}
+                        />
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -380,30 +434,245 @@ export default function WeddingInquiryPage() {
                   <h2 className="text-xl font-serif text-[#541409] mb-4">Cutting Cake Details</h2>
                   <div className="space-y-4">
                     <div>
+                      <label htmlFor="cakeSize" className="block text-sm font-medium text-[#541409] mb-2">
+                        Cake Size <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        id="cakeSize"
+                        required
+                        className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.cakeSize ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                        value={formData.cakeSize}
+                        onChange={(e) => {
+                          const newSize = e.target.value;
+                          // If switching to 10-inch and heart was selected, reset shape
+                          if (newSize === '10-inch' && formData.cakeShape === 'heart') {
+                            setFormData({ ...formData, cakeSize: newSize, cakeShape: '' });
+                          } else {
+                            setFormData({ ...formData, cakeSize: newSize });
+                          }
+                        }}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="6-inch">6" (serves 6-12) - Starting at $115</option>
+                        <option value="8-inch">8" (serves 14-20) - Starting at $155</option>
+                        <option value="10-inch">10" (serves 24-30) - Starting at $195</option>
+                        <option value="unsure">Not sure - need guidance</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label htmlFor="cakeShape" className="block text-sm font-medium text-[#541409] mb-2">
+                        Cake Shape <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        id="cakeShape"
+                        required
+                        className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.cakeShape ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                        value={formData.cakeShape}
+                        onChange={(e) => setFormData({ ...formData, cakeShape: e.target.value })}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="round">Round</option>
+                        {formData.cakeSize !== '10-inch' && <option value="heart">Heart</option>}
+                      </select>
+                    </div>
+
+                    <div>
                       <label htmlFor="cakeFlavor" className="block text-sm font-medium text-[#541409] mb-2">
-                        Cake Flavor
+                        Cake Flavor <span className="text-red-500">*</span>
                       </label>
                       <select
                         id="cakeFlavor"
+                        required
                         className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.cakeFlavor ? 'text-[#541409]' : 'text-[#541409]/50'}`}
                         value={formData.cakeFlavor}
                         onChange={(e) => setFormData({ ...formData, cakeFlavor: e.target.value })}
                       >
                         <option value="">Select an option</option>
-                        <option value="vanilla">Vanilla</option>
+                        <option value="vanilla-bean">Vanilla Bean</option>
                         <option value="chocolate">Chocolate</option>
-                        <option value="almond">Almond</option>
+                        <option value="confetti">Confetti</option>
+                        <option value="red-velvet">Red Velvet</option>
                         <option value="lemon">Lemon</option>
+                        <option value="vanilla-latte">Vanilla Latte (+$5)</option>
+                        <option value="marble">Marble (vanilla & chocolate)</option>
                       </select>
                     </div>
+
+                    <div>
+                      <label htmlFor="cakeFilling" className="block text-sm font-medium text-[#541409] mb-2">
+                        Filling
+                      </label>
+                      <select
+                        id="cakeFilling"
+                        className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.cakeFilling ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                        value={formData.cakeFilling}
+                        onChange={(e) => setFormData({ ...formData, cakeFilling: e.target.value })}
+                      >
+                        <option value="">Select an option (or leave blank)</option>
+                        <option value="chocolate-ganache">Chocolate Ganache (+$10)</option>
+                        <option value="cookies-and-cream">Cookies & Cream (+$5)</option>
+                        <option value="vanilla-bean-ganache">Vanilla Bean Ganache (+$10)</option>
+                        <option value="fresh-strawberries">Fresh Strawberries (+$8)</option>
+                        <option value="lemon-curd">Lemon Curd (+$5)</option>
+                        <option value="raspberry">Raspberry (+$8)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label htmlFor="baseColor" className="block text-sm font-medium text-[#541409] mb-2">
+                        Base Color <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="baseColor"
+                        required
+                        className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                        value={formData.baseColor}
+                        onChange={(e) => setFormData({ ...formData, baseColor: e.target.value })}
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="pipingColors" className="block text-sm font-medium text-[#541409] mb-2">
+                        Piping Color(s) <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="pipingColors"
+                        required
+                        className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                        value={formData.pipingColors}
+                        onChange={(e) => setFormData({ ...formData, pipingColors: e.target.value })}
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="customMessaging" className="block text-sm font-medium text-[#541409] mb-2">
+                        What would you like your custom messaging to say? <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="customMessaging"
+                        required
+                        placeholder="If no messaging, type N/A"
+                        className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                        value={formData.customMessaging}
+                        onChange={(e) => setFormData({ ...formData, customMessaging: e.target.value })}
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="messageStyle" className="block text-sm font-medium text-[#541409] mb-2">
+                        How would you like your message to be written? <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        id="messageStyle"
+                        required
+                        className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.messageStyle ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                        value={formData.messageStyle}
+                        onChange={(e) => setFormData({ ...formData, messageStyle: e.target.value })}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="piped">Piped</option>
+                        <option value="piped-cursive">Piped Cursive</option>
+                        <option value="block">Block</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#541409] mb-2">
+                        Toppings
+                      </label>
+                      <div className="space-y-2">
+                        {[
+                          { value: 'light-beading', label: 'Light Beading (+$8)' },
+                          { value: 'moderate-beading', label: 'Moderate Beading (+$15)' },
+                          { value: 'heavy-beading', label: 'Heavy Beading (+$20)' },
+                          { value: 'ribbon-bows', label: 'Ribbon Bows (+$8)' },
+                          { value: 'fruit', label: 'Fruit (starting at +$8)' },
+                          { value: 'fresh-florals', label: 'Fresh Florals (starting at +$15)' },
+                          { value: 'faux-florals', label: 'Faux Florals (starting at +$15)' },
+                          { value: 'edible-image', label: 'Edible Image (starting at +$10)' },
+                          { value: 'other', label: 'Other (starting at +$8)' },
+                        ].map((topping) => (
+                          <label key={topping.value} className="flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={formData.cakeToppings.includes(topping.value)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setFormData({ ...formData, cakeToppings: [...formData.cakeToppings, topping.value] });
+                                } else {
+                                  setFormData({ ...formData, cakeToppings: formData.cakeToppings.filter(t => t !== topping.value) });
+                                }
+                              }}
+                              className="w-5 h-5 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                            />
+                            <span className="ml-3 text-sm text-stone-700">{topping.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#541409] mb-2">
+                        Inspiration Images <span className="text-red-500">*</span>
+                      </label>
+                      <p className="text-xs text-stone-500 mb-2">Upload up to 10 images for inspiration</p>
+                      <input
+                        type="file"
+                        id="inspirationFiles"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          const totalFiles = formData.inspirationFiles.length + files.length;
+                          if (totalFiles > 10) {
+                            alert('You can upload a maximum of 10 images');
+                            return;
+                          }
+                          setFormData({ ...formData, inspirationFiles: [...formData.inspirationFiles, ...files] });
+                          e.target.value = '';
+                        }}
+                        className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:bg-[#541409] file:text-[#EAD6D6] file:cursor-pointer"
+                        disabled={formData.inspirationFiles.length >= 10}
+                      />
+                      {formData.inspirationFiles.length > 0 && (
+                        <div className="mt-4 grid grid-cols-3 sm:grid-cols-5 gap-2">
+                          {formData.inspirationFiles.map((file, index) => (
+                            <div key={index} className="relative group">
+                              <img
+                                src={URL.createObjectURL(file)}
+                                alt={`Inspiration ${index + 1}`}
+                                className="w-full h-20 object-cover rounded-sm"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setFormData({
+                                    ...formData,
+                                    inspirationFiles: formData.inspirationFiles.filter((_, i) => i !== index)
+                                  });
+                                }}
+                                className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
                     <div>
                       <label htmlFor="cakeDesignNotes" className="block text-sm font-medium text-[#541409] mb-2">
-                        Cake Design Notes
+                        Special Requests & Anything Else I Need to Know
                       </label>
                       <textarea
                         id="cakeDesignNotes"
                         rows={3}
-                        placeholder="Describe your vision for the cake - style, decorations, florals, etc."
+                        placeholder="Be specific! Color scheme, theme, inspo, certain details, etc."
                         className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none text-[#541409] placeholder:text-[#541409]/50"
                         value={formData.cakeDesignNotes}
                         onChange={(e) => setFormData({ ...formData, cakeDesignNotes: e.target.value })}
@@ -417,70 +686,157 @@ export default function WeddingInquiryPage() {
               {showCookieFields && (
                 <div>
                   <h2 className="text-xl font-serif text-[#541409] mb-4">Cookie Details</h2>
+                  <p className="text-sm text-stone-600 mb-4">
+                    <strong>$36 per dozen.</strong> Orders of 10+ dozen get <strong>5% off</strong>!
+                  </p>
                   <div className="space-y-4">
+                    {/* How Many Dozen */}
                     <div>
-                      <label htmlFor="favorCount" className="block text-sm font-medium text-[#541409] mb-2">
-                        Estimated Cookie Count
+                      <label htmlFor="cookieQuantity" className="block text-sm font-medium text-[#541409] mb-2">
+                        How Many Dozen? <span className="text-red-500">*</span>
                       </label>
-                      <input
-                        type="text"
-                        id="favorCount"
-                        placeholder="e.g., 100 cookies"
-                        className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
-                        value={formData.favorCount}
-                        onChange={(e) => setFormData({ ...formData, favorCount: e.target.value })}
-                      />
-                      <p className="text-xs text-stone-500 mt-1">I can help determine this based on your guest count</p>
+                      <select
+                        id="cookieQuantity"
+                        required
+                        className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.cookieQuantity ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                        value={formData.cookieQuantity}
+                        onChange={(e) => {
+                          const newQuantity = e.target.value;
+                          const newMax = newQuantity ? parseInt(newQuantity) * 12 : 0;
+                          if (totalCookies > newMax) {
+                            setFormData({
+                              ...formData,
+                              cookieQuantity: newQuantity,
+                              cookieFlavors: {
+                                chocolateChip: 0,
+                                vanillaBeanSugar: 0,
+                                cherryAlmond: 0,
+                                espressoButterscotch: 0,
+                                lemonSugar: 0,
+                              }
+                            });
+                          } else {
+                            setFormData({ ...formData, cookieQuantity: newQuantity });
+                          }
+                        }}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="4">4 Dozen (48 cookies) - $144</option>
+                        <option value="5">5 Dozen (60 cookies) - $180</option>
+                        <option value="6">6 Dozen (72 cookies) - $216</option>
+                        <option value="7">7 Dozen (84 cookies) - $252</option>
+                        <option value="8">8 Dozen (96 cookies) - $288</option>
+                        <option value="9">9 Dozen (108 cookies) - $324</option>
+                        <option value="10">10 Dozen (120 cookies) - $342 (5% off!)</option>
+                        <option value="11">11 Dozen (132 cookies) - $376.20 (5% off!)</option>
+                        <option value="12">12 Dozen (144 cookies) - $410.40 (5% off!)</option>
+                        <option value="15">15 Dozen (180 cookies) - $513 (5% off!)</option>
+                        <option value="20">20 Dozen (240 cookies) - $684 (5% off!)</option>
+                      </select>
+                      {hasCookieDiscount && (
+                        <p className="text-xs text-green-600 mt-1 font-medium">
+                          5% discount applied for 10+ dozen!
+                        </p>
+                      )}
+                      <p className="text-xs text-stone-500 mt-1">
+                        Need more than 20 dozen? Just ask!
+                      </p>
                     </div>
+
+                    {/* Choose Your Flavors */}
                     <div>
-                      <label htmlFor="favorFlavors" className="block text-sm font-medium text-[#541409] mb-2">
-                        Flavor Preferences
+                      <label className="block text-sm font-medium text-[#541409] mb-2">
+                        Choose Your Flavors <span className="text-red-500">*</span>
                       </label>
-                      <textarea
-                        id="favorFlavors"
-                        rows={2}
-                        placeholder="What cookie flavors would you like?"
-                        className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none text-[#541409] placeholder:text-[#541409]/50"
-                        value={formData.favorFlavors}
-                        onChange={(e) => setFormData({ ...formData, favorFlavors: e.target.value })}
-                      />
+                      <p className="text-sm text-stone-600 mb-4">
+                        {formData.cookieQuantity
+                          ? `Select how many of each flavor (total must equal ${parseInt(formData.cookieQuantity) * 12} cookies). Remaining: ${remainingCookies}`
+                          : 'Please select how many dozen above first.'}
+                      </p>
+                      <div className="space-y-3">
+                        {[
+                          { key: 'chocolateChip', label: 'Chocolate Chip' },
+                          { key: 'vanillaBeanSugar', label: 'Vanilla Bean Sugar' },
+                          { key: 'cherryAlmond', label: 'Cherry Almond' },
+                          { key: 'espressoButterscotch', label: 'Espresso Butterscotch' },
+                          { key: 'lemonSugar', label: 'Lemon Sugar' },
+                        ].map((flavor) => {
+                          const currentValue = formData.cookieFlavors[flavor.key as keyof typeof formData.cookieFlavors];
+                          const maxForFlavor = currentValue + Math.floor(remainingCookies / 12) * 12;
+                          return (
+                            <div key={flavor.key} className="flex items-center justify-between">
+                              <label className="text-stone-700">{flavor.label}</label>
+                              <input
+                                type="number"
+                                min="0"
+                                max={maxForFlavor}
+                                step="12"
+                                disabled={!formData.cookieQuantity}
+                                className="w-20 px-3 py-2 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-center text-[#541409] disabled:bg-stone-100 disabled:cursor-not-allowed"
+                                value={currentValue}
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value) || 0;
+                                  const rounded = Math.round(value / 12) * 12;
+                                  const capped = Math.max(0, Math.min(maxForFlavor, rounded));
+                                  setFormData({
+                                    ...formData,
+                                    cookieFlavors: {
+                                      ...formData.cookieFlavors,
+                                      [flavor.key]: capped
+                                    }
+                                  });
+                                }}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <p className="text-xs text-stone-500 mt-2">
+                        Quantities must be in increments of 12 (one dozen)
+                      </p>
+                      <div className="mt-4 p-3 bg-[#EAD6D6] rounded text-center space-y-1">
+                        <div className="font-medium text-[#541409]">
+                          Total: {totalCookies} / {maxCookies || '—'} cookies
+                        </div>
+                        {formData.cookieQuantity && remainingCookies > 0 && (
+                          <div className="text-sm text-[#541409]/70">
+                            {remainingCookies} cookies remaining to select
+                          </div>
+                        )}
+                        {formData.cookieQuantity && remainingCookies < 0 && (
+                          <div className="text-sm text-red-600">
+                            Over by {Math.abs(remainingCookies)} cookies
+                          </div>
+                        )}
+                        {formData.cookieQuantity && totalCookies === maxCookies && (
+                          <div className="text-sm text-green-600">
+                            Perfect!
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Packaging */}
+                    <div>
+                      <label htmlFor="cookiePackaging" className="block text-sm font-medium text-[#541409] mb-2">
+                        Packaging Preference <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        id="cookiePackaging"
+                        required
+                        className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.cookiePackaging ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                        value={formData.cookiePackaging}
+                        onChange={(e) => setFormData({ ...formData, cookiePackaging: e.target.value })}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="standard">Standard</option>
+                        <option value="heat-sealed">Individually Heat Sealed (+$5/dozen)</option>
+                      </select>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Style & Theme */}
-              <div>
-                <h2 className="text-xl font-serif text-[#541409] mb-4">Style & Theme</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="colorPalette" className="block text-sm font-medium text-[#541409] mb-2">
-                      Color Palette
-                    </label>
-                    <input
-                      type="text"
-                      id="colorPalette"
-                      placeholder="e.g., Dusty rose, sage green, gold"
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.colorPalette}
-                      onChange={(e) => setFormData({ ...formData, colorPalette: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="theme" className="block text-sm font-medium text-[#541409] mb-2">
-                      Wedding Theme/Style
-                    </label>
-                    <input
-                      type="text"
-                      id="theme"
-                      placeholder="e.g., Rustic, Modern, Romantic"
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.theme}
-                      onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
 
               {/* Additional Info */}
               <div>
@@ -501,39 +857,6 @@ export default function WeddingInquiryPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="budgetRange" className="block text-sm font-medium text-[#541409] mb-2">
-                      Budget Range
-                    </label>
-                    <select
-                      id="budgetRange"
-                      className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.budgetRange ? 'text-[#541409]' : 'text-[#541409]/50'}`}
-                      value={formData.budgetRange}
-                      onChange={(e) => setFormData({ ...formData, budgetRange: e.target.value })}
-                    >
-                      <option value="">Select an option</option>
-                      <option value="300-500">$300 - $500</option>
-                      <option value="500-750">$500 - $750</option>
-                      <option value="750-1000">$750 - $1,000</option>
-                      <option value="1000-1500">$1,000 - $1,500</option>
-                      <option value="1500+">$1,500+</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="additionalNotes" className="block text-sm font-medium text-[#541409] mb-2">
-                      Special Requests & Anything Else I Need to Know
-                    </label>
-                    <textarea
-                      id="additionalNotes"
-                      rows={3}
-                      placeholder="Be specific! Color scheme, theme, inspo, certain details, etc"
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.additionalNotes}
-                      onChange={(e) => setFormData({ ...formData, additionalNotes: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
                     <label htmlFor="howDidYouHear" className="block text-sm font-medium text-[#541409] mb-2">
                       How did you hear about me? :)
                     </label>
@@ -548,6 +871,13 @@ export default function WeddingInquiryPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Coupon Code */}
+              <CouponInput
+                orderType="wedding"
+                onCouponApplied={setAppliedCoupon}
+                appliedCoupon={appliedCoupon}
+              />
 
               {/* Acknowledgements */}
               <div>

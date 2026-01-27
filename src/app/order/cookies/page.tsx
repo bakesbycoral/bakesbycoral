@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { TimeSlotPicker } from '@/components/forms';
+import { TimeSlotPicker, CouponInput } from '@/components/forms';
 
 export default function CookieOrderPage() {
   const [formData, setFormData] = useState({
@@ -29,6 +29,13 @@ export default function CookieOrderPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    description: string | null;
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    minOrderAmount: number;
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +78,7 @@ export default function CookieOrderPage() {
           acknowledge_payment: formData.acknowledgePayment,
           acknowledge_allergy: formData.acknowledgeAllergens,
           acknowledge_pickup: formData.acknowledgeLeadTime,
+          coupon_code: appliedCoupon?.code || null,
         }),
       });
 
@@ -371,6 +379,13 @@ export default function CookieOrderPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Coupon Code */}
+              <CouponInput
+                orderType="cookies"
+                onCouponApplied={setAppliedCoupon}
+                appliedCoupon={appliedCoupon}
+              />
 
               {/* Acknowledgements */}
               <div>

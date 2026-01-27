@@ -32,6 +32,24 @@ const navigation = [
     ),
   },
   {
+    name: 'Coupons',
+    href: '/admin/coupons',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Customers',
+    href: '/admin/customers',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    ),
+  },
+  {
     name: 'Settings',
     href: '/admin/settings',
     icon: (
@@ -58,16 +76,16 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
   };
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-neutral-900 text-white flex flex-col">
+    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#EAD6D6] text-[#541409] flex flex-col">
       {/* Logo */}
-      <div className="p-6 border-b border-neutral-800">
+      <div className="p-6 border-b border-[#541409]/10">
         <Link href="/admin" className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
-            <span className="text-xl font-bold text-white">B</span>
+          <div className="w-10 h-10 bg-[#541409] rounded-lg flex items-center justify-center">
+            <span className="text-xl font-bold text-[#EAD6D6]">B</span>
           </div>
           <div>
-            <div className="font-semibold">Bakes by Coral</div>
-            <div className="text-xs text-neutral-400">Admin Dashboard</div>
+            <div className="font-semibold text-[#541409]">Bakes by Coral</div>
+            <div className="text-xs text-[#541409]/60">Admin Dashboard</div>
           </div>
         </Link>
       </div>
@@ -86,8 +104,8 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                   className={`
                     flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
                     ${isActive
-                      ? 'bg-amber-600 text-white'
-                      : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'}
+                      ? 'bg-[#541409] text-[#EAD6D6]'
+                      : 'text-[#541409]/80 hover:bg-[#541409]/10 hover:text-[#541409]'}
                   `}
                 >
                   {item.icon}
@@ -100,21 +118,21 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
       </nav>
 
       {/* User section */}
-      <div className="p-4 border-t border-neutral-800">
+      <div className="p-4 border-t border-[#541409]/10">
         <div className="flex items-center gap-3 px-4 py-3">
-          <div className="w-8 h-8 bg-neutral-700 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium">
+          <div className="w-8 h-8 bg-[#541409]/20 rounded-full flex items-center justify-center">
+            <span className="text-sm font-medium text-[#541409]">
               {userEmail.charAt(0).toUpperCase()}
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium truncate">{userEmail}</div>
-            <div className="text-xs text-neutral-400">Administrator</div>
+            <div className="text-sm font-medium truncate text-[#541409]">{userEmail}</div>
+            <div className="text-xs text-[#541409]/60">Administrator</div>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full mt-2 flex items-center gap-3 px-4 py-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors"
+          className="w-full mt-2 flex items-center gap-3 px-4 py-2 text-[#541409]/60 hover:text-[#541409] hover:bg-[#541409]/10 rounded-lg transition-colors"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -124,12 +142,12 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
       </div>
 
       {/* Back to site */}
-      <div className="p-4 border-t border-neutral-800">
+      <div className="p-4 border-t border-[#541409]/10">
         <a
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-3 px-4 py-2 text-neutral-400 hover:text-white transition-colors"
+          className="flex items-center gap-3 px-4 py-2 text-[#541409]/60 hover:text-[#541409] transition-colors"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

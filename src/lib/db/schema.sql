@@ -127,3 +127,40 @@ CREATE TABLE IF NOT EXISTS order_notes (
 );
 
 CREATE INDEX IF NOT EXISTS idx_order_notes_order ON order_notes(order_id);
+
+-- Coupons table for discount codes
+CREATE TABLE IF NOT EXISTS coupons (
+  id TEXT PRIMARY KEY,
+  code TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  description TEXT,
+  discount_type TEXT NOT NULL CHECK (discount_type IN ('percentage', 'fixed')),
+  discount_value INTEGER NOT NULL, -- percentage (0-100) or cents for fixed
+  min_order_amount INTEGER DEFAULT 0, -- minimum order in cents to use coupon
+  max_uses INTEGER, -- NULL for unlimited
+  current_uses INTEGER DEFAULT 0,
+  valid_from TEXT,
+  valid_until TEXT,
+  order_types TEXT, -- NULL for all, or JSON array like ["cookies", "cake"]
+  is_active INTEGER DEFAULT 1,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_coupons_code ON coupons(code);
+CREATE INDEX IF NOT EXISTS idx_coupons_active ON coupons(is_active);
+
+-- Customers table for contact management
+CREATE TABLE IF NOT EXISTS customers (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE,
+  phone TEXT,
+  address TEXT,
+  notes TEXT,
+  total_orders INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email);
+CREATE INDEX IF NOT EXISTS idx_customers_name ON customers(name);

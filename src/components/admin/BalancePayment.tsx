@@ -54,7 +54,7 @@ export function BalancePayment({ orderId, balanceDue }: BalancePaymentProps) {
           href={invoiceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full px-4 py-2 text-sm bg-amber-50 text-amber-700 rounded-lg text-center hover:bg-amber-100 transition-colors"
+          className="block w-full px-4 py-2 text-sm bg-[#EAD6D6]/30 text-[#541409] rounded-lg text-center hover:bg-[#EAD6D6]/50 transition-colors"
         >
           View Invoice
         </a>
@@ -64,7 +64,7 @@ export function BalancePayment({ orderId, balanceDue }: BalancePaymentProps) {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-[#541409]/70">
         Request the remaining balance of <span className="font-semibold">{formatCurrency(balanceDue)}</span> from the customer.
       </p>
 
@@ -75,7 +75,7 @@ export function BalancePayment({ orderId, balanceDue }: BalancePaymentProps) {
       <button
         onClick={handleCreateInvoice}
         disabled={isCreating}
-        className="w-full px-4 py-2 text-sm bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:bg-amber-400 disabled:cursor-not-allowed transition-colors"
+        className="w-full px-4 py-2 text-sm bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
       >
         {isCreating ? 'Sending Invoice...' : 'Request Balance Payment'}
       </button>

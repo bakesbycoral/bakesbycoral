@@ -77,6 +77,7 @@ const orderTypeLabels: Record<string, string> = {
   cookies_large: 'Large Cookies',
   cake: 'Cake',
   wedding: 'Wedding',
+  tasting: 'Tasting Box',
 };
 
 function formatCurrency(cents: number | null): string {
@@ -101,60 +102,60 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-neutral-900 mb-8">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-[#541409] mb-8">Dashboard</h1>
 
       {/* Stats Cards */}
       <div className="grid gap-6 md:grid-cols-4 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="text-sm text-neutral-500 mb-1">New Inquiries</div>
-          <div className="text-3xl font-bold text-blue-600">{stats.inquiries}</div>
-          <div className="text-xs text-neutral-400 mt-1">Last 30 days</div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#EAD6D6]">
+          <div className="text-sm text-[#541409]/60 mb-1">New Inquiries</div>
+          <div className="text-3xl font-bold text-[#541409]">{stats.inquiries}</div>
+          <div className="text-xs text-[#541409]/40 mt-1">Last 30 days</div>
         </div>
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="text-sm text-neutral-500 mb-1">Pending</div>
-          <div className="text-3xl font-bold text-yellow-600">{stats.pending}</div>
-          <div className="text-xs text-neutral-400 mt-1">Awaiting payment</div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#EAD6D6]">
+          <div className="text-sm text-[#541409]/60 mb-1">Pending</div>
+          <div className="text-3xl font-bold text-[#541409]">{stats.pending}</div>
+          <div className="text-xs text-[#541409]/40 mt-1">Awaiting payment</div>
         </div>
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="text-sm text-neutral-500 mb-1">Confirmed</div>
-          <div className="text-3xl font-bold text-green-600">{stats.confirmed}</div>
-          <div className="text-xs text-neutral-400 mt-1">Ready to fulfill</div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#EAD6D6]">
+          <div className="text-sm text-[#541409]/60 mb-1">Confirmed</div>
+          <div className="text-3xl font-bold text-[#541409]">{stats.confirmed}</div>
+          <div className="text-xs text-[#541409]/40 mt-1">Ready to fulfill</div>
         </div>
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="text-sm text-neutral-500 mb-1">Completed</div>
-          <div className="text-3xl font-bold text-neutral-600">{stats.completed}</div>
-          <div className="text-xs text-neutral-400 mt-1">Last 30 days</div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#EAD6D6]">
+          <div className="text-sm text-[#541409]/60 mb-1">Completed</div>
+          <div className="text-3xl font-bold text-[#541409]">{stats.completed}</div>
+          <div className="text-xs text-[#541409]/40 mt-1">Last 30 days</div>
         </div>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Recent Orders */}
-        <div className="bg-white rounded-xl shadow-sm">
-          <div className="flex items-center justify-between p-6 border-b">
-            <h2 className="font-semibold text-neutral-900">Recent Orders</h2>
-            <Link href="/admin/orders" className="text-sm text-amber-600 hover:text-amber-700">
+        <div className="bg-white rounded-xl shadow-sm border border-[#EAD6D6]">
+          <div className="flex items-center justify-between p-6 border-b border-[#EAD6D6]">
+            <h2 className="font-semibold text-[#541409]">Recent Orders</h2>
+            <Link href="/admin/orders" className="text-sm text-[#541409] hover:opacity-70">
               View all &rarr;
             </Link>
           </div>
-          <div className="divide-y">
+          <div className="divide-y divide-[#EAD6D6]">
             {recentOrders.length === 0 ? (
-              <div className="p-6 text-center text-neutral-500">No orders yet</div>
+              <div className="p-6 text-center text-[#541409]/60">No orders yet</div>
             ) : (
               recentOrders.map((order) => (
                 <Link
                   key={order.id}
                   href={`/admin/orders/${order.id}`}
-                  className="flex items-center justify-between p-4 hover:bg-neutral-50 transition-colors"
+                  className="flex items-center justify-between p-4 hover:bg-[#EAD6D6]/20 transition-colors"
                 >
                   <div>
-                    <div className="font-medium text-neutral-900">{order.order_number}</div>
-                    <div className="text-sm text-neutral-500">{order.customer_name}</div>
+                    <div className="font-medium text-[#541409]">{order.order_number}</div>
+                    <div className="text-sm text-[#541409]/60">{order.customer_name}</div>
                   </div>
                   <div className="text-right">
-                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${statusColors[order.status] || 'bg-neutral-100'}`}>
+                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${statusColors[order.status] || 'bg-[#EAD6D6]'}`}>
                       {order.status.replace('_', ' ')}
                     </span>
-                    <div className="text-sm text-neutral-500 mt-1">
+                    <div className="text-sm text-[#541409]/60 mt-1">
                       {orderTypeLabels[order.order_type] || order.order_type}
                     </div>
                   </div>
@@ -165,32 +166,32 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Upcoming Pickups */}
-        <div className="bg-white rounded-xl shadow-sm">
-          <div className="flex items-center justify-between p-6 border-b">
-            <h2 className="font-semibold text-neutral-900">Upcoming Pickups</h2>
-            <Link href="/admin/calendar" className="text-sm text-amber-600 hover:text-amber-700">
+        <div className="bg-white rounded-xl shadow-sm border border-[#EAD6D6]">
+          <div className="flex items-center justify-between p-6 border-b border-[#EAD6D6]">
+            <h2 className="font-semibold text-[#541409]">Upcoming Pickups</h2>
+            <Link href="/admin/calendar" className="text-sm text-[#541409] hover:opacity-70">
               View calendar &rarr;
             </Link>
           </div>
-          <div className="divide-y">
+          <div className="divide-y divide-[#EAD6D6]">
             {upcomingPickups.length === 0 ? (
-              <div className="p-6 text-center text-neutral-500">No upcoming pickups</div>
+              <div className="p-6 text-center text-[#541409]/60">No upcoming pickups</div>
             ) : (
               upcomingPickups.map((order) => (
                 <Link
                   key={order.id}
                   href={`/admin/orders/${order.id}`}
-                  className="flex items-center justify-between p-4 hover:bg-neutral-50 transition-colors"
+                  className="flex items-center justify-between p-4 hover:bg-[#EAD6D6]/20 transition-colors"
                 >
                   <div>
-                    <div className="font-medium text-neutral-900">{order.customer_name}</div>
-                    <div className="text-sm text-neutral-500">{order.order_number}</div>
+                    <div className="font-medium text-[#541409]">{order.customer_name}</div>
+                    <div className="text-sm text-[#541409]/60">{order.order_number}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-medium text-neutral-900">
+                    <div className="font-medium text-[#541409]">
                       {order.pickup_date ? formatDate(order.pickup_date) : '-'}
                     </div>
-                    <div className="text-sm text-neutral-500">
+                    <div className="text-sm text-[#541409]/60">
                       {formatCurrency(order.total_amount)}
                     </div>
                   </div>

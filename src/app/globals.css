@@ -41,3 +41,28 @@ h1, h2, h3, h4, h5, h6 {
 p, button, a {
   font-family: var(--font-pt-serif), Georgia, serif;
 }
+
+/* Placeholder and option styling - 50% maroon */
+::placeholder {
+  color: rgba(84, 20, 9, 0.5);
+  opacity: 1;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(84, 20, 9, 0.5);
+  opacity: 1;
+}
+
+select option {
+  color: rgba(84, 20, 9, 0.5);
+}
+
+select option:not([value=""]):not(:disabled) {
+  color: #541409;
+}
+
+select:invalid,
+select option[value=""] {
+  color: rgba(84, 20, 9, 0.5);
+}

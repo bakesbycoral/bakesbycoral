@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { TimeSlotPicker } from '@/components/forms';
+import { TimeSlotPicker, CouponInput } from '@/components/forms';
 
 export default function CakeOrderPage() {
   const [formData, setFormData] = useState({
@@ -31,6 +31,13 @@ export default function CakeOrderPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    description: string | null;
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    minOrderAmount: number;
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,6 +72,9 @@ export default function CakeOrderPage() {
       submitData.append('acknowledge_deposit', String(formData.acknowledgeDeposit));
       submitData.append('acknowledge_allergens', String(formData.acknowledgeAllergens));
       submitData.append('acknowledge_lead_time', String(formData.acknowledgeLeadTime));
+      if (appliedCoupon) {
+        submitData.append('coupon_code', appliedCoupon.code);
+      }
 
       // Append inspiration images
       formData.inspirationFiles.forEach((file) => {
@@ -508,6 +518,13 @@ export default function CakeOrderPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Coupon Code */}
+              <CouponInput
+                orderType="cake"
+                onCouponApplied={setAppliedCoupon}
+                appliedCoupon={appliedCoupon}
+              />
 
               {/* Acknowledgements */}
               <div>

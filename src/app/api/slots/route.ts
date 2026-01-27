@@ -51,17 +51,23 @@ export async function GET(request: NextRequest) {
     
 
     // Get lead time for this order type
-    const leadTimeKey =
-      orderType === 'cookies'
-        ? 'lead_time_small_cookie'
-        : orderType === 'cookies_large'
-          ? 'lead_time_large_cookie'
-          : `lead_time_${orderType}`;
+    // Tasting boxes have a fixed 2-week lead time
+    let leadTimeDays = 7; // Default
+    if (orderType === 'tasting') {
+      leadTimeDays = 14; // 2 weeks for tasting boxes
+    } else {
+      const leadTimeKey =
+        orderType === 'cookies'
+          ? 'lead_time_small_cookie'
+          : orderType === 'cookies_large'
+            ? 'lead_time_large_cookie'
+            : `lead_time_${orderType}`;
 
-    const leadTimeSetting = await db.prepare('SELECT value FROM settings WHERE key = ?')
-      .bind(leadTimeKey)
-      .first<{ value: string }>();
-    const leadTimeDays = leadTimeSetting ? parseInt(leadTimeSetting.value) : 7;
+      const leadTimeSetting = await db.prepare('SELECT value FROM settings WHERE key = ?')
+        .bind(leadTimeKey)
+        .first<{ value: string }>();
+      leadTimeDays = leadTimeSetting ? parseInt(leadTimeSetting.value) : 7;
+    }
 
     // Get default slot capacity
     const capacitySetting = await db.prepare('SELECT value FROM settings WHERE key = ?')

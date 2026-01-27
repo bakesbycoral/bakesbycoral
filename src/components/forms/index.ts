@@ -6,3 +6,4 @@ export { FormSection } from './FormSection';
 export { FormError } from './FormError';
 export { Honeypot, isHoneypotFilled } from './Honeypot';
 export { TimeSlotPicker } from './TimeSlotPicker';
+export { CouponInput } from './CouponInput';

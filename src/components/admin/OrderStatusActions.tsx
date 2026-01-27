@@ -109,8 +109,8 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
-      <h2 className="font-semibold text-neutral-900 mb-4">Actions</h2>
+    <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+      <h2 className="font-semibold text-[#541409] mb-4">Actions</h2>
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm mb-4">
@@ -122,15 +122,15 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
       {needsQuote && !showQuoteForm && (
         <button
           onClick={() => setShowQuoteForm(true)}
-          className="w-full mb-4 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+          className="w-full mb-4 px-4 py-2 bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity"
         >
           Create Invoice
         </button>
       )}
 
       {showQuoteForm && (
-        <div className="mb-4 p-4 bg-neutral-50 rounded-lg">
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+        <div className="mb-4 p-4 bg-[#EAD6D6]/20 rounded-lg">
+          <label className="block text-sm font-medium text-[#541409] mb-2">
             Quote Amount ($)
           </label>
           <input
@@ -139,20 +139,20 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
             min="0"
             value={quoteAmount}
             onChange={(e) => setQuoteAmount(e.target.value)}
-            className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none mb-3"
+            className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none mb-3 text-[#541409]"
             placeholder="0.00"
           />
           <div className="flex gap-2">
             <button
               onClick={handleCreateInvoice}
               disabled={isUpdating || !quoteAmount}
-              className="flex-1 px-3 py-2 bg-amber-600 text-white text-sm rounded-lg hover:bg-amber-700 disabled:bg-amber-400 transition-colors"
+              className="flex-1 px-3 py-2 bg-[#541409] text-[#EAD6D6] text-sm rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
               {isUpdating ? 'Creating...' : 'Create Invoice'}
             </button>
             <button
               onClick={() => setShowQuoteForm(false)}
-              className="px-3 py-2 bg-neutral-200 text-neutral-700 text-sm rounded-lg hover:bg-neutral-300 transition-colors"
+              className="px-3 py-2 bg-[#EAD6D6] text-[#541409] text-sm rounded-lg hover:bg-[#EAD6D6]/70 transition-colors"
             >
               Cancel
             </button>
@@ -165,7 +165,7 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
           href={invoiceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full mb-4 px-4 py-2 bg-amber-50 text-amber-700 rounded-lg text-center text-sm hover:bg-amber-100"
+          className="block w-full mb-4 px-4 py-2 bg-[#EAD6D6]/30 text-[#541409] rounded-lg text-center text-sm hover:bg-[#EAD6D6]/50"
         >
           View Invoice
         </a>
@@ -174,7 +174,7 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
       {/* Status transition buttons */}
       {availableTransitions.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm text-neutral-500 mb-2">Update Status</p>
+          <p className="text-sm text-[#541409]/60 mb-2">Update Status</p>
           {availableTransitions
             .filter((status) => !(needsQuote && status === 'pending_payment'))
             .map((status) => (
@@ -188,7 +188,7 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
                     ? 'bg-red-50 text-red-700 hover:bg-red-100'
                     : status === 'completed'
                       ? 'bg-green-50 text-green-700 hover:bg-green-100'
-                      : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}
+                      : 'bg-[#EAD6D6] text-[#541409] hover:bg-[#EAD6D6]/70'}
                   disabled:opacity-50
                 `}
               >
@@ -199,16 +199,16 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
       )}
 
       {availableTransitions.length === 0 && !needsQuote && (
-        <p className="text-sm text-neutral-500">No actions available for this status.</p>
+        <p className="text-sm text-[#541409]/60">No actions available for this status.</p>
       )}
 
       {/* Quick actions */}
-      <div className="mt-6 pt-4 border-t">
-        <p className="text-sm text-neutral-500 mb-2">Quick Actions</p>
+      <div className="mt-6 pt-4 border-t border-[#EAD6D6]">
+        <p className="text-sm text-[#541409]/60 mb-2">Quick Actions</p>
         <div className="space-y-2">
           <a
             href={`mailto:${orderId}@email`}
-            className="block w-full px-4 py-2 text-sm bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors text-center"
+            className="block w-full px-4 py-2 text-sm bg-[#EAD6D6] text-[#541409] rounded-lg hover:bg-[#EAD6D6]/70 transition-colors text-center"
           >
             Email Customer
           </a>

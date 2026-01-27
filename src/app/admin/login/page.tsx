@@ -39,12 +39,15 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F3ED] px-4">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-neutral-900">Admin Login</h1>
-            <p className="text-neutral-500 mt-2">Bakes by Coral Dashboard</p>
+            <div className="w-16 h-16 bg-[#541409] rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold text-[#EAD6D6]">B</span>
+            </div>
+            <h1 className="text-2xl font-bold text-[#541409]">Admin Login</h1>
+            <p className="text-[#541409]/60 mt-2">Bakes by Coral Dashboard</p>
           </div>
 
           {error && (
@@ -55,7 +58,7 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-[#541409] mb-2">
                 Email
               </label>
               <input
@@ -64,13 +67,13 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-colors text-[#541409] placeholder:text-[#541409]/50"
+                className="w-full px-4 py-3 rounded-lg border border-[#EAD6D6] focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none transition-colors text-[#541409] placeholder:text-[#541409]/50"
                 placeholder="coral@bakesbycoral.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-[#541409] mb-2">
                 Password
               </label>
               <input
@@ -79,7 +82,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-colors text-[#541409] placeholder:text-[#541409]/50"
+                className="w-full px-4 py-3 rounded-lg border border-[#EAD6D6] focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none transition-colors text-[#541409] placeholder:text-[#541409]/50"
                 placeholder="Enter your password"
               />
             </div>
@@ -87,15 +90,15 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+              className="w-full bg-[#541409] hover:opacity-90 disabled:opacity-50 text-[#EAD6D6] font-semibold py-3 px-4 rounded-lg transition-opacity"
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-neutral-500 text-sm mt-6">
-          <Link href="/" className="hover:text-amber-600">
+        <p className="text-center text-[#541409]/60 text-sm mt-6">
+          <Link href="/" className="hover:text-[#541409]">
             &larr; Back to website
           </Link>
         </p>

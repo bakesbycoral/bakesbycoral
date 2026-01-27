@@ -42,7 +42,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-[#F7F3ED]">
       <AdminSidebar userEmail={user.email} />
       <main className="flex-1 p-8 ml-64">
         {children}
