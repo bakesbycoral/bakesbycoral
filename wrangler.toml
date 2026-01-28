@@ -1,18 +1,16 @@
 name = "bakes-by-coral"
-compatibility_date = "2024-01-01"
+main = ".open-next/worker.js"
+compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".open-next"
+
+[assets]
+directory = ".open-next/assets"
 
 # D1 Database
 [[d1_databases]]
 binding = "DB"
 database_name = "bakes-coral-db"
 database_id = "2ea77357-2926-4597-8fae-d5f3646cf1ab"
-
-# R2 Bucket for file uploads
-[[r2_buckets]]
-binding = "UPLOADS"
-bucket_name = "bakes-coral-uploads"
 
 # Environment variables (secrets set via `wrangler secret put`)
 [vars]
