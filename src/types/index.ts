@@ -9,6 +9,60 @@ export type OrderStatus =
   | 'completed'
   | 'cancelled';
 
+// Quote types
+export type QuoteStatus = 'draft' | 'sent' | 'approved' | 'expired' | 'converted';
+
+export interface Quote {
+  id: string;
+  order_id: string;
+  quote_number: string;
+  status: QuoteStatus;
+  subtotal: number;
+  deposit_percentage: number;
+  deposit_amount: number | null;
+  total_amount: number;
+  notes: string | null;
+  customer_message: string | null;
+  valid_until: string | null;
+  approval_token: string | null;
+  approved_at: string | null;
+  stripe_invoice_id: string | null;
+  stripe_invoice_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface QuoteLineItem {
+  id: number;
+  quote_id: string;
+  description: string;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+  sort_order: number;
+  created_at?: string;
+}
+
+export interface QuoteWithLineItems extends Quote {
+  line_items: QuoteLineItem[];
+}
+
+// Tasting order data
+export interface TastingOrderData {
+  name: string;
+  email: string;
+  phone: string;
+  wedding_date: string;
+  tasting_type: 'cake' | 'cookie' | 'both';
+  cake_flavors?: string[];
+  fillings?: string[];
+  cookie_flavors?: string[];
+  pickup_or_delivery: 'pickup' | 'delivery';
+  delivery_location?: string;
+  pickup_date: string;
+  pickup_time: string;
+}
+
 // Database models
 export interface User {
   id: string;

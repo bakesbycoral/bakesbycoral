@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { TimeSlotPicker } from '@/components/forms';
 
 const CAKE_FLAVORS = [
@@ -30,7 +31,11 @@ const COOKIE_FLAVORS = [
   { value: 'lemon-sugar', label: 'Lemon Sugar' },
 ];
 
-export default function TastingPage() {
+function TastingPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const cancelled = searchParams.get('cancelled');
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -44,6 +49,9 @@ export default function TastingPage() {
     deliveryLocation: '',
     pickupSlot: null as { date: string; time: string } | null,
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const toggleCakeFlavor = (flavor: string) => {
     setFormData(prev => {
@@ -75,9 +83,52 @@ export default function TastingPage() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thank you for your tasting request! I\'ll get back to you within 24-48 hours.');
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      // Validate pickup slot
+      if (!formData.pickupSlot) {
+        setError('Please select a pickup date and time');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const response = await fetch('/api/orders/tasting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          wedding_date: formData.weddingDate,
+          tasting_type: formData.tastingType,
+          cake_flavors: formData.selectedCakeFlavors,
+          fillings: formData.selectedFillings,
+          cookie_flavors: formData.selectedCookieFlavors,
+          pickup_or_delivery: formData.pickupOrDelivery,
+          delivery_location: formData.deliveryLocation || undefined,
+          pickup_date: formData.pickupSlot.date,
+          pickup_time: formData.pickupSlot.time,
+        }),
+      });
+
+      const data = await response.json() as { checkoutUrl?: string; error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit order');
+      }
+
+      // Redirect to Stripe checkout
+      if (data.checkoutUrl) {
+        router.push(data.checkoutUrl);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -188,6 +239,19 @@ export default function TastingPage() {
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm">
             <h2 className="text-2xl font-serif text-[#541409] mb-6 text-center">Order a Tasting Box</h2>
+
+            {cancelled && (
+              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 text-sm">
+                Your payment was cancelled. You can try again below.
+              </div>
+            )}
+
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
@@ -433,14 +497,27 @@ export default function TastingPage() {
 
               <button
                 type="submit"
-                className="w-full px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity"
+                disabled={isSubmitting}
+                className="w-full px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Submit Tasting Request
+                {isSubmitting ? 'Processing...' : 'Continue to Payment'}
               </button>
             </form>
           </div>
         </div>
       </section>
     </>
+  );
+}
+
+export default function TastingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F7F3ED] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#541409]"></div>
+      </div>
+    }>
+      <TastingPageContent />
+    </Suspense>
   );
 }

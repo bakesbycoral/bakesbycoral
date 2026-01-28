@@ -1,24 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { TimeSlotPicker, CouponInput } from '@/components/forms';
+import { CartProvider, useCart, CartSidebar, FlavorCard } from '@/components/cart';
+import { FLAVORS, PRICE_PER_DOZEN, HEAT_SEAL_FEE } from '@/types/cart';
 
-export default function CookieOrderPage() {
+function CookieOrderContent() {
+  const { dozens, flavors, packaging, clearCart, isComplete } = useCart();
+  const checkoutFormRef = useRef<HTMLDivElement>(null);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     pickupSlot: null as { date: string; time: string } | null,
-    quantity: '',
-    flavors: {
-      chocolateChip: 0,
-      vanillaBeanSugar: 0,
-      cherryAlmond: 0,
-      espressoButterscotch: 0,
-      lemonSugar: 0,
-    },
-    packaging: '',
     allergies: '',
     howDidYouHear: '',
     message: '',
@@ -37,9 +33,18 @@ export default function CookieOrderPage() {
     minOrderAmount: number;
   } | null>(null);
 
+  const handleCheckoutClick = () => {
+    checkoutFormRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
+
+    if (!isComplete) {
+      setSubmitError('Please complete your cookie selection first.');
+      return;
+    }
 
     if (!formData.pickupSlot) {
       setSubmitError('Please select a pickup date and time.');
@@ -48,17 +53,15 @@ export default function CookieOrderPage() {
 
     setSubmitting(true);
     try {
-      // Map flavor keys to API format and build array
-      const flavorKeyMap: Record<string, string> = {
-        chocolateChip: 'chocolate_chip',
-        vanillaBeanSugar: 'vanilla_bean_sugar',
-        cherryAlmond: 'cherry_almond',
-        espressoButterscotch: 'espresso_butterscotch',
-        lemonSugar: 'lemon_sugar',
-      };
-      const selectedFlavors = Object.entries(formData.flavors)
-        .filter(([, count]) => count > 0)
-        .map(([flavor]) => flavorKeyMap[flavor] || flavor);
+      // Convert flavors to cart_items format for API
+      const cartItems = flavors.flatMap((f) => {
+        const items = [];
+        // Each 6 cookies is a half-dozen entry
+        for (let i = 0; i < f.quantity; i += 6) {
+          items.push({ flavor: f.flavor });
+        }
+        return items;
+      });
 
       const response = await fetch('/api/orders/cookies', {
         method: 'POST',
@@ -69,9 +72,8 @@ export default function CookieOrderPage() {
           phone: formData.phone,
           pickup_date: formData.pickupSlot.date,
           pickup_time: formData.pickupSlot.time,
-          quantity: formData.quantity,
-          flavors: selectedFlavors,
-          packaging: formData.packaging,
+          cart_items: cartItems,
+          packaging: packaging,
           allergies: formData.allergies,
           how_did_you_hear: formData.howDidYouHear,
           notes: formData.message,
@@ -88,6 +90,9 @@ export default function CookieOrderPage() {
         throw new Error(data.error || 'Failed to submit order');
       }
 
+      // Clear cart on successful submission
+      clearCart();
+
       // Redirect to Stripe checkout
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
@@ -101,9 +106,11 @@ export default function CookieOrderPage() {
     }
   };
 
-  const totalCookies = Object.values(formData.flavors).reduce((a, b) => a + b, 0);
-  const maxCookies = formData.quantity ? parseInt(formData.quantity) * 12 : 0;
-  const remainingCookies = maxCookies - totalCookies;
+  // Calculate order total for display
+  const subtotal = dozens ? dozens * PRICE_PER_DOZEN : 0;
+  const packagingFee = packaging === 'heat-sealed' && dozens ? dozens * HEAT_SEAL_FEE : 0;
+  const total = subtotal + packagingFee;
+  const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
   return (
     <>
@@ -130,335 +137,270 @@ export default function CookieOrderPage() {
         </div>
       </section>
 
-      {/* Form Section */}
+      {/* Main Content */}
       <section className="py-16 sm:py-24 bg-[#F7F3ED]">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* Pricing Info */}
           <div className="bg-[#EAD6D6] rounded-lg p-6 mb-8 text-center">
             <p className="text-[#541409] font-medium">
-              $30 per dozen | Mix & match flavors welcome!
+              $30 per dozen | Up to 3 dozen | Mix & match flavors in half-dozens!
+            </p>
+            <p className="text-sm text-[#541409]/70 mt-1">
+              For 4+ dozen, please use the <Link href="/order/cookies-large" className="underline hover:opacity-70">large order form</Link>.
             </p>
           </div>
 
-          <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Contact Info */}
-              <div>
-                <h2 className="text-xl font-serif text-[#541409] mb-4">Your Information</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-[#541409] mb-2">
-                      Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      required
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-[#541409] mb-2">
-                      Email <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      required
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-[#541409] mb-2">
-                      Phone <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      required
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Pickup Date & Time */}
-              <div>
-                <TimeSlotPicker
-                  orderType="cookies"
-                  value={formData.pickupSlot ?? undefined}
-                  onChange={(slot) => setFormData({ ...formData, pickupSlot: slot })}
-                  label="Preferred Pickup Date & Time"
-                  required
-                />
-              </div>
-
-              {/* Quantity */}
-              <div>
-                <label htmlFor="quantity" className="block text-sm font-medium text-[#541409] mb-2">
-                  How Many Dozen? <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="quantity"
-                  required
-                  className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.quantity ? 'text-[#541409]' : 'text-[#541409]/50'}`}
-                  value={formData.quantity}
-                  onChange={(e) => {
-                    const newQuantity = e.target.value;
-                    const newMax = newQuantity ? parseInt(newQuantity) * 12 : 0;
-                    // Reset flavors if current total exceeds new max
-                    if (totalCookies > newMax) {
-                      setFormData({
-                        ...formData,
-                        quantity: newQuantity,
-                        flavors: {
-                          chocolateChip: 0,
-                          vanillaBeanSugar: 0,
-                          cherryAlmond: 0,
-                          espressoButterscotch: 0,
-                          lemonSugar: 0,
-                        }
-                      });
-                    } else {
-                      setFormData({ ...formData, quantity: newQuantity });
-                    }
-                  }}
-                >
-                  <option value="">Select an option</option>
-                  <option value="1">1 Dozen (12 cookies) - $30</option>
-                  <option value="2">2 Dozen (24 cookies) - $60</option>
-                  <option value="3">3 Dozen (36 cookies) - $90</option>
-                </select>
-                <p className="text-xs text-stone-500 mt-1">
-                  For 4+ dozen, please use the <Link href="/order/cookies-large" className="text-[#541409] underline">large order form</Link>.
-                </p>
-              </div>
-
-              {/* Flavors */}
-              <div>
-                <h2 className="text-xl font-serif text-[#541409] mb-4">Choose Your Flavors</h2>
-                <p className="text-sm text-stone-600 mb-4">
-                  {formData.quantity
-                    ? `Select how many of each flavor you'd like (total must equal ${parseInt(formData.quantity) * 12} cookies).`
-                    : 'Please select how many dozen above first.'}
-                </p>
-                <div className="space-y-4">
-                  {[
-                    { key: 'chocolateChip', label: 'Chocolate Chip' },
-                    { key: 'vanillaBeanSugar', label: 'Vanilla Bean Sugar' },
-                    { key: 'cherryAlmond', label: 'Cherry Almond' },
-                    { key: 'espressoButterscotch', label: 'Espresso Butterscotch' },
-                    { key: 'lemonSugar', label: 'Lemon Sugar' },
-                  ].map((flavor) => {
-                    const currentValue = formData.flavors[flavor.key as keyof typeof formData.flavors];
-                    // Max for this flavor is current value + remaining cookies (rounded down to nearest 6)
-                    const maxForFlavor = currentValue + Math.floor(remainingCookies / 6) * 6;
-                    return (
-                      <div key={flavor.key} className="flex items-center justify-between">
-                        <label className="text-stone-700">{flavor.label}</label>
-                        <input
-                          type="number"
-                          min="0"
-                          max={maxForFlavor}
-                          step="6"
-                          disabled={!formData.quantity}
-                          className="w-20 px-3 py-2 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-center text-[#541409] disabled:bg-stone-100 disabled:cursor-not-allowed"
-                          value={currentValue}
-                          onChange={(e) => {
-                            // Round to nearest 6
-                            const value = parseInt(e.target.value) || 0;
-                            const rounded = Math.round(value / 6) * 6;
-                            // Cap at max allowed
-                            const capped = Math.max(0, Math.min(maxForFlavor, rounded));
-                            setFormData({
-                              ...formData,
-                              flavors: {
-                                ...formData.flavors,
-                                [flavor.key]: capped
-                              }
-                            });
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-                <p className="text-xs text-stone-500 mt-2">
-                  Quantities must be in increments of 6 (half dozen)
-                </p>
-                <div className="mt-4 p-3 bg-[#EAD6D6] rounded text-center space-y-1">
-                  <div className="font-medium text-[#541409]">
-                    Total: {totalCookies} / {maxCookies || '—'} cookies
-                  </div>
-                  {formData.quantity && remainingCookies > 0 && (
-                    <div className="text-sm text-[#541409]/70">
-                      {remainingCookies} cookies remaining to select
-                    </div>
-                  )}
-                  {formData.quantity && remainingCookies < 0 && (
-                    <div className="text-sm text-red-600">
-                      Over by {Math.abs(remainingCookies)} cookies
-                    </div>
-                  )}
-                  {formData.quantity && totalCookies === maxCookies && (
-                    <div className="text-sm text-green-600">
-                      ✓ Perfect!
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Packaging */}
-              <div>
-                <label htmlFor="packaging" className="block text-sm font-medium text-[#541409] mb-2">
-                  Packaging Preference <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="packaging"
-                  required
-                  className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.packaging ? 'text-[#541409]' : 'text-[#541409]/50'}`}
-                  value={formData.packaging}
-                  onChange={(e) => setFormData({ ...formData, packaging: e.target.value })}
-                >
-                  <option value="">Select an option</option>
-                  <option value="standard">Standard</option>
-                  <option value="heat-sealed">Individually Heat Sealed (+$5/dozen)</option>
-                </select>
-              </div>
-
-              {/* Additional Info */}
-              <div>
-                <h2 className="text-xl font-serif text-[#541409] mb-4">Additional Information</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="allergies" className="block text-sm font-medium text-[#541409] mb-2">
-                      Allergies to Note
-                    </label>
-                    <input
-                      type="text"
-                      id="allergies"
-                      placeholder="Any allergies I should be aware of?"
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.allergies}
-                      onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="howDidYouHear" className="block text-sm font-medium text-[#541409] mb-2">
-                      How did you hear about me? :)
-                    </label>
-                    <input
-                      type="text"
-                      id="howDidYouHear"
-                      placeholder="Instagram, friend, Google, etc."
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.howDidYouHear}
-                      onChange={(e) => setFormData({ ...formData, howDidYouHear: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-[#541409] mb-2">
-                      Notes or Questions
-                    </label>
-                    <textarea
-                      id="message"
-                      rows={3}
-                      placeholder="Anything else I should know?"
-                      className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none text-[#541409] placeholder:text-[#541409]/50"
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Coupon Code */}
-              <CouponInput
-                orderType="cookies"
-                onCouponApplied={setAppliedCoupon}
-                appliedCoupon={appliedCoupon}
-              />
-
-              {/* Acknowledgements */}
-              <div>
-                <h2 className="text-xl font-serif text-[#541409] mb-4">Policies & Acknowledgements</h2>
-                <div className="space-y-3">
-                  <label className="flex items-start cursor-pointer p-4 border border-stone-200 rounded-sm hover:bg-stone-50 transition-colors">
-                    <input
-                      type="checkbox"
-                      required
-                      checked={formData.acknowledgePayment}
-                      onChange={(e) => setFormData({ ...formData, acknowledgePayment: e.target.checked })}
-                      className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
-                    />
-                    <span className="ml-3 text-sm text-stone-600">
-                      I understand that <strong>50% of full payment is non-refundable</strong> once my order is confirmed. <span className="text-red-500">*</span>
-                    </span>
-                  </label>
-
-                  <label className="flex items-start cursor-pointer p-4 border border-stone-200 rounded-sm hover:bg-stone-50 transition-colors">
-                    <input
-                      type="checkbox"
-                      required
-                      checked={formData.acknowledgeAllergens}
-                      onChange={(e) => setFormData({ ...formData, acknowledgeAllergens: e.target.checked })}
-                      className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
-                    />
-                    <span className="ml-3 text-sm text-stone-600">
-                      I understand that all products are made in a kitchen that contains <strong>dairy, eggs, tree nuts, peanuts, and soy</strong>. <span className="text-red-500">*</span>
-                    </span>
-                  </label>
-
-                  <label className="flex items-start cursor-pointer p-4 border border-stone-200 rounded-sm hover:bg-stone-50 transition-colors">
-                    <input
-                      type="checkbox"
-                      required
-                      checked={formData.acknowledgeLeadTime}
-                      onChange={(e) => setFormData({ ...formData, acknowledgeLeadTime: e.target.checked })}
-                      className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
-                    />
-                    <span className="ml-3 text-sm text-stone-600">
-                      I understand that cookie orders require at least <strong>1 week notice</strong>. <span className="text-red-500">*</span>
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              {submitError && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-sm text-red-700 text-sm">
-                  {submitError}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {submitting ? 'Submitting...' : 'Submit Cookie Order'}
-              </button>
-
-              <p className="text-sm text-stone-500 text-center">
-                I'll confirm your order and send payment info within 24-48 hours.
+          {/* Two Column Layout */}
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Flavor Cards */}
+            <div className="lg:col-span-2">
+              <h2 className="text-2xl font-serif text-[#541409] mb-6">Choose Your Flavors</h2>
+              <p className="text-sm text-stone-600 mb-6">
+                Select how many dozen in the sidebar, then use +/- to add cookies in half-dozen (6) increments.
               </p>
-            </form>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {FLAVORS.map((flavor) => (
+                  <FlavorCard key={flavor.key} flavorKey={flavor.key} label={flavor.label} />
+                ))}
+              </div>
+            </div>
+
+            {/* Cart Sidebar */}
+            <div className="lg:col-span-1">
+              <CartSidebar onCheckout={handleCheckoutClick} />
+            </div>
           </div>
+
+          {/* Checkout Form - Only shown when order is complete */}
+          {isComplete && (
+            <div ref={checkoutFormRef} className="mt-12 pt-12 border-t border-[#EAD6D6]">
+              <div className="max-w-2xl mx-auto">
+                <h2 className="text-2xl font-serif text-[#541409] mb-6 text-center">Complete Your Order</h2>
+
+                <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm">
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Contact Info */}
+                    <div>
+                      <h3 className="text-xl font-serif text-[#541409] mb-4">Your Information</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="name" className="block text-sm font-medium text-[#541409] mb-2">
+                            Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="name"
+                            required
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="email" className="block text-sm font-medium text-[#541409] mb-2">
+                            Email <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="email"
+                            id="email"
+                            required
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="phone" className="block text-sm font-medium text-[#541409] mb-2">
+                            Phone <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="tel"
+                            id="phone"
+                            required
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pickup Date & Time */}
+                    <div>
+                      <TimeSlotPicker
+                        orderType="cookies"
+                        value={formData.pickupSlot ?? undefined}
+                        onChange={(slot) => setFormData({ ...formData, pickupSlot: slot })}
+                        label="Preferred Pickup Date & Time"
+                        required
+                      />
+                    </div>
+
+                    {/* Additional Info */}
+                    <div>
+                      <h3 className="text-xl font-serif text-[#541409] mb-4">Additional Information</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label htmlFor="allergies" className="block text-sm font-medium text-[#541409] mb-2">
+                            Allergies to Note
+                          </label>
+                          <input
+                            type="text"
+                            id="allergies"
+                            placeholder="Any allergies I should be aware of?"
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.allergies}
+                            onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="howDidYouHear" className="block text-sm font-medium text-[#541409] mb-2">
+                            How did you hear about me? :)
+                          </label>
+                          <input
+                            type="text"
+                            id="howDidYouHear"
+                            placeholder="Instagram, friend, Google, etc."
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.howDidYouHear}
+                            onChange={(e) => setFormData({ ...formData, howDidYouHear: e.target.value })}
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="message" className="block text-sm font-medium text-[#541409] mb-2">
+                            Notes or Questions
+                          </label>
+                          <textarea
+                            id="message"
+                            rows={3}
+                            placeholder="Anything else I should know?"
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.message}
+                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Coupon Code */}
+                    <CouponInput
+                      orderType="cookies"
+                      onCouponApplied={setAppliedCoupon}
+                      appliedCoupon={appliedCoupon}
+                    />
+
+                    {/* Order Summary */}
+                    <div className="bg-[#EAD6D6]/30 rounded-lg p-4">
+                      <h3 className="text-lg font-serif text-[#541409] mb-3">Order Summary</h3>
+                      <ul className="space-y-1 text-sm text-[#541409]">
+                        {flavors.map((f) => (
+                          <li key={f.flavor} className="flex justify-between">
+                            <span>{f.label}</span>
+                            <span>{f.quantity} cookies</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="mt-2 pt-2 border-t border-[#EAD6D6] text-sm flex justify-between text-[#541409]">
+                        <span>{dozens} dozen cookies</span>
+                        <span>{formatPrice(subtotal)}</span>
+                      </div>
+                      {packagingFee > 0 && (
+                        <div className="text-sm flex justify-between text-[#541409]">
+                          <span>Heat-sealed packaging</span>
+                          <span>{formatPrice(packagingFee)}</span>
+                        </div>
+                      )}
+                      <div className="mt-2 pt-2 border-t border-[#EAD6D6] font-medium flex justify-between text-[#541409]">
+                        <span>Total</span>
+                        <span>{formatPrice(total)}</span>
+                      </div>
+                    </div>
+
+                    {/* Acknowledgements */}
+                    <div>
+                      <h3 className="text-xl font-serif text-[#541409] mb-4">Policies & Acknowledgements</h3>
+                      <div className="space-y-3">
+                        <label className="flex items-start cursor-pointer p-4 border border-stone-200 rounded-sm hover:bg-stone-50 transition-colors">
+                          <input
+                            type="checkbox"
+                            required
+                            checked={formData.acknowledgePayment}
+                            onChange={(e) => setFormData({ ...formData, acknowledgePayment: e.target.checked })}
+                            className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                          />
+                          <span className="ml-3 text-sm text-stone-600">
+                            I understand that <strong>50% of full payment is non-refundable</strong> once my order is confirmed. <span className="text-red-500">*</span>
+                          </span>
+                        </label>
+
+                        <label className="flex items-start cursor-pointer p-4 border border-stone-200 rounded-sm hover:bg-stone-50 transition-colors">
+                          <input
+                            type="checkbox"
+                            required
+                            checked={formData.acknowledgeAllergens}
+                            onChange={(e) => setFormData({ ...formData, acknowledgeAllergens: e.target.checked })}
+                            className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                          />
+                          <span className="ml-3 text-sm text-stone-600">
+                            I understand that all products are made in a kitchen that contains <strong>dairy, eggs, tree nuts, peanuts, and soy</strong>. <span className="text-red-500">*</span>
+                          </span>
+                        </label>
+
+                        <label className="flex items-start cursor-pointer p-4 border border-stone-200 rounded-sm hover:bg-stone-50 transition-colors">
+                          <input
+                            type="checkbox"
+                            required
+                            checked={formData.acknowledgeLeadTime}
+                            onChange={(e) => setFormData({ ...formData, acknowledgeLeadTime: e.target.checked })}
+                            className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                          />
+                          <span className="ml-3 text-sm text-stone-600">
+                            I understand that cookie orders require at least <strong>1 week notice</strong>. <span className="text-red-500">*</span>
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {submitError && (
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-sm text-red-700 text-sm">
+                        {submitError}
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {submitting ? 'Processing...' : 'Proceed to Payment'}
+                    </button>
+
+                    <p className="text-sm text-stone-500 text-center">
+                      You&apos;ll be redirected to Stripe to complete your payment securely.
+                    </p>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="mt-8 text-center">
             <Link href="/cookies" className="text-[#541409] hover:opacity-70 transition-opacity">
-              ← Back to Cookie Info
+              &larr; Back to Cookie Info
             </Link>
           </div>
         </div>
       </section>
     </>
+  );
+}
+
+export default function CookieOrderPage() {
+  return (
+    <CartProvider>
+      <CookieOrderContent />
+    </CartProvider>
   );
 }

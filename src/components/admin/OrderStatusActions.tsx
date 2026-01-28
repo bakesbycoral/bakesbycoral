@@ -31,24 +31,18 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState('');
-  const [quoteAmount, setQuoteAmount] = useState('');
-  const [showQuoteForm, setShowQuoteForm] = useState(false);
-  const [invoiceUrl, setInvoiceUrl] = useState('');
 
   const availableTransitions = statusTransitions[currentStatus] || [];
   const isInquiry = currentStatus === 'inquiry';
-  const needsQuote = isInquiry && ['cake', 'cookies_large', 'wedding'].includes(orderType);
+  // Quote-based order types should use the Quotes section instead of direct invoice
+  const isQuoteBasedType = ['cake', 'cookies_large', 'wedding'].includes(orderType);
 
   const handleStatusUpdate = async (newStatus: string) => {
     setIsUpdating(true);
     setError('');
 
     try {
-      const body: { status: string; totalAmount?: number } = { status: newStatus };
-
-      if (newStatus === 'pending_payment' && quoteAmount) {
-        body.totalAmount = Math.round(parseFloat(quoteAmount) * 100);
-      }
+      const body: { status: string } = { status: newStatus };
 
       const response = await fetch(`/api/admin/orders/${orderId}/status`, {
         method: 'PUT',
@@ -60,46 +54,8 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
 
       if (data.success) {
         router.refresh();
-        setShowQuoteForm(false);
       } else {
         setError(data.error || 'Failed to update status');
-      }
-    } catch {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const handleCreateInvoice = async () => {
-    setError('');
-    setInvoiceUrl('');
-
-    const amount = parseFloat(quoteAmount);
-    if (isNaN(amount) || amount <= 0) {
-      setError('Please enter a valid amount');
-      return;
-    }
-
-    setIsUpdating(true);
-
-    try {
-      const response = await fetch('/api/invoices', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderId,
-          totalAmountCents: Math.round(amount * 100),
-        }),
-      });
-
-      const data = await response.json() as { success?: boolean; error?: string; invoiceUrl?: string };
-      if (data.success) {
-        setInvoiceUrl(data.invoiceUrl || '');
-        setShowQuoteForm(false);
-        router.refresh();
-      } else {
-        setError(data.error || 'Failed to create invoice');
       }
     } catch {
       setError('Something went wrong. Please try again.');
@@ -118,57 +74,13 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
         </div>
       )}
 
-      {/* Quote form for inquiries */}
-      {needsQuote && !showQuoteForm && (
-        <button
-          onClick={() => setShowQuoteForm(true)}
-          className="w-full mb-4 px-4 py-2 bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity"
-        >
-          Create Invoice
-        </button>
-      )}
-
-      {showQuoteForm && (
-        <div className="mb-4 p-4 bg-[#EAD6D6]/20 rounded-lg">
-          <label className="block text-sm font-medium text-[#541409] mb-2">
-            Quote Amount ($)
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={quoteAmount}
-            onChange={(e) => setQuoteAmount(e.target.value)}
-            className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none mb-3 text-[#541409]"
-            placeholder="0.00"
-          />
-          <div className="flex gap-2">
-            <button
-              onClick={handleCreateInvoice}
-              disabled={isUpdating || !quoteAmount}
-              className="flex-1 px-3 py-2 bg-[#541409] text-[#EAD6D6] text-sm rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
-            >
-              {isUpdating ? 'Creating...' : 'Create Invoice'}
-            </button>
-            <button
-              onClick={() => setShowQuoteForm(false)}
-              className="px-3 py-2 bg-[#EAD6D6] text-[#541409] text-sm rounded-lg hover:bg-[#EAD6D6]/70 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
+      {/* Hint for quote-based order types */}
+      {isInquiry && isQuoteBasedType && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-700">
+            Use the <strong>Quotes & Invoices</strong> section below to create and send a quote to the customer.
+          </p>
         </div>
-      )}
-
-      {invoiceUrl && (
-        <a
-          href={invoiceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full mb-4 px-4 py-2 bg-[#EAD6D6]/30 text-[#541409] rounded-lg text-center text-sm hover:bg-[#EAD6D6]/50"
-        >
-          View Invoice
-        </a>
       )}
 
       {/* Status transition buttons */}
@@ -176,7 +88,7 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
         <div className="space-y-2">
           <p className="text-sm text-[#541409]/60 mb-2">Update Status</p>
           {availableTransitions
-            .filter((status) => !(needsQuote && status === 'pending_payment'))
+            .filter((status) => !(isQuoteBasedType && status === 'pending_payment'))
             .map((status) => (
               <button
                 key={status}
@@ -198,7 +110,7 @@ export function OrderStatusActions({ orderId, currentStatus, orderType }: OrderS
         </div>
       )}
 
-      {availableTransitions.length === 0 && !needsQuote && (
+      {availableTransitions.length === 0 && !(isInquiry && isQuoteBasedType) && (
         <p className="text-sm text-[#541409]/60">No actions available for this status.</p>
       )}
 

@@ -206,6 +206,7 @@ export async function POST(request: NextRequest) {
         // For custom quotes sent via Stripe Invoices
         const invoice = event.data.object as Stripe.Invoice;
         const orderId = invoice.metadata?.order_id;
+        const quoteId = invoice.metadata?.quote_id;
 
         if (orderId) {
           const isDeposit = invoice.metadata?.payment_type === 'deposit';
@@ -220,6 +221,16 @@ export async function POST(request: NextRequest) {
             isDeposit ? 'deposit_paid' : 'confirmed',
             orderId
           ).run();
+
+          // Update quote status to converted if this was a quote payment
+          if (quoteId) {
+            await db.prepare(`
+              UPDATE quotes
+              SET status = 'converted',
+                  updated_at = datetime('now')
+              WHERE id = ?
+            `).bind(quoteId).run();
+          }
 
           // Fetch order details for confirmation email
           const order = await db.prepare(`
@@ -271,6 +282,8 @@ export async function POST(request: NextRequest) {
               }),
             });
           }
+
+          console.log(`Invoice paid for order ${order?.order_number}${quoteId ? ` (Quote: ${quoteId})` : ''}`);
         }
         break;
       }

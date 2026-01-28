@@ -2,9 +2,10 @@
 
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getDB } from '@/lib/db';
+import { getDB, getEnvVar } from '@/lib/db';
 import { validateOrder, isSpamSubmission, sanitizeInput } from '@/lib/validation';
 import { validateRequestedDate } from '@/lib/scheduling';
+import { sendEmail, orderConfirmationEmail, adminNewOrderEmail } from '@/lib/email';
 
 interface WeddingOrderData {
   // Contact Info
@@ -168,7 +169,47 @@ export async function POST(request: NextRequest) {
       })
     ).run();
 
-    // TODO: Send confirmation email via Resend
+    // Send form submission emails
+    const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
+    if (resendApiKey) {
+      const adminEmailSetting = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('admin_email').first<{ value: string }>();
+      const adminEmail = adminEmailSetting?.value || 'hello@bakesbycoral.com';
+
+      const formData = {
+        guest_count: data.guest_count,
+        services_needed: data.services_needed,
+        cake_tiers: data.cake_tiers,
+        theme: data.theme,
+      };
+
+      // Email to customer
+      sendEmail(resendApiKey, {
+        to: data.email,
+        subject: `Wedding Inquiry Received - ${orderNumber}`,
+        html: orderConfirmationEmail({
+          customerName: data.name,
+          orderNumber: orderNumber,
+          orderType: 'wedding',
+          pickupDate: data.wedding_date,
+        }),
+        replyTo: adminEmail,
+      }).catch(err => console.error('Failed to send customer email:', err));
+
+      // Email to admin
+      sendEmail(resendApiKey, {
+        to: adminEmail,
+        subject: `New Wedding Inquiry - ${orderNumber}`,
+        html: adminNewOrderEmail({
+          customerName: data.name,
+          customerEmail: data.email,
+          customerPhone: data.phone,
+          orderNumber: orderNumber,
+          orderType: 'wedding',
+          pickupDate: data.wedding_date,
+          formData: formData,
+        }),
+      }).catch(err => console.error('Failed to send admin email:', err));
+    }
 
     return NextResponse.json({
       success: true,

@@ -6,6 +6,7 @@ import { OrderStatusActions } from './OrderStatusActions';
 import { OrderNotes } from './OrderNotes';
 import { BalancePayment } from './BalancePayment';
 import { OrderEditForm } from './OrderEditForm';
+import { QuotesList } from './quotes';
 
 interface Order {
   id: string;
@@ -62,6 +63,7 @@ const orderTypeLabels: Record<string, string> = {
   cookies_large: 'Large Cookie Order (4+ Dozen)',
   cake: 'Custom Cake',
   wedding: 'Wedding',
+  tasting: 'Tasting Order',
 };
 
 function formatCurrency(cents: number | null): string {
@@ -237,13 +239,57 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                 <div>
                   <dt className="text-sm text-[#541409]/60">Flavors</dt>
                   <dd className="font-medium text-[#541409]">
-                    {formData.flavors?.join(', ') || '-'}
+                    {/* Support new flavor_counts format, cart_items format, and legacy flavors format */}
+                    {formData.flavor_counts ? (
+                      <ul className="space-y-1">
+                        {Object.entries(formData.flavor_counts as Record<string, number>).map(([flavor, count]) => {
+                          const flavorLabels: Record<string, string> = {
+                            chocolate_chip: 'Chocolate Chip',
+                            vanilla_bean_sugar: 'Vanilla Bean Sugar',
+                            cherry_almond: 'Cherry Almond',
+                            espresso_butterscotch: 'Espresso Butterscotch',
+                            lemon_sugar: 'Lemon Sugar',
+                          };
+                          return (
+                            <li key={flavor}>
+                              {flavorLabels[flavor] || flavor}: {count} cookies
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : formData.cart_items ? (
+                      formData.cart_items.map((item: { flavor: string }, i: number) => {
+                        const flavorLabels: Record<string, string> = {
+                          chocolate_chip: 'Chocolate Chip',
+                          vanilla_bean_sugar: 'Vanilla Bean Sugar',
+                          cherry_almond: 'Cherry Almond',
+                          espresso_butterscotch: 'Espresso Butterscotch',
+                          lemon_sugar: 'Lemon Sugar',
+                        };
+                        return (
+                          <span key={i}>
+                            {i > 0 && ', '}
+                            {flavorLabels[item.flavor] || item.flavor}
+                          </span>
+                        );
+                      })
+                    ) : (
+                      formData.flavors?.join(', ') || '-'
+                    )}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-sm text-[#541409]/60">Quantity</dt>
                   <dd className="font-medium text-[#541409]">{formData.quantity} dozen</dd>
                 </div>
+                {formData.packaging && formData.packaging !== 'standard' && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60">Packaging</dt>
+                    <dd className="font-medium text-[#541409] capitalize">
+                      {formData.packaging === 'heat-sealed' ? 'Heat-Sealed (+$5/dozen)' : formData.packaging}
+                    </dd>
+                  </div>
+                )}
               </dl>
             )}
 
@@ -373,6 +419,11 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
 
           {/* Internal Notes */}
           <OrderNotes orderId={order.id} notes={notes} />
+
+          {/* Quotes & Invoices - Show for large cookie orders, cakes, weddings */}
+          {['cookies_large', 'cake', 'wedding'].includes(order.order_type) && (
+            <QuotesList orderId={order.id} orderStatus={order.status} />
+          )}
         </div>
 
         {/* Sidebar */}

@@ -16,3 +16,8 @@ database_id = "2ea77357-2926-4597-8fae-d5f3646cf1ab"
 [vars]
 NEXT_PUBLIC_SITE_URL = "https://bakesbycoral.com"
 bakesbycoral_session_secret = "bakes-coral-secret-key-2026-change-in-production"
+
+# Cron triggers for scheduled tasks
+# Run pickup reminders daily at 9 AM EST (14:00 UTC)
+[triggers]
+crons = ["0 14 * * *"]

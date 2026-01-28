@@ -34,6 +34,10 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   // Scheduling
   default_slot_capacity: '2',
   slot_interval_minutes: '30',
+  // Email settings
+  admin_email: 'hello@bakesbycoral.com',
+  reminder_enabled: 'true',
+  reminder_days_before: '1',
 };
 
 function parsePickupHours(value: string | undefined): PickupHours {
@@ -320,6 +324,76 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               onChange={(e) => handleNumberChange('slot_interval_minutes', e.target.value)}
               className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* Email Settings */}
+      <section className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+        <h2 className="text-lg font-semibold text-[#541409] mb-6">Email Notifications</h2>
+        <p className="text-sm text-[#541409]/60 mb-6">
+          Configure automated email notifications. Emails are sent to both you and the customer.
+        </p>
+
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm text-[#541409]/70 mb-1">Admin Email Address</label>
+            <input
+              type="email"
+              value={settings.admin_email || ''}
+              onChange={(e) => handleNumberChange('admin_email', e.target.value)}
+              placeholder="hello@bakesbycoral.com"
+              className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
+            />
+            <p className="text-xs text-[#541409]/60 mt-1">Where you receive order notifications and reminders</p>
+          </div>
+
+          <div className="border-t border-[#EAD6D6] pt-6">
+            <h3 className="font-medium text-[#541409] mb-4">Pickup Reminders</h3>
+            <div className="space-y-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.reminder_enabled === 'true'}
+                  onChange={(e) => handleNumberChange('reminder_enabled', e.target.checked ? 'true' : 'false')}
+                  className="w-5 h-5 rounded border-[#EAD6D6] text-[#541409] focus:ring-[#541409]"
+                />
+                <span className="text-sm text-[#541409]">Send pickup reminder emails</span>
+              </label>
+
+              <div className="ml-8">
+                <label className="block text-sm text-[#541409]/70 mb-1">Days Before Pickup</label>
+                <select
+                  value={settings.reminder_days_before || '1'}
+                  onChange={(e) => handleNumberChange('reminder_days_before', e.target.value)}
+                  disabled={settings.reminder_enabled !== 'true'}
+                  className="w-full max-w-xs px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] disabled:opacity-50"
+                >
+                  <option value="1">1 day before (recommended)</option>
+                  <option value="2">2 days before</option>
+                  <option value="3">3 days before</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-[#EAD6D6] pt-6">
+            <h3 className="font-medium text-[#541409] mb-2">Email Types</h3>
+            <p className="text-sm text-[#541409]/60 mb-4">These emails are sent automatically:</p>
+            <ul className="space-y-2 text-sm text-[#541409]">
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">&#10003;</span>
+                <span><strong>Form Submission:</strong> When a customer submits an order (before payment)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">&#10003;</span>
+                <span><strong>Order Confirmation:</strong> When payment is completed</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">&#10003;</span>
+                <span><strong>Pickup Reminder:</strong> Before scheduled pickup (if enabled above)</span>
+              </li>
+            </ul>
           </div>
         </div>
       </section>

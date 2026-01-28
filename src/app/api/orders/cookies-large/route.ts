@@ -2,9 +2,10 @@
 
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getDB } from '@/lib/db';
+import { getDB, getEnvVar } from '@/lib/db';
 import { validateOrder, isSpamSubmission, sanitizeInput } from '@/lib/validation';
 import { validateRequestedDate } from '@/lib/scheduling';
+import { sendEmail, orderConfirmationEmail, adminNewOrderEmail } from '@/lib/email';
 
 interface LargeCookieOrderData {
   name: string;
@@ -100,7 +101,48 @@ export async function POST(request: NextRequest) {
       })
     ).run();
 
-    // TODO: Send confirmation email via Resend
+    // Send form submission emails
+    const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
+    if (resendApiKey) {
+      const adminEmailSetting = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('admin_email').first<{ value: string }>();
+      const adminEmail = adminEmailSetting?.value || 'hello@bakesbycoral.com';
+
+      const formData = {
+        quantity: data.quantity,
+        flavor_mix: data.flavor_mix,
+        individual_wrap: data.individual_wrap,
+        event_type: data.event_type,
+      };
+
+      // Email to customer
+      sendEmail(resendApiKey, {
+        to: data.email,
+        subject: `Large Cookie Order Received - ${orderNumber}`,
+        html: orderConfirmationEmail({
+          customerName: data.name,
+          orderNumber: orderNumber,
+          orderType: 'cookies_large',
+          pickupDate: data.pickup_date,
+          pickupTime: data.pickup_time,
+        }),
+        replyTo: adminEmail,
+      }).catch(err => console.error('Failed to send customer email:', err));
+
+      // Email to admin
+      sendEmail(resendApiKey, {
+        to: adminEmail,
+        subject: `New Large Cookie Order - ${orderNumber}`,
+        html: adminNewOrderEmail({
+          customerName: data.name,
+          customerEmail: data.email,
+          customerPhone: data.phone,
+          orderNumber: orderNumber,
+          orderType: 'cookies_large',
+          pickupDate: data.pickup_date,
+          formData: formData,
+        }),
+      }).catch(err => console.error('Failed to send admin email:', err));
+    }
 
     return NextResponse.json({
       success: true,
