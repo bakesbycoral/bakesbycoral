@@ -2,6 +2,7 @@
 // Uses local SQLite for development, D1 for production
 
 import type { D1Database } from '@cloudflare/workers-types';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
 
 // Type for query results
 interface QueryResult<T> {
@@ -128,27 +129,18 @@ function getLocalDatabase(): LocalDB {
   };
 }
 
-// Check if we're in a Cloudflare environment
-const cloudflareRequestContextSymbol = Symbol.for('__cloudflare-request-context__');
-
-function getRequestContextSafe() {
-  return (globalThis as { [key: symbol]: unknown })[cloudflareRequestContextSymbol] as
-    | { env: Record<string, string>; DB?: D1Database }
-    | undefined;
-}
-
-function isCloudflare(): boolean {
-  // Check for edge runtime indicators
-  if (typeof EdgeRuntime !== 'undefined') return true;
-  if (process.env.CF_PAGES === '1') return true;
-  return Boolean(getRequestContextSafe());
-}
-
 // Get database instance
 export function getDB(): D1Database | LocalDB {
-  if (isCloudflare()) {
-    const ctx = getRequestContextSafe();
-    if (ctx && ctx.DB) return ctx.DB;
+  try {
+    // Try OpenNext's getCloudflareContext first
+    const { env } = getCloudflareContext();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const envAny = env as any;
+    if (envAny && envAny.DB) {
+      return envAny.DB as D1Database;
+    }
+  } catch {
+    // Not in Cloudflare context, use local database
   }
 
   // Local development
@@ -157,11 +149,17 @@ export function getDB(): D1Database | LocalDB {
 
 // Get environment variables
 export function getEnvVar(key: string): string {
-  if (isCloudflare()) {
-    const ctx = getRequestContextSafe();
-    if (ctx && ctx.env) {
-      return ctx.env[key] || '';
+  try {
+    // Try OpenNext's getCloudflareContext first
+    const { env } = getCloudflareContext();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const envAny = env as any;
+    if (envAny) {
+      const value = envAny[key];
+      if (typeof value === 'string') return value;
     }
+  } catch {
+    // Not in Cloudflare context
   }
 
   // Local development - use process.env
@@ -175,6 +173,3 @@ export function generateId(): string {
 export function now(): string {
   return new Date().toISOString();
 }
-
-// Declare EdgeRuntime for TypeScript
-declare const EdgeRuntime: string | undefined;
