@@ -24,7 +24,7 @@ export async function sendEmail(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Bakes by Coral <noreply@bakesbycoral.com>',
+        from: 'Bakes by Coral <onboarding@resend.dev>',
         to: Array.isArray(options.to) ? options.to : [options.to],
         reply_to: options.replyTo,
         subject: options.subject,

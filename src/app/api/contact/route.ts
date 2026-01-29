@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'Bakes by Coral <noreply@bakesbycoral.com>',
-            to: ['hello@bakesbycoral.com'],
+            from: 'Bakes by Coral <onboarding@resend.dev>',
+            to: ['coral@bakesbycoral.com'],
             reply_to: data.email,
             subject: `New Contact Form Message from ${sanitizeInput(data.name)}`,
             html: `
