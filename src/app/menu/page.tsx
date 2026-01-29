@@ -31,9 +31,9 @@ export default function MenuPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="inline-block px-4 py-1.5 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full mb-4">
+              <Link href="/cakes" className="inline-block px-4 py-1.5 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full mb-4 hover:opacity-80 transition-opacity">
                 Celebration Cakes
-              </span>
+              </Link>
               <h2 className="text-3xl sm:text-4xl font-serif text-[#541409] mb-6">
                 Custom Cakes
               </h2>
@@ -43,22 +43,22 @@ export default function MenuPage() {
               </p>
 
               <div className="space-y-4 mb-8">
-                <div className="flex justify-between items-center border-b border-stone-200 pb-2">
+                <Link href="/order/cake?size=4-inch" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
                   <span className="font-medium text-[#541409]">4" Heart or Round (serves 2-4)</span>
                   <span className="text-stone-600">Starting at $60</span>
-                </div>
-                <div className="flex justify-between items-center border-b border-stone-200 pb-2">
+                </Link>
+                <Link href="/order/cake?size=6-inch" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
                   <span className="font-medium text-[#541409]">6" Heart or Round (serves 6-12)</span>
                   <span className="text-stone-600">Starting at $100</span>
-                </div>
-                <div className="flex justify-between items-center border-b border-stone-200 pb-2">
+                </Link>
+                <Link href="/order/cake?size=8-inch" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
                   <span className="font-medium text-[#541409]">8" Heart or Round (serves 14-20)</span>
                   <span className="text-stone-600">Starting at $140</span>
-                </div>
-                <div className="flex justify-between items-center border-b border-stone-200 pb-2">
+                </Link>
+                <Link href="/order/cake?size=10-inch" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
                   <span className="font-medium text-[#541409]">10" Round (serves 24-30)</span>
                   <span className="text-stone-600">Starting at $180</span>
-                </div>
+                </Link>
               </div>
 
               <Link
@@ -69,13 +69,13 @@ export default function MenuPage() {
               </Link>
             </div>
 
-            <div className="aspect-square rounded-lg overflow-hidden shadow-lg">
+            <Link href="/cakes" className="aspect-square rounded-lg overflow-hidden shadow-lg block hover:shadow-xl hover:scale-[1.02] transition-all">
               <img
                 src="/25th-cake.jpg"
                 alt="Custom Cake"
                 className="w-full h-full object-cover"
               />
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -84,18 +84,18 @@ export default function MenuPage() {
       <section className="py-16 sm:py-24 bg-[#EAD6D6]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="order-2 lg:order-1 aspect-square rounded-lg overflow-hidden shadow-lg">
+            <Link href="/cookies" className="order-2 lg:order-1 aspect-square rounded-lg overflow-hidden shadow-lg block hover:shadow-xl hover:scale-[1.02] transition-all">
               <img
                 src="/cherry.jpg"
                 alt="Cookies"
                 className="w-full h-full object-cover"
               />
-            </div>
+            </Link>
 
             <div className="order-1 lg:order-2">
-              <span className="inline-block px-4 py-1.5 bg-[#541409] text-[#EAD6D6] text-sm font-medium rounded-full mb-4">
+              <Link href="/cookies" className="inline-block px-4 py-1.5 bg-[#541409] text-[#EAD6D6] text-sm font-medium rounded-full mb-4 hover:opacity-80 transition-opacity">
                 Fresh Baked
-              </span>
+              </Link>
               <h2 className="text-3xl sm:text-4xl font-serif text-[#541409] mb-6">
                 Cookies
               </h2>
@@ -105,14 +105,14 @@ export default function MenuPage() {
               </p>
 
               <div className="space-y-4 mb-8">
-                <div className="flex justify-between items-center border-b border-[#541409]/20 pb-2">
+                <Link href="/order/cookies" className="flex justify-between items-center border-b border-[#541409]/20 pb-2 hover:bg-[#FFF8F0]/25 -mx-2 px-2 py-1 rounded transition-colors">
                   <span className="font-medium text-[#541409]">Per Dozen</span>
                   <span className="text-stone-700">$30</span>
-                </div>
-                <div className="flex justify-between items-center border-b border-[#541409]/20 pb-2">
+                </Link>
+                <Link href="/order/cookies-large" className="flex justify-between items-center border-b border-[#541409]/20 pb-2 hover:bg-[#FFF8F0]/25 -mx-2 px-2 py-1 rounded transition-colors">
                   <span className="font-medium text-[#541409]">10+ Dozen</span>
                   <span className="text-stone-700">5% off!</span>
-                </div>
+                </Link>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">

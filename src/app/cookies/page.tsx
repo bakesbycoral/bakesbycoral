@@ -43,23 +43,23 @@ export default function CookiesPage() {
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <Link href="/order/cookies" className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all">
               <h3 className="text-xl font-serif text-[#541409] mb-2">1 Dozen</h3>
               <p className="text-3xl font-bold text-[#541409]">$30</p>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            </Link>
+            <Link href="/order/cookies" className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all">
               <h3 className="text-xl font-serif text-[#541409] mb-2">2 Dozen</h3>
               <p className="text-3xl font-bold text-[#541409]">$60</p>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            </Link>
+            <Link href="/order/cookies" className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all">
               <h3 className="text-xl font-serif text-[#541409] mb-2">3 Dozen</h3>
               <p className="text-3xl font-bold text-[#541409]">$90</p>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            </Link>
+            <Link href="/order/cookies-large" className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all">
               <h3 className="text-xl font-serif text-[#541409] mb-2">4+ Dozen</h3>
               <p className="text-lg font-medium text-[#541409]">$30/dozen</p>
               <p className="text-sm text-stone-600">10+ dozen: 5% off!</p>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -73,13 +73,14 @@ export default function CookiesPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {cookieFlavors.map((cookie) => (
-              <div
+              <Link
                 key={cookie.name}
-                className="bg-white rounded-lg p-6 shadow-sm"
+                href="/order/cookies"
+                className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all block"
               >
                 <h3 className="text-xl font-serif text-[#541409] mb-2">{cookie.name}</h3>
                 <p className="text-stone-600 text-sm">{cookie.description}</p>
-              </div>
+              </Link>
             ))}
           </div>
 
@@ -93,34 +94,34 @@ export default function CookiesPage() {
       <section className="py-16 sm:py-24 bg-[#F7F3ED]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-4 gap-4">
-            <div className="aspect-square rounded-lg overflow-hidden shadow-lg">
+            <Link href="/order/cookies" className="aspect-square rounded-lg overflow-hidden shadow-lg block hover:scale-105 transition-transform">
               <img
                 src="/choco-chip-tray.jpg"
                 alt="Chocolate Chip Cookies"
                 className="w-full h-full object-cover"
               />
-            </div>
-            <div className="aspect-square rounded-lg overflow-hidden shadow-lg">
+            </Link>
+            <Link href="/order/cookies" className="aspect-square rounded-lg overflow-hidden shadow-lg block hover:scale-105 transition-transform">
               <img
                 src="/cherry.jpg"
                 alt="Cherry Almond Cookies"
                 className="w-full h-full object-cover"
               />
-            </div>
-            <div className="aspect-square rounded-lg overflow-hidden shadow-lg">
+            </Link>
+            <Link href="/order/cookies" className="aspect-square rounded-lg overflow-hidden shadow-lg block hover:scale-105 transition-transform">
               <img
                 src="/vanilla.jpg"
                 alt="Vanilla Bean Sugar Cookies"
                 className="w-full h-full object-cover"
               />
-            </div>
-            <div className="aspect-square rounded-lg overflow-hidden shadow-lg">
+            </Link>
+            <Link href="/order/cookies" className="aspect-square rounded-lg overflow-hidden shadow-lg block hover:scale-105 transition-transform">
               <img
                 src="/espresso.jpg"
                 alt="Espresso Butterscotch Cookies"
                 className="w-full h-full object-cover"
               />
-            </div>
+            </Link>
           </div>
         </div>
       </section>

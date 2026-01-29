@@ -31,13 +31,13 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center h-16 sm:h-20 overflow-hidden -ml-16 sm:-ml-24">
+          <Link href="/" className="flex items-center h-16 sm:h-20 overflow-hidden">
             <Image
               src="/logo.png"
               alt="Bakes by Coral"
               width={250}
               height={250}
-              className="h-28 sm:h-32 w-auto object-cover object-center"
+              className="h-20 sm:h-24 w-auto object-contain"
             />
           </Link>
 
@@ -97,7 +97,7 @@ export default function Header() {
           </nav>
 
           {/* CTA Button */}
-          <div className="flex items-center gap-4 -mr-16 sm:-mr-24">
+          <div className="flex items-center gap-4">
             <Link
               href="/order/cake"
               className="hidden sm:inline-flex px-6 py-3 bg-[#EAD6D6] text-[#541409] text-base font-medium rounded-sm hover:opacity-80 transition-opacity"

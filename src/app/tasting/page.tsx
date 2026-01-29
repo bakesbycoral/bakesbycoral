@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { TimeSlotPicker } from '@/components/forms';
+import { useState, Suspense, useRef, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { TimeSlotPicker, CouponInput } from '@/components/forms';
 
 const CAKE_FLAVORS = [
   { value: 'vanilla-bean', label: 'Vanilla Bean' },
@@ -32,9 +32,9 @@ const COOKIE_FLAVORS = [
 ];
 
 function TastingPageContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const cancelled = searchParams.get('cancelled');
+  const formRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -48,10 +48,34 @@ function TastingPageContent() {
     pickupOrDelivery: 'pickup',
     deliveryLocation: '',
     pickupSlot: null as { date: string; time: string } | null,
+    acknowledgePayment: false,
+    acknowledgeAllergens: false,
+    acknowledgeLeadTime: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    description: string | null;
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    minOrderAmount: number;
+  } | null>(null);
+
+  // Pre-fill tasting type from URL parameter
+  useEffect(() => {
+    const type = searchParams.get('type');
+    if (type && ['cake', 'cookie', 'both'].includes(type)) {
+      setFormData(prev => ({ ...prev, tastingType: type }));
+      formRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [searchParams]);
+
+  const selectTastingType = (type: 'cake' | 'cookie' | 'both') => {
+    setFormData(prev => ({ ...prev, tastingType: type }));
+    formRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const toggleCakeFlavor = (flavor: string) => {
     setFormData(prev => {
@@ -112,6 +136,7 @@ function TastingPageContent() {
           delivery_location: formData.deliveryLocation || undefined,
           pickup_date: formData.pickupSlot.date,
           pickup_time: formData.pickupSlot.time,
+          coupon_code: appliedCoupon?.code || null,
         }),
       });
 
@@ -123,7 +148,7 @@ function TastingPageContent() {
 
       // Redirect to Stripe checkout
       if (data.checkoutUrl) {
-        router.push(data.checkoutUrl);
+        window.location.href = data.checkoutUrl;
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
@@ -170,7 +195,10 @@ function TastingPageContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Cake Tasting Box */}
-            <div className="bg-white rounded-lg p-8 shadow-sm">
+            <div
+              onClick={() => selectTastingType('cake')}
+              className="bg-white rounded-lg p-8 shadow-sm cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all"
+            >
               <h2 className="text-2xl font-serif text-[#541409] mb-4">Cake Tasting Box</h2>
               <p className="text-stone-600 mb-6">
                 Each cake tasting box includes individual cake samples with vanilla buttercream.
@@ -198,7 +226,10 @@ function TastingPageContent() {
             </div>
 
             {/* Cookie Tasting Box */}
-            <div className="bg-white rounded-lg p-8 shadow-sm">
+            <div
+              onClick={() => selectTastingType('cookie')}
+              className="bg-white rounded-lg p-8 shadow-sm cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all"
+            >
               <h2 className="text-2xl font-serif text-[#541409] mb-4">Cookie Tasting Box</h2>
               <p className="text-stone-600 mb-6">
                 Each cookie tasting box includes 2 cookies of each flavor. Each cookie is
@@ -236,7 +267,7 @@ function TastingPageContent() {
 
       {/* Order Form */}
       <section className="py-16 sm:py-24 bg-[#EAD6D6]">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6">
+        <div ref={formRef} className="max-w-2xl mx-auto px-4 sm:px-6">
           <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm">
             <h2 className="text-2xl font-serif text-[#541409] mb-6 text-center">Order a Tasting Box</h2>
 
@@ -262,7 +293,7 @@ function TastingPageContent() {
                     type="text"
                     id="name"
                     required
-                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
@@ -275,7 +306,7 @@ function TastingPageContent() {
                     type="email"
                     id="email"
                     required
-                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
@@ -291,7 +322,7 @@ function TastingPageContent() {
                     type="tel"
                     id="phone"
                     required
-                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   />
@@ -494,6 +525,58 @@ function TastingPageContent() {
                   />
                 </>
               )}
+
+              {/* Coupon Code */}
+              <CouponInput
+                orderType="tasting"
+                onCouponApplied={setAppliedCoupon}
+                appliedCoupon={appliedCoupon}
+              />
+
+              {/* Policies & Acknowledgements */}
+              <div>
+                <h3 className="text-xl font-serif text-[#541409] mb-4">Policies & Acknowledgements</h3>
+                <div className="space-y-3">
+                  <label className="flex items-start cursor-pointer p-4 border border-stone-200 rounded-sm hover:bg-stone-50 transition-colors">
+                    <input
+                      type="checkbox"
+                      required
+                      checked={formData.acknowledgePayment}
+                      onChange={(e) => setFormData({ ...formData, acknowledgePayment: e.target.checked })}
+                      className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                    />
+                    <span className="ml-3 text-sm text-stone-600">
+                      I understand that <strong>tasting box payments are non-refundable</strong>, but will be credited toward my wedding order if booked within 30 days. <span className="text-red-500">*</span>
+                    </span>
+                  </label>
+
+                  <label className="flex items-start cursor-pointer p-4 border border-stone-200 rounded-sm hover:bg-stone-50 transition-colors">
+                    <input
+                      type="checkbox"
+                      required
+                      checked={formData.acknowledgeAllergens}
+                      onChange={(e) => setFormData({ ...formData, acknowledgeAllergens: e.target.checked })}
+                      className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                    />
+                    <span className="ml-3 text-sm text-stone-600">
+                      I understand that all products are made in a kitchen that contains <strong>dairy, eggs, tree nuts, peanuts, and soy</strong>. <span className="text-red-500">*</span>
+                    </span>
+                  </label>
+
+                  <label className="flex items-start cursor-pointer p-4 border border-stone-200 rounded-sm hover:bg-stone-50 transition-colors">
+                    <input
+                      type="checkbox"
+                      required
+                      checked={formData.acknowledgeLeadTime}
+                      onChange={(e) => setFormData({ ...formData, acknowledgeLeadTime: e.target.checked })}
+                      className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                    />
+                    <span className="ml-3 text-sm text-stone-600">
+                      I understand that tasting boxes require at least <strong>3 days notice</strong>. <span className="text-red-500">*</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
 
               <button
                 type="submit"

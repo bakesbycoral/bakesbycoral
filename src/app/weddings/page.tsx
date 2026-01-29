@@ -46,7 +46,7 @@ export default function WeddingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Wedding Cakes */}
-            <div className="bg-white rounded-lg p-8 shadow-sm">
+            <Link href="/order/wedding" className="bg-white rounded-lg p-8 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all block">
               <h3 className="text-2xl font-serif text-[#541409] mb-4">Cutting Cakes</h3>
               <p className="text-stone-600 mb-6">
                 Beautiful single-tier cutting cakes perfect for your cake cutting moment. I'll work with you
@@ -66,10 +66,10 @@ export default function WeddingsPage() {
                   Perfect for your cake cutting moment
                 </li>
               </ul>
-            </div>
+            </Link>
 
             {/* Cookies */}
-            <div className="bg-white rounded-lg p-8 shadow-sm">
+            <Link href="/order/wedding" className="bg-white rounded-lg p-8 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all block">
               <h3 className="text-2xl font-serif text-[#541409] mb-4">Cookies</h3>
               <p className="text-stone-600 mb-6">
                 Add something sweet to your celebration! Perfect for dessert tables
@@ -93,7 +93,7 @@ export default function WeddingsPage() {
                   5 delicious flavors to choose from
                 </li>
               </ul>
-            </div>
+            </Link>
           </div>
 
           <div className="text-center mt-12">
@@ -126,18 +126,18 @@ export default function WeddingsPage() {
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto mb-8">
-              <div className="bg-[#EAD6D6]/10 rounded-lg p-4">
+              <Link href="/tasting?type=cake" className="bg-[#EAD6D6]/10 rounded-lg p-4 hover:bg-[#EAD6D6]/20 transition-colors block">
                 <h3 className="font-medium text-[#EAD6D6] mb-2">Cake Tasting Box</h3>
                 <p className="text-sm text-[#EAD6D6]/70">
                   4 cake flavors in 8oz jars with vanilla buttercream + 4 fillings
                 </p>
-              </div>
-              <div className="bg-[#EAD6D6]/10 rounded-lg p-4">
+              </Link>
+              <Link href="/tasting?type=cookie" className="bg-[#EAD6D6]/10 rounded-lg p-4 hover:bg-[#EAD6D6]/20 transition-colors block">
                 <h3 className="font-medium text-[#EAD6D6] mb-2">Cookie Tasting Box</h3>
                 <p className="text-sm text-[#EAD6D6]/70">
                   4 cookie flavors, 2 of each, individually bagged
                 </p>
-              </div>
+              </Link>
             </div>
 
             <Link

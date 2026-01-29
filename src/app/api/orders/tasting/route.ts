@@ -1,90 +1,62 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import Stripe from 'stripe';
-import { validateOrder, isSpamSubmission, sanitizeInput } from '@/lib/validation';
-import { sendEmail, orderConfirmationEmail, adminNewOrderEmail } from '@/lib/email';
+import { sanitizeInput } from '@/lib/validation';
 
 interface TastingOrderData {
   name: string;
   email: string;
   phone: string;
   wedding_date: string;
-  tasting_type: 'cake' | 'cookie' | 'both';
+  tasting_type: string;
   cake_flavors?: string[];
   fillings?: string[];
   cookie_flavors?: string[];
-  pickup_or_delivery: 'pickup' | 'delivery';
+  pickup_or_delivery: string;
   delivery_location?: string;
   pickup_date: string;
   pickup_time: string;
-  // Honeypot fields
-  website?: string;
-  company?: string;
+  coupon_code?: string | null;
 }
-
-// Default prices in cents
-const DEFAULT_PRICES = {
-  cake: 7000,    // $70
-  cookie: 3000,  // $30
-  both: 10000,   // $100
-};
 
 export async function POST(request: NextRequest) {
   try {
     const data: TastingOrderData = await request.json();
 
-    // Spam check
-    if (isSpamSubmission(data.website, data.company)) {
-      return NextResponse.json({ error: 'Invalid submission' }, { status: 400 });
+    // Basic validation
+    if (!data.name?.trim()) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
-
-    // Validate required fields
-    const validation = validateOrder({
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      pickup_date: data.pickup_date,
-      pickup_time: data.pickup_time,
-    });
-
-    if (!validation.isValid) {
-      return NextResponse.json({ error: validation.errors[0] }, { status: 400 });
+    if (!data.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
     }
-
-    // Validate tasting type
-    if (!['cake', 'cookie', 'both'].includes(data.tasting_type)) {
-      return NextResponse.json({ error: 'Invalid tasting type' }, { status: 400 });
+    if (!data.phone?.trim()) {
+      return NextResponse.json({ error: 'Phone is required' }, { status: 400 });
     }
-
-    // Validate wedding date
+    if (!data.tasting_type || !['cake', 'cookie', 'both'].includes(data.tasting_type)) {
+      return NextResponse.json({ error: 'Please select a tasting type' }, { status: 400 });
+    }
     if (!data.wedding_date) {
       return NextResponse.json({ error: 'Wedding date is required' }, { status: 400 });
     }
+    if (!data.pickup_date) {
+      return NextResponse.json({ error: 'Pickup date is required' }, { status: 400 });
+    }
 
-    const db = getDB();
-
-    // Get pricing from settings
-    const cakePriceSetting = await db.prepare('SELECT value FROM settings WHERE key = ?')
-      .bind('tasting_price_cake').first<{ value: string }>();
-    const cookiePriceSetting = await db.prepare('SELECT value FROM settings WHERE key = ?')
-      .bind('tasting_price_cookie').first<{ value: string }>();
-    const bothPriceSetting = await db.prepare('SELECT value FROM settings WHERE key = ?')
-      .bind('tasting_price_both').first<{ value: string }>();
-
-    const prices = {
-      cake: cakePriceSetting ? parseInt(cakePriceSetting.value) : DEFAULT_PRICES.cake,
-      cookie: cookiePriceSetting ? parseInt(cookiePriceSetting.value) : DEFAULT_PRICES.cookie,
-      both: bothPriceSetting ? parseInt(bothPriceSetting.value) : DEFAULT_PRICES.both,
+    // Pricing
+    const prices: Record<string, number> = {
+      cake: 7000,
+      cookie: 3000,
+      both: 10000,
     };
+    const totalAmount = prices[data.tasting_type] || 7000;
 
-    const totalAmount = prices[data.tasting_type];
-
-    // Create order in database
+    // Create order
+    const db = getDB();
     const orderId = crypto.randomUUID();
     const orderNumber = `TST-${Date.now().toString(36).toUpperCase()}`;
 
-    // Store form data
-    const formData = {
+    const formDataJson = JSON.stringify({
       wedding_date: data.wedding_date,
       tasting_type: data.tasting_type,
       cake_flavors: data.cake_flavors || [],
@@ -92,7 +64,8 @@ export async function POST(request: NextRequest) {
       cookie_flavors: data.cookie_flavors || [],
       pickup_or_delivery: data.pickup_or_delivery,
       delivery_location: data.delivery_location || null,
-    };
+      coupon_code: data.coupon_code || null,
+    });
 
     await db.prepare(`
       INSERT INTO orders (
@@ -107,55 +80,63 @@ export async function POST(request: NextRequest) {
       sanitizeInput(data.phone),
       data.wedding_date,
       data.pickup_date,
-      data.pickup_time,
+      data.pickup_time || null,
       totalAmount,
-      totalAmount, // Full payment for tastings (no deposit)
-      JSON.stringify(formData)
+      totalAmount,
+      formDataJson
     ).run();
 
-    // Send confirmation emails (non-blocking)
+    // Send email
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
     if (resendApiKey) {
-      const adminEmailSetting = await db.prepare('SELECT value FROM settings WHERE key = ?')
-        .bind('admin_email').first<{ value: string }>();
-      const adminEmail = adminEmailSetting?.value || 'hello@bakesbycoral.com';
+      try {
+        const tastingTypeLabel = data.tasting_type === 'cake' ? 'Cake Tasting' :
+                                 data.tasting_type === 'cookie' ? 'Cookie Tasting' : 'Cake & Cookie Tasting';
 
-      // Email to customer
-      sendEmail(resendApiKey, {
-        to: data.email,
-        subject: `Tasting Order Received - ${orderNumber}`,
-        html: orderConfirmationEmail({
-          customerName: data.name,
-          orderNumber: orderNumber,
-          orderType: 'tasting',
-          pickupDate: data.pickup_date,
-          pickupTime: data.pickup_time,
-        }),
-        replyTo: adminEmail,
-      }).catch(err => console.error('Failed to send customer email:', err));
-
-      // Email to admin
-      sendEmail(resendApiKey, {
-        to: adminEmail,
-        subject: `New Tasting Order - ${orderNumber}`,
-        html: adminNewOrderEmail({
-          customerName: data.name,
-          customerEmail: data.email,
-          customerPhone: data.phone,
-          orderNumber: orderNumber,
-          orderType: 'tasting',
-          pickupDate: data.pickup_date,
-          formData: formData,
-        }),
-      }).catch(err => console.error('Failed to send admin email:', err));
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Bakes by Coral <onboarding@resend.dev>',
+            to: ['coral@bakesbycoral.com'],
+            reply_to: data.email,
+            subject: `New Tasting Order - ${orderNumber}`,
+            html: `
+              <h2>New Tasting Order</h2>
+              <p><strong>Order Number:</strong> ${orderNumber}</p>
+              <p><strong>Amount:</strong> $${(totalAmount / 100).toFixed(2)}</p>
+              <hr>
+              <p><strong>Customer:</strong> ${sanitizeInput(data.name)}</p>
+              <p><strong>Email:</strong> ${sanitizeInput(data.email)}</p>
+              <p><strong>Phone:</strong> ${sanitizeInput(data.phone)}</p>
+              <hr>
+              <p><strong>Type:</strong> ${tastingTypeLabel}</p>
+              <p><strong>Wedding Date:</strong> ${data.wedding_date}</p>
+              <p><strong>Pickup Date:</strong> ${data.pickup_date}</p>
+              <p><strong>Pickup Time:</strong> ${data.pickup_time || 'TBD'}</p>
+              <hr>
+              <p><a href="https://bakesbycoral.com/admin/orders">View in Admin Dashboard</a></p>
+            `,
+          }),
+        });
+      } catch (emailErr) {
+        console.error('Email error:', emailErr);
+      }
     }
 
-    // Create Stripe checkout session
-    const stripe = new Stripe(getEnvVar('bakesbycoral_stripe_secret_key'), {
+    // Create Stripe checkout
+    const stripeKey = getEnvVar('bakesbycoral_stripe_secret_key');
+    if (!stripeKey) {
+      return NextResponse.json({ error: 'Payment system not configured' }, { status: 500 });
+    }
+
+    const stripe = new Stripe(stripeKey, {
       httpClient: Stripe.createFetchHttpClient(),
     });
 
-    // Build product name based on tasting type
     const tastingNames: Record<string, string> = {
       cake: 'Cake Tasting Box',
       cookie: 'Cookie Tasting Box',
@@ -169,7 +150,7 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: tastingNames[data.tasting_type],
+              name: tastingNames[data.tasting_type] || 'Tasting Box',
               description: `Wedding tasting for ${data.wedding_date}`,
             },
             unit_amount: totalAmount,
@@ -178,8 +159,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'payment',
-      success_url: `${request.nextUrl.origin}/order/success?order=${orderNumber}`,
-      cancel_url: `${request.nextUrl.origin}/tasting?cancelled=true`,
+      success_url: `https://bakes-by-coral.coral-44f.workers.dev/order/success?order=${orderNumber}`,
+      cancel_url: `https://bakes-by-coral.coral-44f.workers.dev/tasting?cancelled=true`,
       customer_email: data.email,
       metadata: {
         order_id: orderId,
@@ -196,8 +177,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ checkoutUrl: session.url });
   } catch (error) {
     console.error('Tasting order error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to process order. Please try again.' },
+      { error: `Failed to process order: ${errorMessage}` },
       { status: 500 }
     );
   }

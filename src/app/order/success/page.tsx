@@ -17,7 +17,7 @@ export default async function OrderSuccessPage({ searchParams }: SuccessPageProp
 
   return (
     <>
-      <PageHeader title="Order Confirmed!" />
+      <PageHeader title="Order Confirmed!" centered variant="pink" />
       <Section>
         <Container size="sm">
           <div className="text-center py-12">
@@ -64,7 +64,7 @@ export default async function OrderSuccessPage({ searchParams }: SuccessPageProp
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button href="/">Back to Home</Button>
-                <Button href="/contact" variant="outline">Contact Us</Button>
+                <Button href="/contact" variant="outline">Contact Me</Button>
               </div>
             </div>
           </div>

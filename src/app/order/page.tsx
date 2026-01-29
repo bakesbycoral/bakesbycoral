@@ -9,18 +9,18 @@ export default function OrderPage() {
         style={{
           background: `repeating-linear-gradient(
             90deg,
-            #541409 0px,
-            #541409 40px,
+            #F7F3ED 0px,
+            #F7F3ED 40px,
             #EAD6D6 40px,
             #EAD6D6 80px
           )`
         }}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h1 className="text-4xl sm:text-5xl font-serif text-white font-bold drop-shadow-lg">
+          <h1 className="text-4xl sm:text-5xl font-serif text-[#4A2C21] font-bold">
             Place an Order
           </h1>
-          <p className="mt-4 text-lg text-white/90 drop-shadow">
+          <p className="mt-4 text-lg text-[#4A2C21]/80">
             Choose what you'd like to order
           </p>
         </div>
@@ -87,7 +87,7 @@ export default function OrderPage() {
           <div className="mt-12 bg-[#EAD6D6] rounded-lg p-8 text-center">
             <h3 className="text-2xl font-serif text-[#541409] mb-4">Planning a Large Event?</h3>
             <p className="text-stone-700 mb-6">
-              For orders of 5+ dozen cookies, I offer special event pricing.
+              For orders of 4+ dozen cookies, fill out the large order form.
             </p>
             <Link
               href="/order/cookies-large"

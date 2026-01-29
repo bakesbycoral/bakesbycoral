@@ -20,11 +20,11 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-50 bg-[var(--background)]">
-        <Container>
+        <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <nav className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center">
-              <span className="text-xl italic text-[var(--foreground)]" style={{ fontFamily: 'Georgia, serif' }}>
+            <Link href="/" className="flex items-center flex-shrink-0">
+              <span className="text-base sm:text-xl italic text-[var(--foreground)]" style={{ fontFamily: 'Georgia, serif' }}>
                 Bakes by Coral
               </span>
             </Link>
@@ -72,7 +72,7 @@ export function Header() {
               )}
             </button>
           </nav>
-        </Container>
+        </div>
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
@@ -103,14 +103,18 @@ export function Header() {
       </header>
 
       {/* Stripe Divider */}
-      <div className="h-8 flex overflow-hidden">
-        {[...Array(40)].map((_, i) => (
-          <div
-            key={i}
-            className={`flex-1 min-w-[20px] ${i % 2 === 0 ? 'bg-[var(--background)]' : 'bg-[var(--primary)]'}`}
-          />
-        ))}
-      </div>
+      <div
+        className="h-8 w-full"
+        style={{
+          background: `repeating-linear-gradient(
+            90deg,
+            var(--background) 0px,
+            var(--background) 20px,
+            var(--primary) 20px,
+            var(--primary) 40px
+          )`
+        }}
+      />
     </>
   );
 }

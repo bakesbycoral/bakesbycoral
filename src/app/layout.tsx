@@ -51,7 +51,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${playfair.variable} ${ptSerif.variable}`}>
-      <body className="min-h-screen flex flex-col bg-[#F7F3ED] text-neutral-900 antialiased">
+      <body className="min-h-screen flex flex-col bg-[#F7F3ED] text-neutral-900 antialiased overflow-x-hidden">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

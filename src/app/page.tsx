@@ -19,12 +19,11 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="relative min-h-[55vh] sm:min-h-[65vh] flex items-center bg-[#3D2318]">
-        {/* Background image */}
+        {/* Background image - zoomed into lighter area on mobile */}
         <div
-          className="absolute inset-0 bg-cover"
+          className="absolute inset-0 bg-[length:200%] sm:bg-cover bg-[position:50%_60%] sm:bg-[position:center_60%]"
           style={{
             backgroundImage: 'url("/hero-cookies.jpg")',
-            backgroundPosition: 'center 60%',
           }}
         />
 
@@ -147,13 +146,13 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Custom Cakes Card */}
             <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-              <div className="aspect-[4/3] overflow-hidden">
+              <Link href="/cakes" className="aspect-[4/3] overflow-hidden block">
                 <img
                   src="/miles-cake.jpg"
                   alt="Custom Cake"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-              </div>
+              </Link>
               <div className="p-6">
                 <h3 className="text-2xl font-serif text-[#541409] mb-2">Custom Cakes</h3>
                 <p className="text-stone-600 mb-4">
@@ -178,13 +177,13 @@ export default function HomePage() {
 
             {/* Cookies Card */}
             <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-              <div className="aspect-[4/3] overflow-hidden">
+              <Link href="/cookies" className="aspect-[4/3] overflow-hidden block">
                 <img
                   src="/choco-chip.jpg"
                   alt="Chocolate Chip Cookies"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-              </div>
+              </Link>
               <div className="p-6">
                 <h3 className="text-2xl font-serif text-[#541409] mb-2">Cookies</h3>
                 <p className="text-stone-600 mb-4">

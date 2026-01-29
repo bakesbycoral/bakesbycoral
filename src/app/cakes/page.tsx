@@ -2,22 +2,22 @@ import Link from 'next/link';
 
 export default function CakesPage() {
   const cakeFlavors = [
-    'Vanilla Bean',
-    'Chocolate',
-    'Confetti',
-    'Red Velvet',
-    'Lemon',
-    'Vanilla Latte',
-    'Marble',
+    { name: 'Vanilla Bean', value: 'vanilla-bean' },
+    { name: 'Chocolate', value: 'chocolate' },
+    { name: 'Confetti', value: 'confetti' },
+    { name: 'Red Velvet', value: 'red-velvet' },
+    { name: 'Lemon', value: 'lemon' },
+    { name: 'Vanilla Latte', value: 'vanilla-latte' },
+    { name: 'Marble', value: 'marble' },
   ];
 
   const fillings = [
-    'Chocolate Ganache',
-    'Cookies & Cream',
-    'Vanilla Bean Ganache',
-    'Fresh Strawberries',
-    'Lemon Curd',
-    'Raspberry',
+    { name: 'Chocolate Ganache', value: 'chocolate-ganache' },
+    { name: 'Cookies & Cream', value: 'cookies-and-cream' },
+    { name: 'Vanilla Bean Ganache', value: 'vanilla-bean-ganache' },
+    { name: 'Fresh Strawberries', value: 'fresh-strawberries' },
+    { name: 'Lemon Curd', value: 'lemon-curd' },
+    { name: 'Raspberry', value: 'raspberry' },
   ];
 
   return (
@@ -64,33 +64,33 @@ export default function CakesPage() {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-lg p-6 text-center shadow-sm">
+            <Link href="/order/cake?size=4-inch" className="bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md hover:scale-[1.02] transition-all">
               <h3 className="text-xl font-serif text-[#541409] mb-2">4" Heart or Round</h3>
               <p className="text-2xl font-bold text-[#541409] mb-2">Starting at $60</p>
               <p className="text-sm text-stone-600">Serves 2-4</p>
               <p className="text-xs text-stone-500 mt-2">Perfect for date nights</p>
-            </div>
+            </Link>
 
-            <div className="bg-white rounded-lg p-6 text-center shadow-sm">
+            <Link href="/order/cake?size=6-inch" className="bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md hover:scale-[1.02] transition-all">
               <h3 className="text-xl font-serif text-[#541409] mb-2">6" Heart or Round</h3>
               <p className="text-2xl font-bold text-[#541409] mb-2">Starting at $100</p>
               <p className="text-sm text-stone-600">Serves 6-12</p>
               <p className="text-xs text-stone-500 mt-2">Perfect for small gatherings</p>
-            </div>
+            </Link>
 
-            <div className="bg-white rounded-lg p-6 text-center shadow-sm">
+            <Link href="/order/cake?size=8-inch" className="bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md hover:scale-[1.02] transition-all">
               <h3 className="text-xl font-serif text-[#541409] mb-2">8" Heart or Round</h3>
               <p className="text-2xl font-bold text-[#541409] mb-2">Starting at $140</p>
               <p className="text-sm text-stone-600">Serves 14-20</p>
               <p className="text-xs text-stone-500 mt-2">Most popular size</p>
-            </div>
+            </Link>
 
-            <div className="bg-white rounded-lg p-6 text-center shadow-sm">
+            <Link href="/order/cake?size=10-inch" className="bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md hover:scale-[1.02] transition-all">
               <h3 className="text-xl font-serif text-[#541409] mb-2">10" Round</h3>
               <p className="text-2xl font-bold text-[#541409] mb-2">Starting at $180</p>
               <p className="text-sm text-stone-600">Serves 24-30</p>
               <p className="text-xs text-stone-500 mt-2">Great for larger parties</p>
-            </div>
+            </Link>
           </div>
 
           <p className="text-center text-stone-600 mt-8 text-sm">
@@ -110,12 +110,13 @@ export default function CakesPage() {
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 {cakeFlavors.map((flavor) => (
-                  <div
-                    key={flavor}
-                    className="bg-white rounded-lg p-4 text-center shadow-sm"
+                  <Link
+                    key={flavor.value}
+                    href={`/order/cake?flavor=${flavor.value}`}
+                    className="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md hover:scale-[1.02] transition-all"
                   >
-                    <span className="text-stone-700">{flavor}</span>
-                  </div>
+                    <span className="text-stone-700">{flavor.name}</span>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -127,12 +128,13 @@ export default function CakesPage() {
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 {fillings.map((filling) => (
-                  <div
-                    key={filling}
-                    className="bg-white rounded-lg p-4 text-center shadow-sm"
+                  <Link
+                    key={filling.value}
+                    href={`/order/cake?filling=${filling.value}`}
+                    className="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md hover:scale-[1.02] transition-all"
                   >
-                    <span className="text-stone-700">{filling}</span>
-                  </div>
+                    <span className="text-stone-700">{filling.name}</span>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -151,15 +153,15 @@ export default function CakesPage() {
             Recent Creations
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="aspect-square rounded-lg overflow-hidden">
+            <Link href="/order/cake" className="aspect-square rounded-lg overflow-hidden block">
               <img src="/christmas-cake.jpg" alt="Custom cake" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" style={{ objectPosition: 'center 30%' }} />
-            </div>
-            <div className="aspect-square rounded-lg overflow-hidden">
+            </Link>
+            <Link href="/order/cake" className="aspect-square rounded-lg overflow-hidden block">
               <img src="/49rs-cake.jpg" alt="Custom cake" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-            </div>
-            <div className="aspect-square rounded-lg overflow-hidden">
+            </Link>
+            <Link href="/order/cake" className="aspect-square rounded-lg overflow-hidden block">
               <img src="/shannon-cake-top.jpg" alt="Custom cake" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" style={{ objectPosition: '20% center' }} />
-            </div>
+            </Link>
           </div>
         </div>
       </section>

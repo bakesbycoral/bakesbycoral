@@ -4,15 +4,21 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   breadcrumbs?: Array<{ label: string; href?: string }>;
+  centered?: boolean;
+  variant?: 'default' | 'pink';
 }
 
-export function PageHeader({ title, subtitle, breadcrumbs }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, breadcrumbs, centered = false, variant = 'default' }: PageHeaderProps) {
+  const bgClass = variant === 'pink' ? 'bg-[#EAD6D6]' : 'bg-neutral-50';
+  const textClass = variant === 'pink' ? 'text-[#541409]' : 'text-neutral-900';
+  const subtitleClass = variant === 'pink' ? 'text-[#541409]/80' : 'text-neutral-600';
+
   return (
-    <div className="bg-neutral-50 py-12 sm:py-16">
+    <div className={`${bgClass} py-12 sm:py-16`}>
       <Container>
         {breadcrumbs && breadcrumbs.length > 0 && (
-          <nav className="mb-4">
-            <ol className="flex items-center space-x-2 text-sm text-neutral-500">
+          <nav className={`mb-4 ${centered ? 'text-center' : ''}`}>
+            <ol className={`flex items-center space-x-2 text-sm text-neutral-500 ${centered ? 'justify-center' : ''}`}>
               {breadcrumbs.map((crumb, index) => (
                 <li key={index} className="flex items-center">
                   {index > 0 && <span className="mx-2">/</span>}
@@ -21,16 +27,16 @@ export function PageHeader({ title, subtitle, breadcrumbs }: PageHeaderProps) {
                       {crumb.label}
                     </a>
                   ) : (
-                    <span className="text-neutral-900">{crumb.label}</span>
+                    <span className={textClass}>{crumb.label}</span>
                   )}
                 </li>
               ))}
             </ol>
           </nav>
         )}
-        <h1 className="text-3xl font-bold text-neutral-900 sm:text-4xl">{title}</h1>
+        <h1 className={`text-3xl font-bold ${textClass} sm:text-4xl ${centered ? 'text-center' : ''}`}>{title}</h1>
         {subtitle && (
-          <p className="mt-4 text-lg text-neutral-600 max-w-2xl">{subtitle}</p>
+          <p className={`mt-4 text-lg ${subtitleClass} max-w-2xl ${centered ? 'text-center mx-auto' : ''}`}>{subtitle}</p>
         )}
       </Container>
     </div>

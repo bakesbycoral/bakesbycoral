@@ -1,10 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { TimeSlotPicker, CouponInput } from '@/components/forms';
+import { SuccessModal } from '@/components/ui';
 
-export default function CakeOrderPage() {
+function CakeOrderContent() {
+  const searchParams = useSearchParams();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -31,6 +35,7 @@ export default function CakeOrderPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
     description: string | null;
@@ -38,6 +43,20 @@ export default function CakeOrderPage() {
     discountValue: number;
     minOrderAmount: number;
   } | null>(null);
+
+  // Pre-fill from URL parameters
+  useEffect(() => {
+    const size = searchParams.get('size');
+    const flavor = searchParams.get('flavor');
+    const filling = searchParams.get('filling');
+
+    setFormData(prev => ({
+      ...prev,
+      ...(size && ['4-inch', '6-inch', '8-inch', '10-inch'].includes(size) ? { cakeSize: size } : {}),
+      ...(flavor && ['vanilla-bean', 'chocolate', 'confetti', 'red-velvet', 'lemon', 'vanilla-latte', 'marble'].includes(flavor) ? { cakeFlavor: flavor } : {}),
+      ...(filling && ['chocolate-ganache', 'cookies-and-cream', 'vanilla-bean-ganache', 'fresh-strawberries', 'lemon-curd', 'raspberry'].includes(filling) ? { filling: filling } : {}),
+    }));
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +110,31 @@ export default function CakeOrderPage() {
         throw new Error(data.error || 'Failed to submit inquiry');
       }
 
-      window.location.href = '/order/success?type=cake';
+      setShowSuccess(true);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        pickupSlot: null,
+        eventType: '',
+        cakeSize: '',
+        cakeShape: '',
+        cakeFlavor: '',
+        filling: '',
+        baseColor: '',
+        pipingColors: '',
+        customMessaging: '',
+        messageStyle: '',
+        toppings: [],
+        inspirationFiles: [],
+        allergies: '',
+        message: '',
+        howDidYouHear: '',
+        acknowledgeDeposit: false,
+        acknowledgeAllergens: false,
+        acknowledgeLeadTime: false,
+      });
+      setAppliedCoupon(null);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
@@ -598,6 +641,25 @@ export default function CakeOrderPage() {
           </div>
         </div>
       </section>
+
+      <SuccessModal
+        isOpen={showSuccess}
+        onClose={() => setShowSuccess(false)}
+        title="Inquiry Submitted!"
+        message="Thank you! I'll respond within 24-48 hours with a quote and availability."
+      />
     </>
+  );
+}
+
+export default function CakeOrderPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F7F3ED] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#541409]"></div>
+      </div>
+    }>
+      <CakeOrderContent />
+    </Suspense>
   );
 }
