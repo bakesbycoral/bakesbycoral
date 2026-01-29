@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     const depositAmount = Math.round(totalAmountCents * (depositPercentage / 100));
 
     const stripe = new Stripe(getEnvVar('bakesbycoral_stripe_secret_key'), {
-      apiVersion: '2025-12-15.clover',
+      httpClient: Stripe.createFetchHttpClient(),
     });
 
     // Create or reuse Stripe customer

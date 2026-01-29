@@ -64,7 +64,9 @@ export async function POST(
       );
     }
 
-    const stripe = new Stripe(stripeKey, { apiVersion: '2025-12-15.clover' });
+    const stripe = new Stripe(stripeKey, {
+      httpClient: Stripe.createFetchHttpClient(),
+    });
 
     // Create or get customer
     const customers = await stripe.customers.list({

@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
 
     // Create Stripe checkout session
     const stripe = new Stripe(getEnvVar('bakesbycoral_stripe_secret_key'), {
-      apiVersion: '2025-12-15.clover',
+      httpClient: Stripe.createFetchHttpClient(),
     });
 
     // Build product name based on tasting type

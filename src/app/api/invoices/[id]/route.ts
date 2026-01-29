@@ -32,7 +32,7 @@ export async function GET(
     const { id } = await params;
 
     const stripe = new Stripe(getEnvVar('bakesbycoral_stripe_secret_key'), {
-      apiVersion: '2025-12-15.clover',
+      httpClient: Stripe.createFetchHttpClient(),
     });
 
     const invoice = await stripe.invoices.retrieve(id);

@@ -216,8 +216,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Create Stripe checkout session
-    const stripe = new Stripe(getEnvVar('bakesbycoral_stripe_secret_key'), {
-      apiVersion: '2025-12-15.clover',
+    const stripeKey = getEnvVar('bakesbycoral_stripe_secret_key');
+    console.log('Stripe key found:', stripeKey ? 'yes' : 'no');
+
+    const stripe = new Stripe(stripeKey, {
+      httpClient: Stripe.createFetchHttpClient(),
     });
 
     // Create line items per flavor for better receipt clarity
@@ -276,7 +279,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ checkoutUrl: session.url });
   } catch (error) {
-    console.error('Cookie order error:', error);
+    console.error('Cookie order error:', error instanceof Error ? error.message : error);
+    console.error('Full error:', JSON.stringify(error, null, 2));
     return NextResponse.json(
       { error: 'Failed to process order. Please try again.' },
       { status: 500 }
