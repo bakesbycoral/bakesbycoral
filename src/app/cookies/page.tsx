@@ -1,4 +1,15 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Gluten-Free Cookies',
+  description: 'Order soft, chewy gluten-free cookies in Cincinnati. $30/dozen. Chocolate chip, vanilla bean sugar, cherry almond, espresso butterscotch & lemon flavors. Celiac-safe.',
+  keywords: ['gluten-free cookies', 'Cincinnati cookies', 'celiac safe cookies', 'soft chewy cookies', 'gluten-free bakery'],
+  openGraph: {
+    title: 'Gluten-Free Cookies | Bakes by Coral',
+    description: 'Soft, chewy gluten-free cookies that taste just like the real thing. Order online for pickup in Cincinnati.',
+  },
+};
 
 export default function CookiesPage() {
   const cookieFlavors = [

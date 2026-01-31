@@ -1,4 +1,15 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Gluten-Free Wedding Desserts',
+  description: 'Gluten-free wedding cakes and cookies in Cincinnati. Beautiful cutting cakes, dessert table cookies, and tasting boxes. Celiac-safe for your special day.',
+  keywords: ['gluten-free wedding cake', 'Cincinnati wedding cake', 'celiac safe wedding dessert', 'gluten-free wedding cookies', 'wedding tasting'],
+  openGraph: {
+    title: 'Gluten-Free Wedding Desserts | Bakes by Coral',
+    description: 'Make your wedding day unforgettable with beautiful gluten-free desserts. Cutting cakes, cookies, and tasting boxes available.',
+  },
+};
 
 export default function WeddingsPage() {
   return (

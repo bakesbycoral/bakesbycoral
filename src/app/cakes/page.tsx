@@ -1,4 +1,15 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Custom Gluten-Free Cakes',
+  description: 'Order custom gluten-free celebration cakes in Cincinnati. 3-layer cakes starting at $60. Vanilla, chocolate, red velvet, lemon & more flavors. Celiac-safe dedicated kitchen.',
+  keywords: ['gluten-free cake', 'custom cake Cincinnati', 'celiac safe cake', 'gluten-free birthday cake', 'celebration cake'],
+  openGraph: {
+    title: 'Custom Gluten-Free Cakes | Bakes by Coral',
+    description: 'Beautiful custom gluten-free cakes for any celebration. Handcrafted in Cincinnati with love.',
+  },
+};
 
 export default function CakesPage() {
   const cakeFlavors = [

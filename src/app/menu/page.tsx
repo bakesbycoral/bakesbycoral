@@ -1,4 +1,15 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Menu & Pricing',
+  description: 'View our gluten-free bakery menu. Cookies from $30/dozen, custom cakes from $60, wedding desserts, and tasting boxes. All celiac-safe, made in Cincinnati.',
+  keywords: ['gluten-free menu', 'bakery prices', 'cookie prices', 'cake prices', 'Cincinnati bakery menu'],
+  openGraph: {
+    title: 'Menu & Pricing | Bakes by Coral',
+    description: 'Browse our full menu of gluten-free cookies, cakes, and wedding desserts with pricing.',
+  },
+};
 
 export default function MenuPage() {
   return (

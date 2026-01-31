@@ -1,4 +1,14 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About Coralyn',
+  description: 'Meet Coralyn, the baker behind Bakes by Coral. A Cincinnati-based gluten-free bakery born from a personal journey with IBS and a passion for delicious treats everyone can enjoy.',
+  openGraph: {
+    title: 'About Coralyn | Bakes by Coral',
+    description: 'Meet Coralyn, the baker behind Bakes by Coral. A Cincinnati-based gluten-free bakery born from a personal journey with IBS and a passion for delicious treats.',
+  },
+};
 
 export default function AboutPage() {
   return (
