@@ -51,10 +51,10 @@ interface OrderDetailViewProps {
 }
 
 const statusColors: Record<string, string> = {
-  inquiry: 'bg-blue-100 text-blue-700',
-  pending_payment: 'bg-yellow-100 text-yellow-700',
-  deposit_paid: 'bg-purple-100 text-purple-700',
-  confirmed: 'bg-green-100 text-green-700',
+  inquiry: 'bg-[#ffd6ae] text-[#6b4020]',
+  pending_payment: 'bg-[#fff2b5] text-[#5c5010]',
+  deposit_paid: 'bg-[#cff3a8] text-[#2d5c1a]',
+  confirmed: 'bg-[#c1ecf8] text-[#1a4a5c]',
   completed: 'bg-neutral-100 text-neutral-700',
   cancelled: 'bg-red-100 text-red-700',
 };
@@ -65,6 +65,14 @@ const orderTypeLabels: Record<string, string> = {
   cake: 'Custom Cake',
   wedding: 'Wedding',
   tasting: 'Tasting Order',
+};
+
+const orderTypeColors: Record<string, string> = {
+  cookies: 'bg-[#ffe3c6] text-[#704a20]',
+  cookies_large: 'bg-[#f6f4d0] text-[#5c5a20]',
+  cake: 'bg-[#e4f7bf] text-[#3d5c1a]',
+  wedding: 'bg-[#d0f0ff] text-[#1a4a5c]',
+  tasting: 'bg-[#d6e2ff] text-[#2a3a5c]',
 };
 
 function formatCurrency(cents: number | null): string {
@@ -146,7 +154,9 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
               &larr; Back to Orders
             </Link>
             <h1 className="text-2xl font-bold text-[#541409]">Edit {order.order_number}</h1>
-            <p className="text-[#541409]/60">{orderTypeLabels[order.order_type] || order.order_type}</p>
+            <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6] text-[#541409]'}`}>
+              {orderTypeLabels[order.order_type] || order.order_type}
+            </span>
           </div>
         </div>
 
@@ -168,7 +178,9 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
             &larr; Back to Orders
           </Link>
           <h1 className="text-2xl font-bold text-[#541409]">{order.order_number}</h1>
-          <p className="text-[#541409]/60">{orderTypeLabels[order.order_type] || order.order_type}</p>
+          <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6] text-[#541409]'}`}>
+            {orderTypeLabels[order.order_type] || order.order_type}
+          </span>
         </div>
         <div className="flex items-center gap-4">
           <button

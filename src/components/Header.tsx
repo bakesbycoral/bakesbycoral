@@ -29,15 +29,15 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-[#541409]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+        <div className="flex items-center justify-between h-16 sm:h-18 py-3">
           {/* Logo */}
-          <Link href="/" className="flex items-center h-16 sm:h-20 overflow-hidden">
+          <Link href="/" className="flex items-center h-10 sm:h-12 overflow-hidden -ml-6">
             <Image
               src="/logo.png"
               alt="Bakes by Coral"
-              width={250}
-              height={250}
-              className="h-20 sm:h-24 w-auto object-contain"
+              width={120}
+              height={120}
+              className="h-10 sm:h-12 w-auto object-contain"
             />
           </Link>
 

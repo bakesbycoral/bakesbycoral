@@ -35,11 +35,11 @@ interface CalendarPageProps {
 }
 
 const orderTypeColors: Record<string, string> = {
-  cookies: 'bg-amber-100 text-amber-800 border-amber-200',
-  cookies_large: 'bg-orange-100 text-orange-800 border-orange-200',
-  cake: 'bg-pink-100 text-pink-800 border-pink-200',
-  wedding: 'bg-purple-100 text-purple-800 border-purple-200',
-  tasting: 'bg-teal-100 text-teal-800 border-teal-200',
+  cookies: 'bg-[#ffe3c6] text-[#704a20] border-[#f0d0a8]',
+  cookies_large: 'bg-[#f6f4d0] text-[#5c5a20] border-[#e0deb0]',
+  cake: 'bg-[#e4f7bf] text-[#3d5c1a] border-[#c8e09a]',
+  wedding: 'bg-[#d0f0ff] text-[#1a4a5c] border-[#a8d8f0]',
+  tasting: 'bg-[#d6e2ff] text-[#2a3a5c] border-[#b8c8f0]',
 };
 
 const orderTypeLabels: Record<string, string> = {
@@ -47,14 +47,14 @@ const orderTypeLabels: Record<string, string> = {
   cookies_large: 'Large Order',
   cake: 'Cake',
   wedding: 'Wedding',
-  tasting: 'Tasting Box',
+  tasting: 'Tasting',
 };
 
 const statusColors: Record<string, string> = {
-  inquiry: 'bg-blue-100 text-blue-700',
-  pending_payment: 'bg-yellow-100 text-yellow-700',
-  deposit_paid: 'bg-purple-100 text-purple-700',
-  confirmed: 'bg-green-100 text-green-700',
+  inquiry: 'bg-[#ffd6ae] text-[#6b4020]',
+  pending_payment: 'bg-[#fff2b5] text-[#5c5010]',
+  deposit_paid: 'bg-[#cff3a8] text-[#2d5c1a]',
+  confirmed: 'bg-[#c1ecf8] text-[#1a4a5c]',
   completed: 'bg-neutral-100 text-neutral-700',
   cancelled: 'bg-red-100 text-red-700',
 };
