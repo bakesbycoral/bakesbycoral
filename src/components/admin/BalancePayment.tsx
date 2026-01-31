@@ -5,14 +5,16 @@ import { useRouter } from 'next/navigation';
 
 interface BalancePaymentProps {
   orderId: string;
-  balanceDue: number;
+  balanceDue: number | null;
+  canSendInvoice: boolean;
+  disabledReason?: string;
 }
 
 function formatCurrency(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-export function BalancePayment({ orderId, balanceDue }: BalancePaymentProps) {
+export function BalancePayment({ orderId, balanceDue, canSendInvoice, disabledReason }: BalancePaymentProps) {
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState('');
@@ -64,9 +66,15 @@ export function BalancePayment({ orderId, balanceDue }: BalancePaymentProps) {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-[#541409]/70">
-        Request the remaining balance of <span className="font-semibold">{formatCurrency(balanceDue)}</span> from the customer.
-      </p>
+      {canSendInvoice && balanceDue ? (
+        <p className="text-sm text-[#541409]/70">
+          Request the remaining balance of <span className="font-semibold">{formatCurrency(balanceDue)}</span> from the customer.
+        </p>
+      ) : (
+        <p className="text-sm text-[#541409]/50">
+          {disabledReason || 'No balance due'}
+        </p>
+      )}
 
       {error && (
         <p className="text-sm text-red-600">{error}</p>
@@ -74,7 +82,7 @@ export function BalancePayment({ orderId, balanceDue }: BalancePaymentProps) {
 
       <button
         onClick={handleCreateInvoice}
-        disabled={isCreating}
+        disabled={isCreating || !canSendInvoice}
         className="w-full px-4 py-2 text-sm bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
       >
         {isCreating ? 'Sending Invoice...' : 'Request Balance Payment'}

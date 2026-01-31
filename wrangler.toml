@@ -14,7 +14,7 @@ database_id = "2ea77357-2926-4597-8fae-d5f3646cf1ab"
 
 # Environment variables (secrets set via `wrangler secret put`)
 [vars]
-NEXT_PUBLIC_SITE_URL = "https://bakesbycoral.com"
+NEXT_PUBLIC_SITE_URL = "https://bakes-by-coral.coral-44f.workers.dev"
 # Note: bakesbycoral_session_secret should be set via: wrangler secret put bakesbycoral_session_secret
 
 # Cron triggers for scheduled tasks

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import Stripe from 'stripe';
-import { sendEmail, quoteApprovedEmail } from '@/lib/email';
+import { sendEmail, buildQuoteApprovedFromTemplate } from '@/lib/email';
 import type { Quote, QuoteLineItem } from '@/types';
 
 // POST /api/quotes/[token]/approve - Approve quote and create Stripe invoice
@@ -141,17 +141,32 @@ export async function POST(
     // Send confirmation email
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
     if (resendApiKey) {
-      await sendEmail(resendApiKey, {
-        to: quote.customer_email,
-        subject: `Quote Approved - ${quote.quote_number}`,
-        html: quoteApprovedEmail({
+      // Get email template from settings
+      const approvedTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+        .bind('email_template_quote_approved')
+        .first<{ value: string }>();
+      const approvedSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+        .bind('email_subject_quote_approved')
+        .first<{ value: string }>();
+
+      // Build quote approved email from template
+      const approvedEmail = buildQuoteApprovedFromTemplate(
+        approvedTemplate?.value,
+        approvedSubject?.value,
+        {
           customerName: quote.customer_name,
           quoteNumber: quote.quote_number,
           orderNumber: quote.order_number,
           depositAmount: quote.deposit_amount || 0,
           totalAmount: quote.total_amount,
           invoiceUrl: finalized.hosted_invoice_url || '',
-        }),
+        }
+      );
+
+      await sendEmail(resendApiKey, {
+        to: quote.customer_email,
+        subject: approvedEmail.subject,
+        html: approvedEmail.html,
         replyTo: 'hello@bakesbycoral.com',
       });
     }

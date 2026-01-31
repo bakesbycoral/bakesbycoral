@@ -7,7 +7,7 @@ import { CartProvider, useCart, CartSidebar, FlavorCard } from '@/components/car
 import { FLAVORS, PRICE_PER_DOZEN, HEAT_SEAL_FEE } from '@/types/cart';
 
 function CookieOrderContent() {
-  const { dozens, flavors, packaging, clearCart, isComplete } = useCart();
+  const { dozens, flavors, packaging, clearCart, isComplete, setDozens, setPackaging, totalCookies, targetCookies, remainingCookies } = useCart();
   const checkoutFormRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
@@ -150,34 +150,95 @@ function CookieOrderContent() {
             </p>
           </div>
 
-          {/* Two Column Layout */}
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Flavor Cards */}
-            <div className="lg:col-span-2">
-              <h2 className="text-2xl font-serif text-[#541409] mb-6">Choose Your Flavors</h2>
-              <p className="text-sm text-stone-600 mb-6">
-                Select how many dozen in the sidebar, then use +/- to add cookies in half-dozen (6) increments.
-              </p>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {FLAVORS.map((flavor) => (
-                  <FlavorCard key={flavor.key} flavorKey={flavor.key} label={flavor.label} />
-                ))}
+          {/* Single Card Order Flow */}
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white rounded-lg shadow-sm border border-[#EAD6D6] p-4 sm:p-6">
+              {/* Step 1: How Many Dozen */}
+              <div className="mb-6">
+                <h2 className="text-lg font-serif text-[#541409] mb-3">1. How many dozen?</h2>
+                <div className="grid grid-cols-3 gap-2">
+                  {([1, 2, 3] as const).map((num) => (
+                    <button
+                      key={num}
+                      onClick={() => setDozens(num)}
+                      className={`py-3 px-4 rounded-md text-sm font-medium transition-colors ${
+                        dozens === num
+                          ? 'bg-[#541409] text-[#EAD6D6]'
+                          : 'border border-[#541409] text-[#541409] hover:bg-[#EAD6D6]'
+                      }`}
+                    >
+                      {num} dozen
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Cart Sidebar */}
-            <div className="lg:col-span-1">
-              <CartSidebar onCheckout={handleCheckoutClick} />
-            </div>
-          </div>
+              {dozens && (
+                <>
+                  {/* Step 2: Choose Flavors */}
+                  <div className="mb-6 pt-6 border-t border-[#EAD6D6]">
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-lg font-serif text-[#541409]">2. Choose your flavors</h2>
+                      <span className="text-sm text-[#541409]/70">
+                        {totalCookies} / {targetCookies} cookies
+                      </span>
+                    </div>
 
-          {/* Checkout Form - Only shown when order is complete */}
-          {isComplete && (
-            <div ref={checkoutFormRef} className="mt-12 pt-12 border-t border-[#EAD6D6]">
-              <div className="max-w-2xl mx-auto">
-                <h2 className="text-2xl font-serif text-[#541409] mb-6 text-center">Complete Your Order</h2>
+                    {/* Progress Bar */}
+                    <div className="w-full bg-[#EAD6D6] rounded-full h-2 mb-4">
+                      <div
+                        className={`h-2 rounded-full transition-all ${
+                          isComplete ? 'bg-green-500' : 'bg-[#541409]'
+                        }`}
+                        style={{ width: `${Math.min((totalCookies / targetCookies) * 100, 100)}%` }}
+                      />
+                    </div>
 
-                <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm">
+                    <p className="text-xs text-stone-600 mb-4">
+                      Add cookies in half-dozen (6) increments
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      {FLAVORS.map((flavor) => (
+                        <FlavorCard key={flavor.key} flavorKey={flavor.key} label={flavor.label} />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Step 3: Packaging */}
+                  <div className="pt-6 border-t border-[#EAD6D6]">
+                    <h2 className="text-lg font-serif text-[#541409] mb-3">3. Packaging</h2>
+                    <div className="space-y-2">
+                      <label className="flex items-center cursor-pointer p-3 border border-[#EAD6D6] rounded hover:bg-[#EAD6D6]/10 transition-colors">
+                        <input
+                          type="radio"
+                          name="packaging"
+                          value="standard"
+                          checked={packaging === 'standard'}
+                          onChange={() => setPackaging('standard')}
+                          className="w-4 h-4 accent-[#541409]"
+                        />
+                        <span className="ml-3 text-sm text-[#541409]">Standard packaging</span>
+                      </label>
+                      <label className="flex items-center cursor-pointer p-3 border border-[#EAD6D6] rounded hover:bg-[#EAD6D6]/10 transition-colors">
+                        <input
+                          type="radio"
+                          name="packaging"
+                          value="heat-sealed"
+                          checked={packaging === 'heat-sealed'}
+                          onChange={() => setPackaging('heat-sealed')}
+                          className="w-4 h-4 accent-[#541409]"
+                        />
+                        <span className="ml-3 text-sm text-[#541409]">
+                          Heat-sealed bags (+$5/dozen)
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Step 4: Your Information - Only shown when flavors are complete */}
+                  {isComplete && (
+                    <div ref={checkoutFormRef} className="pt-6 border-t border-[#EAD6D6]">
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Contact Info */}
                     <div>
@@ -382,14 +443,16 @@ function CookieOrderContent() {
                     </p>
                   </form>
                 </div>
-              </div>
-            </div>
+              )}
+            </>
           )}
+            </div>
 
-          <div className="mt-8 text-center">
-            <Link href="/cookies" className="text-[#541409] hover:opacity-70 transition-opacity">
-              &larr; Back to Cookie Info
-            </Link>
+            <div className="mt-8 text-center">
+              <Link href="/cookies" className="text-[#541409] hover:opacity-70 transition-opacity">
+                &larr; Back to Cookie Info
+              </Link>
+            </div>
           </div>
         </div>
       </section>

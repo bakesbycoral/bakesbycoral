@@ -155,3 +155,44 @@ export async function GET(
     );
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // Check for admin auth
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get('session')?.value;
+
+    if (!sessionToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const db = getDB();
+
+    // First check if order exists
+    const order = await db.prepare('SELECT id FROM orders WHERE id = ?')
+      .bind(id)
+      .first();
+
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    // Delete related notes first
+    await db.prepare('DELETE FROM order_notes WHERE order_id = ?').bind(id).run();
+
+    // Delete the order
+    await db.prepare('DELETE FROM orders WHERE id = ?').bind(id).run();
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Delete order error:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete order' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import Stripe from 'stripe';
+import { sendEmail, buildBalanceInvoiceFromTemplate } from '@/lib/email';
+import { sendSms, buildSmsMessage, DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
 
 interface Order {
   id: string;
   order_number: string;
   customer_name: string;
   customer_email: string;
+  customer_phone: string | null;
+  pickup_date: string | null;
   total_amount: number | null;
   deposit_amount: number | null;
   stripe_invoice_id: string | null;
+  form_data: string | null;
 }
 
 export async function POST(
@@ -22,7 +27,7 @@ export async function POST(
 
     // Get the order
     const order = await db.prepare(`
-      SELECT id, order_number, customer_name, customer_email, total_amount, deposit_amount, stripe_invoice_id
+      SELECT id, order_number, customer_name, customer_email, customer_phone, pickup_date, total_amount, deposit_amount, stripe_invoice_id, form_data
       FROM orders WHERE id = ?
     `).bind(orderId).first<Order>();
 
@@ -120,6 +125,81 @@ export async function POST(
       SET updated_at = datetime("now")
       WHERE id = ?
     `).bind(orderId).run();
+
+    // Send custom branded email notification
+    const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
+    if (resendApiKey && finalizedInvoice.hosted_invoice_url) {
+      // Parse form_data to check for delivery
+      const formData = order.form_data ? JSON.parse(order.form_data) : {};
+      const isDelivery = formData.pickup_or_delivery === 'delivery';
+      const deliveryAddress = formData.delivery_location || formData.venue_address || formData.event_location || '';
+
+      // Get email template from settings (use delivery version if applicable)
+      const emailTemplateKey = isDelivery ? 'email_template_balance_invoice_delivery' : 'email_template_balance_invoice';
+      const emailSubjectKey = isDelivery ? 'email_subject_balance_invoice_delivery' : 'email_subject_balance_invoice';
+
+      const balanceTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+        .bind(emailTemplateKey)
+        .first<{ value: string }>();
+      const balanceSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+        .bind(emailSubjectKey)
+        .first<{ value: string }>();
+
+      const balanceEmail = buildBalanceInvoiceFromTemplate(
+        balanceTemplate?.value,
+        balanceSubject?.value,
+        {
+          customerName: order.customer_name,
+          orderNumber: order.order_number,
+          pickupDate: order.pickup_date || '',
+          totalAmount: order.total_amount!,
+          depositAmount: order.deposit_amount!,
+          balanceDue,
+          invoiceUrl: finalizedInvoice.hosted_invoice_url,
+          isDelivery,
+          deliveryAddress,
+        }
+      );
+
+      await sendEmail(resendApiKey, {
+        to: order.customer_email,
+        subject: balanceEmail.subject,
+        html: balanceEmail.html,
+        replyTo: 'hello@bakesbycoral.com',
+      });
+
+      // Send SMS notification
+      const twilioAccountSid = getEnvVar('bakesbycoral_twilio_account_sid');
+      const twilioAuthToken = getEnvVar('bakesbycoral_twilio_auth_token');
+      const twilioPhoneNumber = getEnvVar('bakesbycoral_twilio_phone_number');
+
+      if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber && order.customer_phone) {
+        try {
+          const smsTemplateKey = isDelivery ? 'sms_template_balance_invoice_delivery' : 'sms_template_balance_invoice';
+          const smsTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+            .bind(smsTemplateKey)
+            .first<{ value: string }>();
+
+          const smsBody = buildSmsMessage(
+            smsTemplate?.value,
+            isDelivery ? DEFAULT_SMS_TEMPLATES.balance_invoice_delivery : DEFAULT_SMS_TEMPLATES.balance_invoice,
+            {
+              customer_name: order.customer_name,
+              order_number: order.order_number,
+              balance_due: `$${(balanceDue / 100).toFixed(2)}`,
+              payment_url: finalizedInvoice.hosted_invoice_url,
+            }
+          );
+
+          await sendSms(
+            { accountSid: twilioAccountSid, authToken: twilioAuthToken, fromNumber: twilioPhoneNumber },
+            { to: order.customer_phone, body: smsBody }
+          );
+        } catch (smsError) {
+          console.error('SMS send error (non-fatal):', smsError);
+        }
+      }
+    }
 
     return NextResponse.json({
       success: true,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getEnvVar } from '@/lib/db';
+import { getDB, getEnvVar } from '@/lib/db';
 import { isSpamSubmission, sanitizeInput } from '@/lib/validation';
+import { sendEmail, buildContactFormNotification } from '@/lib/email';
 
 interface ContactFormData {
   name: string;
@@ -38,31 +39,32 @@ export async function POST(request: NextRequest) {
     // Send email via Resend if configured
     if (resendApiKey) {
       try {
-        const response = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${resendApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: 'Bakes by Coral <onboarding@resend.dev>',
-            to: ['coral@bakesbycoral.com'],
-            reply_to: data.email,
-            subject: `New Contact Form Message from ${sanitizeInput(data.name)}`,
-            html: `
-              <h2>New Contact Form Submission</h2>
-              <p><strong>From:</strong> ${sanitizeInput(data.name)}</p>
-              <p><strong>Email:</strong> ${sanitizeInput(data.email)}</p>
-              <hr />
-              <p><strong>Message:</strong></p>
-              <p>${sanitizeInput(data.message).replace(/\n/g, '<br>')}</p>
-            `,
-          }),
-        });
+        const db = getDB();
 
-        if (!response.ok) {
-          console.error('Failed to send email:', await response.text());
-        }
+        // Get email template from settings
+        const contactTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind('email_template_contact_form')
+          .first<{ value: string }>();
+        const contactSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind('email_subject_contact_form')
+          .first<{ value: string }>();
+
+        const email = buildContactFormNotification(
+          contactTemplate?.value,
+          contactSubject?.value,
+          {
+            customerName: sanitizeInput(data.name),
+            customerEmail: sanitizeInput(data.email),
+            message: sanitizeInput(data.message),
+          }
+        );
+
+        await sendEmail(resendApiKey, {
+          to: 'coral@bakesbycoral.com',
+          subject: email.subject,
+          html: email.html,
+          replyTo: data.email,
+        });
       } catch (emailError) {
         console.error('Email sending error:', emailError);
         // Don't fail the request if email fails

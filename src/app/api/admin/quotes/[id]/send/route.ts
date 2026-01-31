@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getDB, getEnvVar } from '@/lib/db';
 import { verifySession } from '@/lib/auth/session';
-import { sendEmail, quoteEmail } from '@/lib/email';
+import { sendEmail, buildQuoteFromTemplate } from '@/lib/email';
+import { sendSms, buildSmsMessage, DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
 import type { Quote, QuoteLineItem } from '@/types';
 
 // Verify admin session helper
@@ -47,7 +48,7 @@ export async function POST(
 
     // Get quote with order details
     const quote = await db.prepare(`
-      SELECT q.*, o.order_number, o.order_type, o.customer_name, o.customer_email
+      SELECT q.*, o.order_number, o.order_type, o.customer_name, o.customer_email, o.customer_phone
       FROM quotes q
       JOIN orders o ON q.order_id = o.id
       WHERE q.id = ?
@@ -56,6 +57,7 @@ export async function POST(
       order_type: string;
       customer_name: string;
       customer_email: string;
+      customer_phone: string;
     }>();
 
     if (!quote) {
@@ -87,10 +89,19 @@ export async function POST(
       return NextResponse.json({ error: 'Email service not configured' }, { status: 500 });
     }
 
-    const emailSent = await sendEmail(resendApiKey, {
-      to: quote.customer_email,
-      subject: `Your Quote from Bakes by Coral - ${quote.quote_number}`,
-      html: quoteEmail({
+    // Get email template from settings
+    const quoteTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+      .bind('email_template_quote')
+      .first<{ value: string }>();
+    const quoteSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+      .bind('email_subject_quote')
+      .first<{ value: string }>();
+
+    // Build quote email from template
+    const quoteEmailContent = buildQuoteFromTemplate(
+      quoteTemplate?.value,
+      quoteSubject?.value,
+      {
         customerName: quote.customer_name,
         quoteNumber: quote.quote_number,
         orderNumber: quote.order_number,
@@ -99,16 +110,52 @@ export async function POST(
         subtotal: quote.subtotal,
         depositAmount: quote.deposit_amount || 0,
         depositPercentage: quote.deposit_percentage,
-        totalAmount: quote.total_amount,
         validUntil: quote.valid_until || '',
         customerMessage: quote.customer_message || '',
         quoteUrl,
-      }),
+      }
+    );
+
+    const emailSent = await sendEmail(resendApiKey, {
+      to: quote.customer_email,
+      subject: quoteEmailContent.subject,
+      html: quoteEmailContent.html,
       replyTo: 'hello@bakesbycoral.com',
     });
 
     if (!emailSent) {
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
+    }
+
+    // Send SMS notification
+    const twilioAccountSid = getEnvVar('bakesbycoral_twilio_account_sid');
+    const twilioAuthToken = getEnvVar('bakesbycoral_twilio_auth_token');
+    const twilioPhoneNumber = getEnvVar('bakesbycoral_twilio_phone_number');
+
+    if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber && quote.customer_phone) {
+      try {
+        // Get SMS template from settings
+        const smsTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind('sms_template_quote_sent')
+          .first<{ value: string }>();
+
+        const smsBody = buildSmsMessage(
+          smsTemplate?.value,
+          DEFAULT_SMS_TEMPLATES.quote_sent,
+          {
+            customer_name: quote.customer_name,
+            order_type: quote.order_type,
+            quote_url: quoteUrl,
+          }
+        );
+
+        await sendSms(
+          { accountSid: twilioAccountSid, authToken: twilioAuthToken, fromNumber: twilioPhoneNumber },
+          { to: quote.customer_phone, body: smsBody }
+        );
+      } catch (smsError) {
+        console.error('SMS send error (non-fatal):', smsError);
+      }
     }
 
     // Update quote status to sent

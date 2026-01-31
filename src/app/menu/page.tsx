@@ -34,9 +34,11 @@ export default function MenuPage() {
               <Link href="/cakes" className="inline-block px-4 py-1.5 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full mb-4 hover:opacity-80 transition-opacity">
                 Celebration Cakes
               </Link>
-              <h2 className="text-3xl sm:text-4xl font-serif text-[#541409] mb-6">
-                Custom Cakes
-              </h2>
+              <Link href="/cakes" className="block hover:opacity-70 transition-opacity">
+                <h2 className="text-3xl sm:text-4xl font-serif text-[#541409] mb-6">
+                  Custom Cakes
+                </h2>
+              </Link>
               <p className="text-stone-600 leading-relaxed mb-6">
                 Beautiful 3-layer cakes perfect for birthdays, showers, and any celebration.
                 Each cake is made to order with your choice of flavors, fillings, and design.
@@ -61,12 +63,20 @@ export default function MenuPage() {
                 </Link>
               </div>
 
-              <Link
-                href="/cakes"
-                className="inline-flex px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity"
-              >
-                View Cake Details
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  href="/order/cake"
+                  className="inline-flex px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity"
+                >
+                  Order Now
+                </Link>
+                <Link
+                  href="/cakes"
+                  className="inline-flex px-8 py-4 bg-transparent border-2 border-[#541409] text-[#541409] font-medium rounded-sm hover:bg-[#541409]/10 transition-colors"
+                >
+                  View Cake Details
+                </Link>
+              </div>
             </div>
 
             <Link href="/cakes" className="aspect-square rounded-lg overflow-hidden shadow-lg block hover:shadow-xl hover:scale-[1.02] transition-all">
@@ -96,9 +106,11 @@ export default function MenuPage() {
               <Link href="/cookies" className="inline-block px-4 py-1.5 bg-[#541409] text-[#EAD6D6] text-sm font-medium rounded-full mb-4 hover:opacity-80 transition-opacity">
                 Fresh Baked
               </Link>
-              <h2 className="text-3xl sm:text-4xl font-serif text-[#541409] mb-6">
-                Cookies
-              </h2>
+              <Link href="/cookies" className="block hover:opacity-70 transition-opacity">
+                <h2 className="text-3xl sm:text-4xl font-serif text-[#541409] mb-6">
+                  Cookies
+                </h2>
+              </Link>
               <p className="text-stone-700 leading-relaxed mb-6">
                 Soft, chewy cookies in delicious flavors. Perfect for gifts, events,
                 or treating yourself. Available by the dozen.
@@ -117,16 +129,16 @@ export default function MenuPage() {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/cookies"
+                  href="/order/cookies"
                   className="inline-flex px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity"
                 >
-                  View Cookie Flavors
+                  Order Now
                 </Link>
                 <Link
-                  href="/order/cookies-large"
+                  href="/cookies"
                   className="inline-flex px-8 py-4 bg-transparent border-2 border-[#541409] text-[#541409] font-medium rounded-sm hover:bg-[#541409]/10 transition-colors"
                 >
-                  Large Cookie Order Form
+                  View Cookie Flavors
                 </Link>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
+import { sendEmail, buildLargeCookieOrderNotification } from '@/lib/email';
 
 interface LargeCookieOrderData {
   name: string;
@@ -93,49 +94,46 @@ export async function POST(request: NextRequest) {
       })
     ).run();
 
-    // Send email via Resend (same way as contact form which works)
+    // Send email via Resend
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
     if (resendApiKey) {
       try {
-        const response = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${resendApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: 'Bakes by Coral <onboarding@resend.dev>',
-            to: ['coral@bakesbycoral.com'],
-            reply_to: data.email,
-            subject: `New Large Cookie Order - ${orderNumber}`,
-            html: `
-              <h2>New Large Cookie Order</h2>
-              <p><strong>Order Number:</strong> ${orderNumber}</p>
-              <hr>
-              <p><strong>Customer:</strong> ${sanitizeInput(data.name)}</p>
-              <p><strong>Email:</strong> ${sanitizeInput(data.email)}</p>
-              <p><strong>Phone:</strong> ${sanitizeInput(data.phone)}</p>
-              <hr>
-              <h3>Order Details</h3>
-              <p><strong>Quantity:</strong> ${data.quantity} dozen (${data.quantity * 12} cookies)</p>
-              <p><strong>Flavors:</strong> ${flavorList.join(', ') || 'Not specified'}</p>
-              <p><strong>Packaging:</strong> ${data.packaging === 'heat-sealed' ? 'Individually Heat Sealed' : 'Standard'}</p>
-              <p><strong>Event Type:</strong> ${data.event_type || 'Not specified'}</p>
-              <p><strong>Event Date:</strong> ${data.event_date || 'TBD'}</p>
-              <p><strong>Pickup/Delivery:</strong> ${data.pickup_or_delivery === 'delivery' ? `Delivery to: ${data.event_location}` : 'Pickup'}</p>
-              <p><strong>Pickup Date:</strong> ${data.pickup_date || 'TBD'}</p>
-              <p><strong>Pickup Time:</strong> ${data.pickup_time || 'TBD'}</p>
-              <p><strong>Allergies:</strong> ${data.allergies || 'None noted'}</p>
-              ${data.notes ? `<p><strong>Additional Notes:</strong> ${sanitizeInput(data.notes)}</p>` : ''}
-              <hr>
-              <p><a href="https://bakesbycoral.com/admin/orders">View in Admin Dashboard</a></p>
-            `,
-          }),
-        });
+        // Get email template from settings
+        const cookieTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind('email_template_large_cookie_order')
+          .first<{ value: string }>();
+        const cookieSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind('email_subject_large_cookie_order')
+          .first<{ value: string }>();
 
-        if (!response.ok) {
-          console.error('Failed to send email:', await response.text());
-        }
+        const emailContent = buildLargeCookieOrderNotification(
+          cookieTemplate?.value,
+          cookieSubject?.value,
+          {
+            orderNumber,
+            customerName: sanitizeInput(data.name),
+            customerEmail: sanitizeInput(data.email),
+            customerPhone: sanitizeInput(data.phone),
+            quantity: data.quantity,
+            flavors: flavorList.join(', ') || 'Not specified',
+            packaging: data.packaging,
+            eventType: data.event_type || '',
+            eventDate: data.event_date || '',
+            pickupDelivery: data.pickup_or_delivery === 'delivery' ? `Delivery to: ${data.event_location}` : 'Pickup',
+            pickupDate: data.pickup_date || '',
+            pickupTime: data.pickup_time || '',
+            allergies: data.allergies || '',
+            notes: data.notes ? sanitizeInput(data.notes) : '',
+            adminUrl: 'https://bakesbycoral.com/admin/orders',
+          }
+        );
+
+        await sendEmail(resendApiKey, {
+          to: 'coral@bakesbycoral.com',
+          subject: emailContent.subject,
+          html: emailContent.html,
+          replyTo: data.email,
+        });
       } catch (emailError) {
         console.error('Email sending error:', emailError);
       }

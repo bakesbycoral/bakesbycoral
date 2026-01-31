@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
-import { sendEmail, pickupReminderEmail, adminPickupReminderEmail } from '@/lib/email';
+import { sendEmail, adminPickupReminderEmail, buildPickupReminderFromTemplate } from '@/lib/email';
+import { sendSms, buildSmsMessage, DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
 
 interface OrderForReminder {
   id: string;
@@ -54,6 +55,14 @@ export async function GET(request: NextRequest) {
       .first<{ value: string }>();
     const adminEmail = adminEmailSetting?.value || 'hello@bakesbycoral.com';
 
+    // Get email template and subject from settings
+    const reminderTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+      .bind('email_template_reminder')
+      .first<{ value: string }>();
+    const reminderSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+      .bind('email_subject_reminder')
+      .first<{ value: string }>();
+
     // Calculate target pickup date
     const targetDate = new Date();
     targetDate.setDate(targetDate.getDate() + daysBeforePickup);
@@ -74,27 +83,49 @@ export async function GET(request: NextRequest) {
 
     for (const order of orders.results || []) {
       try {
-        const formData = order.form_data ? JSON.parse(order.form_data) : undefined;
+        const formData = order.form_data ? JSON.parse(order.form_data) : {};
+        const isDelivery = formData.pickup_or_delivery === 'delivery';
+        const deliveryAddress = formData.delivery_location || formData.venue_address || formData.event_location || '';
 
-        // Send reminder to customer
-        await sendEmail(resendApiKey, {
-          to: order.customer_email,
-          subject: `Pickup Reminder - ${order.order_number}`,
-          html: pickupReminderEmail({
+        // Get appropriate template based on delivery status
+        const emailTemplateKey = isDelivery ? 'email_template_reminder_delivery' : 'email_template_reminder';
+        const emailSubjectKey = isDelivery ? 'email_subject_reminder_delivery' : 'email_subject_reminder';
+
+        const orderReminderTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind(emailTemplateKey)
+          .first<{ value: string }>();
+        const orderReminderSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind(emailSubjectKey)
+          .first<{ value: string }>();
+
+        // Build reminder email from template
+        const reminderEmail = buildPickupReminderFromTemplate(
+          orderReminderTemplate?.value || reminderTemplate?.value,
+          orderReminderSubject?.value || reminderSubject?.value,
+          {
             customerName: order.customer_name,
             orderNumber: order.order_number,
             orderType: order.order_type,
             pickupDate: order.pickup_date,
             pickupTime: order.pickup_time,
             formData,
-          }),
+            isDelivery,
+            deliveryAddress,
+          }
+        );
+
+        // Send reminder to customer
+        await sendEmail(resendApiKey, {
+          to: order.customer_email,
+          subject: reminderEmail.subject,
+          html: reminderEmail.html,
           replyTo: adminEmail,
         });
 
         // Send reminder to admin
         await sendEmail(resendApiKey, {
           to: adminEmail,
-          subject: `Pickup Tomorrow - ${order.order_number}`,
+          subject: isDelivery ? `Delivery Tomorrow - ${order.order_number}` : `Pickup Tomorrow - ${order.order_number}`,
           html: adminPickupReminderEmail({
             customerName: order.customer_name,
             customerEmail: order.customer_email,
@@ -106,6 +137,46 @@ export async function GET(request: NextRequest) {
             formData,
           }),
         });
+
+        // Send SMS reminder
+        const twilioAccountSid = getEnvVar('bakesbycoral_twilio_account_sid');
+        const twilioAuthToken = getEnvVar('bakesbycoral_twilio_auth_token');
+        const twilioPhoneNumber = getEnvVar('bakesbycoral_twilio_phone_number');
+
+        if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber && order.customer_phone) {
+          try {
+            const smsTemplateKey = isDelivery ? 'sms_template_delivery_reminder' : 'sms_template_pickup_reminder';
+            const smsTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+              .bind(smsTemplateKey)
+              .first<{ value: string }>();
+
+            const dateFormatted = new Date(order.pickup_date).toLocaleDateString('en-US', {
+              weekday: 'short',
+              month: 'short',
+              day: 'numeric',
+            });
+
+            const smsBody = buildSmsMessage(
+              smsTemplate?.value,
+              isDelivery ? DEFAULT_SMS_TEMPLATES.delivery_reminder : DEFAULT_SMS_TEMPLATES.pickup_reminder,
+              {
+                customer_name: order.customer_name,
+                order_number: order.order_number,
+                pickup_date: dateFormatted,
+                pickup_time: order.pickup_time || '',
+                delivery_date: dateFormatted,
+                delivery_time: order.pickup_time || '',
+              }
+            );
+
+            await sendSms(
+              { accountSid: twilioAccountSid, authToken: twilioAuthToken, fromNumber: twilioPhoneNumber },
+              { to: order.customer_phone, body: smsBody }
+            );
+          } catch (smsError) {
+            console.error('SMS reminder error (non-fatal):', smsError);
+          }
+        }
 
         // Mark reminder as sent
         await db.prepare('UPDATE orders SET reminder_sent_at = datetime(\'now\') WHERE id = ?')

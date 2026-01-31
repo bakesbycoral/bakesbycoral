@@ -71,6 +71,7 @@ export function textToHtmlEmail(text: string, title: string): string {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${title}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
       <style>
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -96,6 +97,7 @@ export function textToHtmlEmail(text: string, title: string): string {
           margin: 0;
           font-size: 28px;
           font-weight: normal;
+          font-family: 'Playfair Display', Georgia, serif;
         }
         .content {
           background: #fff;
@@ -137,7 +139,7 @@ export function textToHtmlEmail(text: string, title: string): string {
         </div>
         <div class="footer">
           <p>Bakes by Coral • Cincinnati, OH</p>
-          <p>Homemade Gluten-Free Baked Goods</p>
+          <p>100% Gluten-Free Home Bakery</p>
         </div>
       </div>
     </body>
@@ -276,6 +278,7 @@ export function orderConfirmationEmail(data: {
     <!DOCTYPE html>
     <html>
     <head>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
       <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -288,7 +291,7 @@ export function orderConfirmationEmail(data: {
     <body>
       <div class="container">
         <div class="header">
-          <h1 style="margin: 0;">Bakes by Coral</h1>
+          <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif;">Bakes by Coral</h1>
         </div>
         <div class="content">
           <h2>Thank you for your order, ${data.customerName}!</h2>
@@ -312,7 +315,7 @@ export function orderConfirmationEmail(data: {
         </div>
         <div class="footer">
           <p>Bakes by Coral • Cincinnati, OH</p>
-          <p>Homemade Gluten-Free Baked Goods</p>
+          <p>100% Gluten-Free Home Bakery</p>
         </div>
       </div>
     </body>
@@ -392,6 +395,7 @@ export function pickupReminderEmail(data: {
     <!DOCTYPE html>
     <html>
     <head>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
       <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -405,7 +409,7 @@ export function pickupReminderEmail(data: {
     <body>
       <div class="container">
         <div class="header">
-          <h1 style="margin: 0;">Pickup Reminder</h1>
+          <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif;">Pickup Reminder</h1>
         </div>
         <div class="content">
           <p>Hi ${data.customerName},</p>
@@ -428,7 +432,7 @@ export function pickupReminderEmail(data: {
         </div>
         <div class="footer">
           <p>Bakes by Coral • Cincinnati, OH</p>
-          <p>Homemade Gluten-Free Baked Goods</p>
+          <p>100% Gluten-Free Home Bakery</p>
         </div>
       </div>
     </body>
@@ -527,6 +531,7 @@ export function quoteEmail(data: {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Quote from Bakes by Coral</title>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
       <style>
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -544,7 +549,7 @@ export function quoteEmail(data: {
           text-align: center;
           border-radius: 8px 8px 0 0;
         }
-        .header h1 { margin: 0; font-size: 28px; font-weight: normal; }
+        .header h1 { margin: 0; font-size: 28px; font-weight: normal; font-family: 'Playfair Display', Georgia, serif; }
         .content {
           background: #fff;
           padding: 30px;
@@ -647,7 +652,7 @@ export function quoteEmail(data: {
         </div>
         <div class="footer">
           <p>Bakes by Coral • Cincinnati, OH</p>
-          <p>Homemade Gluten-Free Baked Goods</p>
+          <p>100% Gluten-Free Home Bakery</p>
         </div>
       </div>
     </body>
@@ -671,6 +676,7 @@ export function quoteApprovedEmail(data: {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Quote Approved - Bakes by Coral</title>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
       <style>
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -688,7 +694,7 @@ export function quoteApprovedEmail(data: {
           text-align: center;
           border-radius: 8px 8px 0 0;
         }
-        .header h1 { margin: 0; font-size: 28px; font-weight: normal; }
+        .header h1 { margin: 0; font-size: 28px; font-weight: normal; font-family: 'Playfair Display', Georgia, serif; }
         .content {
           background: #fff;
           padding: 30px;
@@ -763,10 +769,921 @@ export function quoteApprovedEmail(data: {
         </div>
         <div class="footer">
           <p>Bakes by Coral • Cincinnati, OH</p>
-          <p>Homemade Gluten-Free Baked Goods</p>
+          <p>100% Gluten-Free Home Bakery</p>
         </div>
       </div>
     </body>
     </html>
   `;
+}
+
+// ============================================
+// Template-based email builders (use admin settings)
+// ============================================
+
+export const DEFAULT_TEMPLATES: Record<string, string> = {
+  form_submission: `Hi {{customer_name}},
+
+Thank you for your order request! We've received your {{order_type}} inquiry and will review it shortly.
+
+**Order Details:**
+Order Number: {{order_number}}
+Pickup Date: {{pickup_date}}
+{{pickup_time}}
+
+{{order_details}}
+
+We'll be in touch within 24-48 hours to confirm your order and discuss any details.
+
+Thank you for choosing Bakes by Coral!
+
+Best,
+Coral`,
+
+  reminder: `Hi {{customer_name}},
+
+Just a friendly reminder that your order is ready for pickup tomorrow!
+
+**Pickup Details:**
+Order Number: {{order_number}}
+Pickup Date: {{pickup_date}}
+{{pickup_time}}
+
+{{order_details}}
+
+Please pick up at our location. If you need to make any changes, please contact us as soon as possible.
+
+See you soon!
+Coral`,
+
+  confirmation: `Hi {{customer_name}},
+
+Great news! Your order has been confirmed and payment received.
+
+**Order Details:**
+Order Number: {{order_number}}
+Pickup Date: {{pickup_date}}
+{{pickup_time}}
+
+{{order_details}}
+
+**Total:** {{total_amount}}
+
+We're excited to bake for you! If you have any questions, just reply to this email.
+
+Thank you for choosing Bakes by Coral!
+
+Best,
+Coral`,
+
+  quote: `Hi {{customer_name}},
+
+Thank you for your inquiry! Here's your personalized quote for your {{order_type}}:
+
+{{customer_message}}
+{{line_items_table}}
+**Subtotal:** {{subtotal}}
+**Deposit Due ({{deposit_percentage}}%):** {{deposit_amount}}
+
+This quote is valid until {{valid_until}}.
+
+To approve this quote and pay your deposit, click the button below.
+
+If you have any questions or would like to make changes, please reply to this email.
+
+Sweet regards,
+Coral`,
+
+  quote_approved: `Hi {{customer_name}},
+
+Thank you for approving your quote! Your order is now confirmed.
+
+**Quote:** {{quote_number}}
+**Order:** {{order_number}}
+**Deposit Due:** {{deposit_amount}}
+**Total Order:** {{total_amount}}
+
+Please pay your deposit to secure your order. Once your deposit is paid, we'll reach out to confirm all the details for your order. The remaining balance will be due 1 week before pickup.
+
+Questions? Just reply to this email!
+
+Sweet regards,
+Coral`,
+
+  balance_invoice: `Hi {{customer_name}},
+
+Your order is almost ready! Here's the remaining balance for your order:
+
+**Order:** {{order_number}}
+**Pickup Date:** {{pickup_date}}
+
+**Order Total:** {{total_amount}}
+**Deposit Paid:** {{deposit_amount}}
+**Balance Due:** {{balance_due}}
+
+Please click the button below to pay your remaining balance.
+
+Thank you for choosing Bakes by Coral! We can't wait for you to enjoy your order.
+
+Sweet regards,
+Coral`,
+
+  // DELIVERY VERSIONS
+  confirmation_delivery: `Hi {{customer_name}},
+
+Great news! Your order has been confirmed and payment received.
+
+**Order Details:**
+Order Number: {{order_number}}
+Delivery Date: {{delivery_date}}
+{{delivery_time}}
+Delivery Address: {{delivery_address}}
+
+{{order_details}}
+
+**Total:** {{total_amount}}
+
+We're excited to bake for you! If you have any questions, just reply to this email.
+
+Thank you for choosing Bakes by Coral!
+
+Best,
+Coral`,
+
+  reminder_delivery: `Hi {{customer_name}},
+
+Just a friendly reminder that your order will be delivered tomorrow!
+
+**Delivery Details:**
+Order Number: {{order_number}}
+Delivery Date: {{delivery_date}}
+{{delivery_time}}
+Delivery Address: {{delivery_address}}
+
+{{order_details}}
+
+Please make sure someone is available to receive the delivery. If you need to make any changes, please contact us as soon as possible.
+
+See you soon!
+Coral`,
+
+  balance_invoice_delivery: `Hi {{customer_name}},
+
+Your order is almost ready! Here's the remaining balance for your order:
+
+**Order:** {{order_number}}
+**Delivery Date:** {{delivery_date}}
+**Delivery Address:** {{delivery_address}}
+
+**Order Total:** {{total_amount}}
+**Deposit Paid:** {{deposit_amount}}
+**Balance Due:** {{balance_due}}
+
+Please click the button below to pay your remaining balance.
+
+Thank you for choosing Bakes by Coral! We can't wait for you to enjoy your order.
+
+Sweet regards,
+Coral`,
+};
+
+export const DEFAULT_SUBJECTS: Record<string, string> = {
+  reminder: 'Pickup Reminder - {{order_number}}',
+  confirmation: 'Order Confirmed - {{order_number}}',
+  quote: 'Your Quote from Bakes by Coral - {{quote_number}}',
+  quote_approved: 'Quote Approved! - {{quote_number}}',
+  balance_invoice: 'Balance Due - {{order_number}}',
+  form_submission: 'Order Request Received - {{order_number}}',
+  // Delivery versions
+  reminder_delivery: 'Delivery Reminder - {{order_number}}',
+  confirmation_delivery: 'Order Confirmed - {{order_number}}',
+  balance_invoice_delivery: 'Balance Due - {{order_number}}',
+};
+
+// Wrap template text in styled HTML email
+function wrapInEmailTemplate(content: string, title: string, headerText?: string): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${title}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+          background-color: #f5f5f5;
+        }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header {
+          background: #541409;
+          color: #EAD6D6;
+          padding: 30px 20px;
+          text-align: center;
+          border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+          margin: 0;
+          font-size: 28px;
+          font-weight: normal;
+          font-family: 'Playfair Display', Georgia, serif;
+        }
+        .header p { margin: 10px 0 0 0; opacity: 0.9; }
+        .content {
+          background: #fff;
+          padding: 30px;
+          border: 1px solid #EAD6D6;
+          border-top: none;
+        }
+        .content p { margin: 0 0 16px 0; }
+        .footer {
+          background: #EAD6D6;
+          padding: 20px;
+          text-align: center;
+          font-size: 14px;
+          color: #541409;
+          border-radius: 0 0 8px 8px;
+        }
+        .btn {
+          display: inline-block;
+          background: #541409;
+          color: #EAD6D6 !important;
+          padding: 14px 28px;
+          text-decoration: none;
+          border-radius: 6px;
+          margin-top: 20px;
+          font-weight: bold;
+        }
+        table { width: 100%; border-collapse: collapse; margin: 0 0 16px 0; }
+        th { background: #EAD6D6; color: #541409; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #EAD6D6; }
+        strong { color: #541409; }
+        a { color: #541409; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Bakes by Coral</h1>
+          ${headerText ? `<p>${headerText}</p>` : ''}
+        </div>
+        <div class="content">
+          <p>${content}</p>
+        </div>
+        <div class="footer">
+          <p>Bakes by Coral • Cincinnati, OH</p>
+          <p>100% Gluten-Free Home Bakery</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// Build pickup/delivery reminder from template
+export function buildPickupReminderFromTemplate(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    customerName: string;
+    orderNumber: string;
+    orderType: string;
+    pickupDate: string;
+    pickupTime: string;
+    formData?: Record<string, unknown>;
+    isDelivery?: boolean;
+    deliveryAddress?: string;
+  }
+): { subject: string; html: string } {
+  const isDelivery = data.isDelivery || false;
+  const templateText = template || (isDelivery ? DEFAULT_TEMPLATES.reminder_delivery : DEFAULT_TEMPLATES.reminder);
+  const subjectText = subject || (isDelivery ? DEFAULT_SUBJECTS.reminder_delivery : DEFAULT_SUBJECTS.reminder);
+
+  const orderDetails = data.formData ? formatOrderDetails(data.orderType, data.formData) : '';
+
+  const variables: Record<string, string> = {
+    customer_name: data.customerName,
+    order_number: data.orderNumber,
+    order_type: ORDER_TYPE_LABELS[data.orderType] || data.orderType,
+    pickup_date: formatDate(data.pickupDate),
+    pickup_time: formatTime(data.pickupTime),
+    delivery_date: formatDate(data.pickupDate),
+    delivery_time: formatTime(data.pickupTime),
+    delivery_address: data.deliveryAddress || '',
+    order_details: orderDetails,
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  const processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  const headerText = isDelivery ? 'Delivery Reminder' : 'Pickup Reminder';
+  const html = wrapInEmailTemplate(processedBody, processedSubject, headerText);
+
+  return { subject: processedSubject, html };
+}
+
+// Build order confirmation from template
+export function buildConfirmationFromTemplate(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    customerName: string;
+    orderNumber: string;
+    orderType: string;
+    pickupDate?: string;
+    pickupTime?: string;
+    totalAmount?: number;
+    formData?: Record<string, unknown>;
+    isDelivery?: boolean;
+    deliveryAddress?: string;
+  }
+): { subject: string; html: string } {
+  const isDelivery = data.isDelivery || false;
+  const templateText = template || (isDelivery ? DEFAULT_TEMPLATES.confirmation_delivery : DEFAULT_TEMPLATES.confirmation);
+  const subjectText = subject || (isDelivery ? DEFAULT_SUBJECTS.confirmation_delivery : DEFAULT_SUBJECTS.confirmation);
+
+  const orderDetails = data.formData ? formatOrderDetails(data.orderType, data.formData) : '';
+
+  const variables: Record<string, string> = {
+    customer_name: data.customerName,
+    order_number: data.orderNumber,
+    order_type: ORDER_TYPE_LABELS[data.orderType] || data.orderType,
+    pickup_date: data.pickupDate ? formatDate(data.pickupDate) : 'TBD',
+    pickup_time: data.pickupTime ? formatTime(data.pickupTime) : '',
+    delivery_date: data.pickupDate ? formatDate(data.pickupDate) : 'TBD',
+    delivery_time: data.pickupTime ? formatTime(data.pickupTime) : '',
+    delivery_address: data.deliveryAddress || '',
+    order_details: orderDetails,
+    total_amount: data.totalAmount ? formatPrice(data.totalAmount) : '',
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  const processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject);
+
+  return { subject: processedSubject, html };
+}
+
+// Build quote email from template
+export function buildQuoteFromTemplate(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    customerName: string;
+    quoteNumber: string;
+    orderNumber: string;
+    orderType: string;
+    lineItems: Array<{
+      description: string;
+      quantity: number;
+      unit_price: number;
+      total_price: number;
+    }>;
+    subtotal: number;
+    depositAmount: number;
+    depositPercentage: number;
+    validUntil: string;
+    customerMessage: string;
+    quoteUrl: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_TEMPLATES.quote;
+  const subjectText = subject || DEFAULT_SUBJECTS.quote;
+
+  // Build line items table
+  const lineItemsHtml = data.lineItems.map(item => `
+    <tr>
+      <td>${item.description}</td>
+      <td style="text-align: center;">${item.quantity}</td>
+      <td style="text-align: right;">${formatPrice(item.unit_price)}</td>
+      <td style="text-align: right;">${formatPrice(item.total_price)}</td>
+    </tr>
+  `).join('');
+
+  const lineItemsTable = `<table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th style="text-align: center;">Qty</th>
+          <th style="text-align: right;">Price</th>
+          <th style="text-align: right;">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${lineItemsHtml}
+      </tbody>
+    </table>`;
+
+  // Replace all variables EXCEPT line_items_table first
+  const variables: Record<string, string> = {
+    customer_name: data.customerName,
+    quote_number: data.quoteNumber,
+    order_number: data.orderNumber,
+    order_type: ORDER_TYPE_LABELS[data.orderType] || data.orderType,
+    subtotal: formatPrice(data.subtotal),
+    deposit_amount: formatPrice(data.depositAmount),
+    deposit_percentage: String(data.depositPercentage),
+    valid_until: formatDate(data.validUntil),
+    customer_message: data.customerMessage || '',
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+
+  // Process text variables and newlines first, keeping table placeholder intact
+  let processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>')
+    // Remove <br> right before or after the table placeholder
+    .replace(/<br>\{\{line_items_table\}\}/g, '{{line_items_table}}')
+    .replace(/\{\{line_items_table\}\}<br>/g, '{{line_items_table}}');
+
+  // Now replace the table (after newline conversion so table HTML stays intact)
+  processedBody = processedBody.replace(/\{\{line_items_table\}\}/g, lineItemsTable);
+
+  // Add the approve button
+  processedBody += `
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="${data.quoteUrl}" class="btn">View & Approve Quote</a>
+    </div>
+  `;
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'Quote for Your Order');
+
+  return { subject: processedSubject, html };
+}
+
+// Build quote approved email from template
+export function buildQuoteApprovedFromTemplate(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    customerName: string;
+    quoteNumber: string;
+    orderNumber: string;
+    depositAmount: number;
+    totalAmount: number;
+    invoiceUrl: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_TEMPLATES.quote_approved;
+  const subjectText = subject || DEFAULT_SUBJECTS.quote_approved;
+
+  const variables: Record<string, string> = {
+    customer_name: data.customerName,
+    quote_number: data.quoteNumber,
+    order_number: data.orderNumber,
+    deposit_amount: formatPrice(data.depositAmount),
+    total_amount: formatPrice(data.totalAmount),
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  let processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  // Add the pay button
+  processedBody += `
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="${data.invoiceUrl}" class="btn">Pay Deposit</a>
+    </div>
+  `;
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'Quote Approved!');
+
+  return { subject: processedSubject, html };
+}
+
+// Build balance invoice email from template
+export function buildBalanceInvoiceFromTemplate(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    customerName: string;
+    orderNumber: string;
+    pickupDate: string;
+    totalAmount: number;
+    depositAmount: number;
+    balanceDue: number;
+    invoiceUrl: string;
+    isDelivery?: boolean;
+    deliveryAddress?: string;
+  }
+): { subject: string; html: string } {
+  const isDelivery = data.isDelivery || false;
+  const templateText = template || (isDelivery ? DEFAULT_TEMPLATES.balance_invoice_delivery : DEFAULT_TEMPLATES.balance_invoice);
+  const subjectText = subject || (isDelivery ? DEFAULT_SUBJECTS.balance_invoice_delivery : DEFAULT_SUBJECTS.balance_invoice);
+
+  const variables: Record<string, string> = {
+    customer_name: data.customerName,
+    order_number: data.orderNumber,
+    pickup_date: data.pickupDate ? formatDate(data.pickupDate) : 'TBD',
+    delivery_date: data.pickupDate ? formatDate(data.pickupDate) : 'TBD',
+    delivery_address: data.deliveryAddress || '',
+    total_amount: formatPrice(data.totalAmount),
+    deposit_amount: formatPrice(data.depositAmount),
+    balance_due: formatPrice(data.balanceDue),
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  let processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  // Add the pay button
+  processedBody += `
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="${data.invoiceUrl}" class="btn">Pay Balance</a>
+    </div>
+  `;
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'Balance Due');
+
+  return { subject: processedSubject, html };
+}
+
+// ============================================
+// ADMIN NOTIFICATION TEMPLATES
+// These are emails sent TO Coral when customers submit forms
+// ============================================
+
+export const DEFAULT_ADMIN_TEMPLATES = {
+  contact_form: `**New Contact Form Message**
+
+**From:** {{customer_name}}
+**Email:** {{customer_email}}
+
+**Message:**
+{{message}}`,
+
+  cake_inquiry: `**New Cake Inquiry**
+
+**Order Number:** {{order_number}}
+
+**Customer Information:**
+**Name:** {{customer_name}}
+**Email:** {{customer_email}}
+**Phone:** {{customer_phone}}
+
+**Cake Details:**
+**Event Type:** {{event_type}}
+**Pickup Date:** {{pickup_date}}
+**Pickup Time:** {{pickup_time}}
+**Size:** {{cake_size}}
+**Shape:** {{cake_shape}}
+**Flavor:** {{cake_flavor}}
+**Filling:** {{filling}}
+**Base Color:** {{base_color}}
+**Piping Colors:** {{piping_colors}}
+**Custom Message:** {{custom_messaging}}
+**Toppings:** {{toppings}}
+**Allergies:** {{allergies}}
+{{notes}}
+
+{{admin_link}}`,
+
+  large_cookie_order: `**New Large Cookie Order**
+
+**Order Number:** {{order_number}}
+
+**Customer Information:**
+**Name:** {{customer_name}}
+**Email:** {{customer_email}}
+**Phone:** {{customer_phone}}
+
+**Order Details:**
+**Quantity:** {{quantity}} dozen ({{cookie_count}} cookies)
+**Flavors:** {{flavors}}
+**Packaging:** {{packaging}}
+**Event Type:** {{event_type}}
+**Event Date:** {{event_date}}
+**Pickup/Delivery:** {{pickup_delivery}}
+**Pickup Date:** {{pickup_date}}
+**Pickup Time:** {{pickup_time}}
+**Allergies:** {{allergies}}
+{{notes}}
+
+{{admin_link}}`,
+
+  wedding_inquiry: `**New Wedding Inquiry**
+
+**Order Number:** {{order_number}}
+
+**Customer Information:**
+**Name:** {{customer_name}}
+**Partner:** {{partner_name}}
+**Email:** {{customer_email}}
+**Phone:** {{customer_phone}}
+
+**Wedding Details:**
+**Wedding Date:** {{wedding_date}}
+**Venue:** {{venue}}
+**Start Time:** {{start_time}}
+**Guest Count:** {{guest_count}}
+**Services Needed:** {{services}}
+**Pickup/Delivery:** {{pickup_delivery}}
+{{cake_details}}
+{{cookie_details}}
+**Dietary Restrictions:** {{dietary_restrictions}}
+**Inspiration Images:** {{image_count}} uploaded
+{{design_notes}}
+
+{{admin_link}}`,
+
+  tasting_order: `**New Tasting Order**
+
+**Order Number:** {{order_number}}
+**Amount:** {{amount}}
+
+**Customer Information:**
+**Name:** {{customer_name}}
+**Email:** {{customer_email}}
+**Phone:** {{customer_phone}}
+
+**Tasting Details:**
+**Type:** {{tasting_type}}
+**Wedding Date:** {{wedding_date}}
+**Pickup Date:** {{pickup_date}}
+**Pickup Time:** {{pickup_time}}
+
+{{admin_link}}`,
+};
+
+export const DEFAULT_ADMIN_SUBJECTS = {
+  contact_form: 'New Contact Form Message from {{customer_name}}',
+  cake_inquiry: 'New Cake Inquiry - {{order_number}}',
+  large_cookie_order: 'New Large Cookie Order - {{order_number}}',
+  wedding_inquiry: 'New Wedding Inquiry - {{order_number}}',
+  tasting_order: 'New Tasting Order - {{order_number}}',
+};
+
+// Build contact form notification email
+export function buildContactFormNotification(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    customerName: string;
+    customerEmail: string;
+    message: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_ADMIN_TEMPLATES.contact_form;
+  const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.contact_form;
+
+  const variables: Record<string, string> = {
+    customer_name: data.customerName,
+    customer_email: data.customerEmail,
+    message: data.message,
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  const processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'New Message');
+
+  return { subject: processedSubject, html };
+}
+
+// Build cake inquiry notification email
+export function buildCakeInquiryNotification(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    orderNumber: string;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    eventType: string;
+    pickupDate: string;
+    pickupTime: string;
+    cakeSize: string;
+    cakeShape: string;
+    cakeFlavor: string;
+    filling: string;
+    baseColor: string;
+    pipingColors: string;
+    customMessaging: string;
+    toppings: string;
+    allergies: string;
+    notes: string;
+    adminUrl: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_ADMIN_TEMPLATES.cake_inquiry;
+  const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.cake_inquiry;
+
+  const variables: Record<string, string> = {
+    order_number: data.orderNumber,
+    customer_name: data.customerName,
+    customer_email: data.customerEmail,
+    customer_phone: data.customerPhone,
+    event_type: data.eventType || 'Not specified',
+    pickup_date: data.pickupDate || 'TBD',
+    pickup_time: data.pickupTime || 'TBD',
+    cake_size: data.cakeSize || 'Not specified',
+    cake_shape: data.cakeShape || 'Not specified',
+    cake_flavor: data.cakeFlavor || 'Not specified',
+    filling: data.filling || 'None',
+    base_color: data.baseColor || 'Not specified',
+    piping_colors: data.pipingColors || 'Not specified',
+    custom_messaging: data.customMessaging || 'None',
+    toppings: data.toppings || 'None',
+    allergies: data.allergies || 'None',
+    notes: data.notes ? `**Additional Notes:** ${data.notes}` : '',
+    admin_link: `[View in Admin Dashboard](${data.adminUrl})`,
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  const processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'New Cake Inquiry');
+
+  return { subject: processedSubject, html };
+}
+
+// Build large cookie order notification email
+export function buildLargeCookieOrderNotification(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    orderNumber: string;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    quantity: number;
+    flavors: string;
+    packaging: string;
+    eventType: string;
+    eventDate: string;
+    pickupDelivery: string;
+    pickupDate: string;
+    pickupTime: string;
+    allergies: string;
+    notes: string;
+    adminUrl: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_ADMIN_TEMPLATES.large_cookie_order;
+  const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.large_cookie_order;
+
+  const variables: Record<string, string> = {
+    order_number: data.orderNumber,
+    customer_name: data.customerName,
+    customer_email: data.customerEmail,
+    customer_phone: data.customerPhone,
+    quantity: String(data.quantity),
+    cookie_count: String(data.quantity * 12),
+    flavors: data.flavors || 'Not specified',
+    packaging: data.packaging === 'heat-sealed' ? 'Individually Heat Sealed' : 'Standard',
+    event_type: data.eventType || 'Not specified',
+    event_date: data.eventDate || 'TBD',
+    pickup_delivery: data.pickupDelivery,
+    pickup_date: data.pickupDate || 'TBD',
+    pickup_time: data.pickupTime || 'TBD',
+    allergies: data.allergies || 'None noted',
+    notes: data.notes ? `**Additional Notes:** ${data.notes}` : '',
+    admin_link: `[View in Admin Dashboard](${data.adminUrl})`,
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  const processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'New Large Cookie Order');
+
+  return { subject: processedSubject, html };
+}
+
+// Build wedding inquiry notification email
+export function buildWeddingInquiryNotification(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    orderNumber: string;
+    customerName: string;
+    partnerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    weddingDate: string;
+    venue: string;
+    startTime: string;
+    guestCount: string;
+    services: string;
+    pickupDelivery: string;
+    cakeDetails: string;
+    cookieDetails: string;
+    dietaryRestrictions: string;
+    imageCount: number;
+    designNotes: string;
+    adminUrl: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_ADMIN_TEMPLATES.wedding_inquiry;
+  const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.wedding_inquiry;
+
+  const variables: Record<string, string> = {
+    order_number: data.orderNumber,
+    customer_name: data.customerName,
+    partner_name: data.partnerName || 'Not specified',
+    customer_email: data.customerEmail,
+    customer_phone: data.customerPhone,
+    wedding_date: data.weddingDate,
+    venue: data.venue || 'TBD',
+    start_time: data.startTime || 'TBD',
+    guest_count: data.guestCount || 'Not specified',
+    services: data.services,
+    pickup_delivery: data.pickupDelivery === 'delivery' ? 'Delivery' : 'Pickup',
+    cake_details: data.cakeDetails ? `**Cake Details:** ${data.cakeDetails}` : '',
+    cookie_details: data.cookieDetails ? `**Cookie Details:** ${data.cookieDetails}` : '',
+    dietary_restrictions: data.dietaryRestrictions || 'None',
+    image_count: String(data.imageCount),
+    design_notes: data.designNotes ? `**Design Notes:** ${data.designNotes}` : '',
+    admin_link: `[View in Admin Dashboard](${data.adminUrl})`,
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  const processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'New Wedding Inquiry');
+
+  return { subject: processedSubject, html };
+}
+
+// Build tasting order notification email
+export function buildTastingOrderNotification(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    orderNumber: string;
+    amount: number;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    tastingType: string;
+    weddingDate: string;
+    pickupDate: string;
+    pickupTime: string;
+    adminUrl: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_ADMIN_TEMPLATES.tasting_order;
+  const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.tasting_order;
+
+  const tastingTypeLabels: Record<string, string> = {
+    cake: 'Cake Tasting',
+    cookie: 'Cookie Tasting',
+    both: 'Cake & Cookie Tasting',
+  };
+
+  const variables: Record<string, string> = {
+    order_number: data.orderNumber,
+    amount: formatPrice(data.amount),
+    customer_name: data.customerName,
+    customer_email: data.customerEmail,
+    customer_phone: data.customerPhone,
+    tasting_type: tastingTypeLabels[data.tastingType] || data.tastingType,
+    wedding_date: data.weddingDate,
+    pickup_date: data.pickupDate,
+    pickup_time: data.pickupTime || 'TBD',
+    admin_link: `[View in Admin Dashboard](${data.adminUrl})`,
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  const processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'New Tasting Order');
+
+  return { subject: processedSubject, html };
 }

@@ -140,7 +140,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-medium text-[#541409]">Location</h3>
                     <p className="text-stone-600">Cincinnati, Ohio</p>
-                    <p className="text-sm text-stone-500">(Pickup only)</p>
+                    <p className="text-sm text-stone-500">45245</p>
                   </div>
                 </div>
               </div>

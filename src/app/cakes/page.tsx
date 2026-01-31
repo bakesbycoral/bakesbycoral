@@ -42,6 +42,12 @@ export default function CakesPage() {
           <p className="mt-4 text-lg text-[#4A2C21]/80">
             Beautiful celebration cakes made just for you
           </p>
+          <Link
+            href="/order/cake"
+            className="inline-flex mt-6 px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity"
+          >
+            Order Now
+          </Link>
         </div>
       </section>
 
@@ -188,7 +194,7 @@ export default function CakesPage() {
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="font-medium text-[#541409] mb-2">Pickup</h3>
               <p className="text-stone-600 text-sm">
-                All orders are pickup only from my home kitchen in Cincinnati, OH.
+                All orders are pickup only from my home kitchen in Cincinnati, OH 45245.
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm">

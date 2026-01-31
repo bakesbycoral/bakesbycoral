@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import Stripe from 'stripe';
 import { sanitizeInput } from '@/lib/validation';
+import { sendEmail, buildTastingOrderNotification } from '@/lib/email';
 
 interface TastingOrderData {
   name: string;
@@ -90,37 +91,36 @@ export async function POST(request: NextRequest) {
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
     if (resendApiKey) {
       try {
-        const tastingTypeLabel = data.tasting_type === 'cake' ? 'Cake Tasting' :
-                                 data.tasting_type === 'cookie' ? 'Cookie Tasting' : 'Cake & Cookie Tasting';
+        // Get email template from settings
+        const tastingTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind('email_template_tasting_order')
+          .first<{ value: string }>();
+        const tastingSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind('email_subject_tasting_order')
+          .first<{ value: string }>();
 
-        await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${resendApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: 'Bakes by Coral <onboarding@resend.dev>',
-            to: ['coral@bakesbycoral.com'],
-            reply_to: data.email,
-            subject: `New Tasting Order - ${orderNumber}`,
-            html: `
-              <h2>New Tasting Order</h2>
-              <p><strong>Order Number:</strong> ${orderNumber}</p>
-              <p><strong>Amount:</strong> $${(totalAmount / 100).toFixed(2)}</p>
-              <hr>
-              <p><strong>Customer:</strong> ${sanitizeInput(data.name)}</p>
-              <p><strong>Email:</strong> ${sanitizeInput(data.email)}</p>
-              <p><strong>Phone:</strong> ${sanitizeInput(data.phone)}</p>
-              <hr>
-              <p><strong>Type:</strong> ${tastingTypeLabel}</p>
-              <p><strong>Wedding Date:</strong> ${data.wedding_date}</p>
-              <p><strong>Pickup Date:</strong> ${data.pickup_date}</p>
-              <p><strong>Pickup Time:</strong> ${data.pickup_time || 'TBD'}</p>
-              <hr>
-              <p><a href="https://bakesbycoral.com/admin/orders">View in Admin Dashboard</a></p>
-            `,
-          }),
+        const emailContent = buildTastingOrderNotification(
+          tastingTemplate?.value,
+          tastingSubject?.value,
+          {
+            orderNumber,
+            amount: totalAmount,
+            customerName: sanitizeInput(data.name),
+            customerEmail: sanitizeInput(data.email),
+            customerPhone: sanitizeInput(data.phone),
+            tastingType: data.tasting_type,
+            weddingDate: data.wedding_date,
+            pickupDate: data.pickup_date,
+            pickupTime: data.pickup_time || '',
+            adminUrl: 'https://bakesbycoral.com/admin/orders',
+          }
+        );
+
+        await sendEmail(resendApiKey, {
+          to: 'coral@bakesbycoral.com',
+          subject: emailContent.subject,
+          html: emailContent.html,
+          replyTo: data.email,
         });
       } catch (emailErr) {
         console.error('Email error:', emailErr);

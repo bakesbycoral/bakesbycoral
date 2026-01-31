@@ -150,7 +150,7 @@ export default function QuotePage({ params }: { params: Promise<{ token: string 
       <header className="bg-[#541409] text-[#EAD6D6] py-6">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h1 className="text-2xl font-serif">Bakes by Coral</h1>
-          <p className="text-sm opacity-80 mt-1">Homemade Gluten-Free Baked Goods</p>
+          <p className="text-sm opacity-80 mt-1">100% Gluten-Free Home Bakery</p>
         </div>
       </header>
 
@@ -178,7 +178,7 @@ export default function QuotePage({ params }: { params: Promise<{ token: string 
                   </span>
                 )}
                 {canApprove && (
-                  <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
+                  <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full whitespace-nowrap">
                     Pending Approval
                   </span>
                 )}
@@ -313,7 +313,7 @@ export default function QuotePage({ params }: { params: Promise<{ token: string 
                 <p className="text-[#541409]/80 mb-4">
                   By approving this quote, you agree to pay a {quote.deposit_percentage}% deposit of{' '}
                   <strong>{formatCurrency(quote.deposit_amount || 0)}</strong> to secure your order.
-                  The remaining balance will be due before pickup.
+                  The remaining balance is due 1 week before pickup.
                 </p>
                 <button
                   onClick={handleApprove}
@@ -336,7 +336,7 @@ export default function QuotePage({ params }: { params: Promise<{ token: string 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-[#541409]/60">
           <p>Bakes by Coral • Cincinnati, OH</p>
-          <p className="mt-1">Homemade Gluten-Free Baked Goods</p>
+          <p className="mt-1">100% Gluten-Free Home Bakery</p>
         </div>
       </main>
     </div>

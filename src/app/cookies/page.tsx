@@ -31,6 +31,12 @@ export default function CookiesPage() {
           <p className="mt-4 text-lg text-[#4A2C21]/80">
             Soft, chewy, and 100% gluten-free
           </p>
+          <Link
+            href="/order/cookies"
+            className="inline-flex mt-6 px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity"
+          >
+            Order Now
+          </Link>
         </div>
       </section>
 
@@ -155,7 +161,7 @@ export default function CookiesPage() {
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="font-medium text-[#541409] mb-2">Lead Time</h3>
               <p className="text-stone-600 text-sm">
-                Please order at least 1 week in advance for regular orders.
+                Please order at least 1 week in advance for regular orders. Rush orders may be available at an extra cost - just ask!
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm">
@@ -165,9 +171,9 @@ export default function CookiesPage() {
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="font-medium text-[#541409] mb-2">Freshness</h3>
+              <h3 className="font-medium text-[#541409] mb-2">Pickup</h3>
               <p className="text-stone-600 text-sm">
-                Cookies are baked fresh for your pickup date. Best enjoyed within 5 days.
+                All orders are pickup only from my home kitchen in Cincinnati, OH 45245.
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm">

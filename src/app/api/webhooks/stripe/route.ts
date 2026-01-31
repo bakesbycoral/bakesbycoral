@@ -4,7 +4,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import Stripe from 'stripe';
-import { sendEmail, orderConfirmationEmail, adminNewOrderEmail } from '@/lib/email';
+import { sendEmail, adminNewOrderEmail, buildConfirmationFromTemplate } from '@/lib/email';
+import { sendSms, buildSmsMessage, DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
 
 async function verifyStripeSignature(
   payload: string,
@@ -141,17 +142,43 @@ export async function POST(request: NextRequest) {
             }>();
 
             if (order && getEnvVar('bakesbycoral_resend_api_key')) {
-              // Send confirmation email to customer
-              await sendEmail(getEnvVar('bakesbycoral_resend_api_key'), {
-                to: order.customer_email,
-                subject: `Order Confirmed - ${order.order_number}`,
-                html: orderConfirmationEmail({
+              // Parse form_data to check for delivery
+              const formData = order.form_data ? JSON.parse(order.form_data) : {};
+              const isDelivery = formData.pickup_or_delivery === 'delivery';
+              const deliveryAddress = formData.delivery_location || formData.venue_address || formData.event_location || '';
+
+              // Get email template from settings (use delivery version if applicable)
+              const templateKey = isDelivery ? 'email_template_confirmation_delivery' : 'email_template_confirmation';
+              const subjectKey = isDelivery ? 'email_subject_confirmation_delivery' : 'email_subject_confirmation';
+
+              const confirmTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+                .bind(templateKey)
+                .first<{ value: string }>();
+              const confirmSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+                .bind(subjectKey)
+                .first<{ value: string }>();
+
+              // Build confirmation email from template
+              const confirmEmail = buildConfirmationFromTemplate(
+                confirmTemplate?.value,
+                confirmSubject?.value,
+                {
                   customerName: order.customer_name,
                   orderNumber: order.order_number,
                   orderType: order.order_type,
                   pickupDate: order.pickup_date || undefined,
                   pickupTime: order.pickup_time || undefined,
-                }),
+                  formData,
+                  isDelivery,
+                  deliveryAddress,
+                }
+              );
+
+              // Send confirmation email to customer
+              await sendEmail(getEnvVar('bakesbycoral_resend_api_key'), {
+                to: order.customer_email,
+                subject: confirmEmail.subject,
+                html: confirmEmail.html,
                 replyTo: 'hello@bakesbycoral.com',
               });
 
@@ -169,6 +196,44 @@ export async function POST(request: NextRequest) {
                   formData: order.form_data ? JSON.parse(order.form_data) : undefined,
                 }),
               });
+
+              // Send SMS confirmation
+              const twilioAccountSid = getEnvVar('bakesbycoral_twilio_account_sid');
+              const twilioAuthToken = getEnvVar('bakesbycoral_twilio_auth_token');
+              const twilioPhoneNumber = getEnvVar('bakesbycoral_twilio_phone_number');
+
+              if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber && order.customer_phone) {
+                try {
+                  const smsTemplateKey = isDelivery ? 'sms_template_order_confirmed_delivery' : 'sms_template_order_confirmed';
+                  const smsTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+                    .bind(smsTemplateKey)
+                    .first<{ value: string }>();
+
+                  const dateFormatted = order.pickup_date
+                    ? new Date(order.pickup_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+                    : '';
+
+                  const smsBody = buildSmsMessage(
+                    smsTemplate?.value,
+                    isDelivery ? DEFAULT_SMS_TEMPLATES.order_confirmed_delivery : DEFAULT_SMS_TEMPLATES.order_confirmed,
+                    {
+                      customer_name: order.customer_name,
+                      order_number: order.order_number,
+                      pickup_date: dateFormatted,
+                      pickup_time: order.pickup_time || '',
+                      delivery_date: dateFormatted,
+                      delivery_time: order.pickup_time || '',
+                    }
+                  );
+
+                  await sendSms(
+                    { accountSid: twilioAccountSid, authToken: twilioAuthToken, fromNumber: twilioPhoneNumber },
+                    { to: order.customer_phone, body: smsBody }
+                  );
+                } catch (smsError) {
+                  console.error('SMS send error (non-fatal):', smsError);
+                }
+              }
 
               console.log(`Order ${orderNumber} confirmed - emails sent`);
             } else {
@@ -249,19 +314,43 @@ export async function POST(request: NextRequest) {
           }>();
 
           if (order && getEnvVar('bakesbycoral_resend_api_key')) {
-            // Send confirmation email to customer
-            await sendEmail(getEnvVar('bakesbycoral_resend_api_key'), {
-              to: order.customer_email,
-              subject: isDeposit
-                ? `Deposit Received - ${order.order_number}`
-                : `Payment Confirmed - ${order.order_number}`,
-              html: orderConfirmationEmail({
+            // Parse form_data to check for delivery
+            const orderFormData = order.form_data ? JSON.parse(order.form_data) : {};
+            const orderIsDelivery = orderFormData.pickup_or_delivery === 'delivery';
+            const orderDeliveryAddress = orderFormData.delivery_location || orderFormData.venue_address || orderFormData.event_location || '';
+
+            // Get email template from settings (use delivery version if applicable)
+            const emailTemplateKey = orderIsDelivery ? 'email_template_confirmation_delivery' : 'email_template_confirmation';
+            const emailSubjectKey = orderIsDelivery ? 'email_subject_confirmation_delivery' : 'email_subject_confirmation';
+
+            const confirmTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+              .bind(emailTemplateKey)
+              .first<{ value: string }>();
+            const confirmSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+              .bind(emailSubjectKey)
+              .first<{ value: string }>();
+
+            // Build confirmation email from template
+            const confirmEmail = buildConfirmationFromTemplate(
+              confirmTemplate?.value,
+              isDeposit ? `Deposit Received - {{order_number}}` : confirmSubject?.value,
+              {
                 customerName: order.customer_name,
                 orderNumber: order.order_number,
                 orderType: order.order_type,
                 pickupDate: order.pickup_date || undefined,
                 pickupTime: order.pickup_time || undefined,
-              }),
+                formData: orderFormData,
+                isDelivery: orderIsDelivery,
+                deliveryAddress: orderDeliveryAddress,
+              }
+            );
+
+            // Send confirmation email to customer
+            await sendEmail(getEnvVar('bakesbycoral_resend_api_key'), {
+              to: order.customer_email,
+              subject: confirmEmail.subject,
+              html: confirmEmail.html,
               replyTo: 'hello@bakesbycoral.com',
             });
 
@@ -278,9 +367,47 @@ export async function POST(request: NextRequest) {
                 orderNumber: order.order_number,
                 orderType: order.order_type,
                 pickupDate: order.pickup_date || undefined,
-                formData: order.form_data ? JSON.parse(order.form_data) : undefined,
+                formData: orderFormData,
               }),
             });
+
+            // Send SMS confirmation
+            const twilioAccountSid = getEnvVar('bakesbycoral_twilio_account_sid');
+            const twilioAuthToken = getEnvVar('bakesbycoral_twilio_auth_token');
+            const twilioPhoneNumber = getEnvVar('bakesbycoral_twilio_phone_number');
+
+            if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber && order.customer_phone) {
+              try {
+                const smsTemplateKeyInvoice = orderIsDelivery ? 'sms_template_order_confirmed_delivery' : 'sms_template_order_confirmed';
+                const smsTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+                  .bind(smsTemplateKeyInvoice)
+                  .first<{ value: string }>();
+
+                const dateFormatted = order.pickup_date
+                  ? new Date(order.pickup_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+                  : '';
+
+                const smsBody = buildSmsMessage(
+                  smsTemplate?.value,
+                  orderIsDelivery ? DEFAULT_SMS_TEMPLATES.order_confirmed_delivery : DEFAULT_SMS_TEMPLATES.order_confirmed,
+                  {
+                    customer_name: order.customer_name,
+                    order_number: order.order_number,
+                    pickup_date: dateFormatted,
+                    pickup_time: order.pickup_time || '',
+                    delivery_date: dateFormatted,
+                    delivery_time: order.pickup_time || '',
+                  }
+                );
+
+                await sendSms(
+                  { accountSid: twilioAccountSid, authToken: twilioAuthToken, fromNumber: twilioPhoneNumber },
+                  { to: order.customer_phone, body: smsBody }
+                );
+              } catch (smsError) {
+                console.error('SMS send error (non-fatal):', smsError);
+              }
+            }
           }
 
           console.log(`Invoice paid for order ${order?.order_number}${quoteId ? ` (Quote: ${quoteId})` : ''}`);

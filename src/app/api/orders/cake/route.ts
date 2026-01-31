@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
+import { sendEmail, buildCakeInquiryNotification } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -81,56 +82,51 @@ export async function POST(request: NextRequest) {
       })
     ).run();
 
-    // Send email via Resend (same way as contact form which works)
+    // Send email via Resend
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
     if (resendApiKey) {
       try {
         const toppingsList = JSON.parse(toppings || '[]').join(', ') || 'None';
 
-        const response = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${resendApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: 'Bakes by Coral <onboarding@resend.dev>',
-            to: ['coral@bakesbycoral.com'],
-            reply_to: email,
-            subject: `New Cake Inquiry - ${orderNumber}`,
-            html: `
-              <h2>New Cake Inquiry</h2>
-              <p><strong>Order Number:</strong> ${orderNumber}</p>
-              <hr>
-              <p><strong>Customer:</strong> ${sanitizeInput(name)}</p>
-              <p><strong>Email:</strong> ${sanitizeInput(email)}</p>
-              <p><strong>Phone:</strong> ${sanitizeInput(phone)}</p>
-              <hr>
-              <h3>Cake Details</h3>
-              <p><strong>Event Type:</strong> ${eventType}</p>
-              <p><strong>Pickup Date:</strong> ${pickupDate || 'TBD'}</p>
-              <p><strong>Pickup Time:</strong> ${pickupTime || 'TBD'}</p>
-              <p><strong>Size:</strong> ${cakeSize}</p>
-              <p><strong>Shape:</strong> ${cakeShape}</p>
-              <p><strong>Flavor:</strong> ${cakeFlavor}</p>
-              <p><strong>Filling:</strong> ${filling || 'None'}</p>
-              <p><strong>Base Color:</strong> ${baseColor}</p>
-              <p><strong>Piping Colors:</strong> ${pipingColors}</p>
-              <p><strong>Custom Message:</strong> ${customMessaging}</p>
-              <p><strong>Message Style:</strong> ${messageStyle}</p>
-              <p><strong>Toppings:</strong> ${toppingsList}</p>
-              <p><strong>Allergies:</strong> ${allergies || 'None'}</p>
-              <p><strong>Inspiration Images:</strong> ${imageCount} uploaded</p>
-              ${notes ? `<p><strong>Additional Notes:</strong> ${sanitizeInput(notes)}</p>` : ''}
-              <hr>
-              <p><a href="https://bakesbycoral.com/admin/orders">View in Admin Dashboard</a></p>
-            `,
-          }),
-        });
+        // Get email template from settings
+        const cakeTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind('email_template_cake_inquiry')
+          .first<{ value: string }>();
+        const cakeSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
+          .bind('email_subject_cake_inquiry')
+          .first<{ value: string }>();
 
-        if (!response.ok) {
-          console.error('Failed to send email:', await response.text());
-        }
+        const emailContent = buildCakeInquiryNotification(
+          cakeTemplate?.value,
+          cakeSubject?.value,
+          {
+            orderNumber,
+            customerName: sanitizeInput(name),
+            customerEmail: sanitizeInput(email),
+            customerPhone: sanitizeInput(phone),
+            eventType,
+            pickupDate: pickupDate || '',
+            pickupTime: pickupTime || '',
+            cakeSize,
+            cakeShape,
+            cakeFlavor,
+            filling: filling || '',
+            baseColor,
+            pipingColors,
+            customMessaging,
+            toppings: toppingsList,
+            allergies: allergies || '',
+            notes: notes ? sanitizeInput(notes) : '',
+            adminUrl: 'https://bakesbycoral.com/admin/orders',
+          }
+        );
+
+        await sendEmail(resendApiKey, {
+          to: 'coral@bakesbycoral.com',
+          subject: emailContent.subject,
+          html: emailContent.html,
+          replyTo: email,
+        });
       } catch (emailError) {
         console.error('Email sending error:', emailError);
       }

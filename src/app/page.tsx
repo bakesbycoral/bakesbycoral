@@ -19,9 +19,9 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="relative min-h-[55vh] sm:min-h-[65vh] flex items-center bg-[#3D2318]">
-        {/* Background image - zoomed into lighter area on mobile */}
+        {/* Background image - positioned to show lighter marble/bowl area on mobile */}
         <div
-          className="absolute inset-0 bg-[length:200%] sm:bg-cover bg-[position:50%_60%] sm:bg-[position:center_60%]"
+          className="absolute inset-0 bg-[length:180%] sm:bg-cover bg-[position:30%_65%] sm:bg-[position:center_60%]"
           style={{
             backgroundImage: 'url("/hero-cookies.jpg")',
           }}
@@ -31,7 +31,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left: Headline */}
             <div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-[#4A2C21] leading-tight font-playfair font-bold">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl text-[#4A2C21] leading-tight font-playfair font-bold">
                 Gluten-Free Baking<br />
                 You'll <em className="italic">Actually</em> Crave
               </h1>
@@ -39,7 +39,7 @@ export default function HomePage() {
 
             {/* Right: Description + CTA */}
             <div className="lg:pl-8">
-              <p className="text-lg sm:text-xl text-[#4A2C21] leading-relaxed mb-8">
+              <p className="text-base sm:text-xl text-[#4A2C21] leading-relaxed mb-8">
                 Custom cakes & cookies made from scratch in my home bakery that taste just like the classics, without the gluten.
               </p>
               <Link
@@ -59,13 +59,13 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             {/* Profile Image */}
             <div className="flex justify-center md:justify-end">
-              <div className="w-72 h-72 sm:w-96 sm:h-96 rounded-full overflow-hidden shadow-lg">
+              <Link href="/about" className="w-72 h-72 sm:w-96 sm:h-96 rounded-full overflow-hidden shadow-lg block hover:shadow-xl hover:scale-[1.02] transition-all">
                 <img
                   src="/profile.jpg"
                   alt="Coralyn - Bakes by Coral"
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </Link>
             </div>
 
             {/* Text Content */}
@@ -124,7 +124,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-serif text-[#541409] mb-2">Local Pickup</h3>
               <p className="text-stone-600">
-                Fresh from my home kitchen to your hands. Located in Cincinnati, Ohio.
+                Fresh from my home kitchen to your hands. Located in Cincinnati, Ohio 45245.
               </p>
             </div>
           </div>
@@ -143,7 +143,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-3 sm:gap-8">
             {/* Custom Cakes Card */}
             <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
               <Link href="/cakes" className="aspect-[4/3] overflow-hidden block">
@@ -153,25 +153,34 @@ export default function HomePage() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </Link>
-              <div className="p-6">
-                <h3 className="text-2xl font-serif text-[#541409] mb-2">Custom Cakes</h3>
-                <p className="text-stone-600 mb-4">
-                  Beautiful 3-layer cakes for birthdays, showers, and celebrations.
-                  Choose your size, flavor, and design.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="px-3 py-1 bg-[#EAD6D6] text-[#541409] text-sm rounded-full">Starting at $60</span>
-                  <span className="px-3 py-1 bg-[#F7F3ED] text-stone-600 text-sm rounded-full">2 weeks notice</span>
-                </div>
-                <Link
-                  href="/cakes"
-                  className="inline-flex items-center text-[#541409] font-medium hover:opacity-70 transition-opacity"
-                >
-                  Explore Cakes
-                  <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+              <div className="p-3 sm:p-6">
+                <Link href="/cakes" className="block hover:opacity-70 transition-opacity">
+                  <h3 className="text-lg sm:text-2xl font-serif text-[#541409] mb-1 sm:mb-2">Custom Cakes</h3>
                 </Link>
+                <p className="text-stone-600 mb-2 sm:mb-4 text-xs sm:text-base">
+                  Beautiful 3-layer cakes for birthdays, showers, and celebrations.
+                </p>
+                <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-4">
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#EAD6D6] text-[#541409] text-xs sm:text-sm rounded-full">From $60</span>
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#F7F3ED] text-stone-600 text-xs sm:text-sm rounded-full">2 weeks</span>
+                </div>
+                <div className="flex flex-wrap gap-2 sm:gap-4">
+                  <Link
+                    href="/order/cake"
+                    className="inline-flex items-center text-[#541409] font-medium hover:opacity-70 transition-opacity text-xs sm:text-base"
+                  >
+                    Order
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                  <Link
+                    href="/cakes"
+                    className="inline-flex items-center text-[#541409]/70 font-medium hover:opacity-70 transition-opacity text-xs sm:text-base"
+                  >
+                    Cake Details
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -184,25 +193,34 @@ export default function HomePage() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </Link>
-              <div className="p-6">
-                <h3 className="text-2xl font-serif text-[#541409] mb-2">Cookies</h3>
-                <p className="text-stone-600 mb-4">
-                  Soft, chewy cookies in classic flavors. Perfect for gifts, events,
-                  or just because you deserve a treat.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="px-3 py-1 bg-[#EAD6D6] text-[#541409] text-sm rounded-full">$30/dozen</span>
-                  <span className="px-3 py-1 bg-[#F7F3ED] text-stone-600 text-sm rounded-full">1 week notice</span>
-                </div>
-                <Link
-                  href="/cookies"
-                  className="inline-flex items-center text-[#541409] font-medium hover:opacity-70 transition-opacity"
-                >
-                  Order Cookies
-                  <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+              <div className="p-3 sm:p-6">
+                <Link href="/cookies" className="block hover:opacity-70 transition-opacity">
+                  <h3 className="text-lg sm:text-2xl font-serif text-[#541409] mb-1 sm:mb-2">Cookies</h3>
                 </Link>
+                <p className="text-stone-600 mb-2 sm:mb-4 text-xs sm:text-base">
+                  Soft, chewy cookies in classic flavors. Perfect for gifts or events.
+                </p>
+                <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-4">
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#EAD6D6] text-[#541409] text-xs sm:text-sm rounded-full">$30/dozen</span>
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#F7F3ED] text-stone-600 text-xs sm:text-sm rounded-full">1 week</span>
+                </div>
+                <div className="flex flex-wrap gap-2 sm:gap-4">
+                  <Link
+                    href="/order/cookies"
+                    className="inline-flex items-center text-[#541409] font-medium hover:opacity-70 transition-opacity text-xs sm:text-base"
+                  >
+                    Order
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                  <Link
+                    href="/cookies"
+                    className="inline-flex items-center text-[#541409]/70 font-medium hover:opacity-70 transition-opacity text-xs sm:text-base"
+                  >
+                    View Flavors
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -216,12 +234,14 @@ export default function HomePage() {
             {/* Decorative border */}
             <div className="absolute inset-4 border border-[#EAD6D6]/30 rounded pointer-events-none"></div>
 
-            <span className="inline-block px-4 py-1.5 bg-[#EAD6D6]/20 text-[#EAD6D6] text-sm font-medium rounded-full mb-6">
+            <Link href="/weddings" className="inline-block px-4 py-1.5 bg-[#EAD6D6]/20 text-[#EAD6D6] text-sm font-medium rounded-full mb-6 hover:bg-[#EAD6D6]/30 transition-colors">
               Weddings
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-serif text-[#EAD6D6] mb-6">
-              Make Your Day Sweeter
-            </h2>
+            </Link>
+            <Link href="/weddings" className="block hover:opacity-80 transition-opacity">
+              <h2 className="text-3xl sm:text-4xl font-serif text-[#EAD6D6] mb-6">
+                Make Your Day Sweeter
+              </h2>
+            </Link>
             <p className="text-lg text-[#EAD6D6]/80 max-w-2xl mx-auto mb-8">
               Make your special day even sweeter with custom gluten-free desserts.
               From elegant wedding cakes to cookie favors for your guests.
@@ -237,9 +257,11 @@ export default function HomePage() {
             <div className="my-10 border-t border-[#EAD6D6]/30"></div>
 
             {/* Tasting Box Section */}
-            <h3 className="text-2xl sm:text-3xl font-serif text-[#EAD6D6] mb-4">
-              Cake & Cookie Tastings
-            </h3>
+            <Link href="/tasting" className="block hover:opacity-80 transition-opacity">
+              <h3 className="text-2xl sm:text-3xl font-serif text-[#EAD6D6] mb-4">
+                Cake & Cookie Tastings
+              </h3>
+            </Link>
             <p className="text-[#EAD6D6]/80 max-w-2xl mx-auto mb-8">
               Sample flavors before your big day! Tasting boxes include 4 cake flavors with fillings or 4 cookie flavors (2 of each). Book within 30 days and your tasting fee is credited toward your order.
             </p>

@@ -99,10 +99,10 @@ export default function Header() {
           {/* CTA Button */}
           <div className="flex items-center gap-4">
             <Link
-              href="/order/cake"
+              href="/order"
               className="hidden sm:inline-flex px-6 py-3 bg-[#EAD6D6] text-[#541409] text-base font-medium rounded-sm hover:opacity-80 transition-opacity"
             >
-              Custom Cake Form
+              Place an Order
             </Link>
 
             {/* Mobile menu button */}
@@ -168,11 +168,11 @@ export default function Header() {
               ))}
 
               <Link
-                href="/order/cake"
+                href="/order"
                 onClick={() => setMobileMenuOpen(false)}
                 className="mx-4 mt-2 px-5 py-3 bg-[#EAD6D6] text-[#541409] font-medium rounded-sm text-center hover:opacity-80 transition-opacity"
               >
-                Custom Cake Form
+                Place an Order
               </Link>
             </div>
           </nav>
