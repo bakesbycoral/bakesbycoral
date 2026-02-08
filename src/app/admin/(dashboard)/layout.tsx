@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getDB, getEnvVar } from '@/lib/db';
 import { verifySession } from '@/lib/auth/session';
-import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { AdminSidebar, MobileMenuProvider, MobileMenuButton } from '@/components/admin/AdminSidebar';
 
 interface Tenant {
   id: string;
@@ -110,15 +110,21 @@ export default async function DashboardLayout({
   const textColor = isDarkTheme ? 'text-white' : 'text-gray-900';
 
   return (
-    <div className={`flex min-h-screen ${bgColor} ${textColor}`} data-theme={isDarkTheme ? 'dark' : 'light'}>
-      <AdminSidebar
-        userEmail={user.email}
-        currentTenant={user.currentTenant}
-        tenants={user.tenants}
-      />
-      <main className="flex-1 p-8 ml-64">
-        {children}
-      </main>
-    </div>
+    <MobileMenuProvider>
+      <div className={`flex min-h-screen ${bgColor} ${textColor}`} data-theme={isDarkTheme ? 'dark' : 'light'}>
+        <MobileMenuButton
+          primaryColor={user.currentTenant.primary_color}
+          secondaryColor={user.currentTenant.secondary_color}
+        />
+        <AdminSidebar
+          userEmail={user.email}
+          currentTenant={user.currentTenant}
+          tenants={user.tenants}
+        />
+        <main className="flex-1 p-4 pt-16 md:p-8 md:ml-64">
+          {children}
+        </main>
+      </div>
+    </MobileMenuProvider>
   );
 }

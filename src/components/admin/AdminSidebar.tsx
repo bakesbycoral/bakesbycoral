@@ -2,7 +2,26 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, createContext, useContext } from 'react';
+
+// Context to share mobile menu state
+const MobileMenuContext = createContext<{
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}>({ isOpen: false, setIsOpen: () => {} });
+
+export function useMobileMenu() {
+  return useContext(MobileMenuContext);
+}
+
+export function MobileMenuProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <MobileMenuContext.Provider value={{ isOpen, setIsOpen }}>
+      {children}
+    </MobileMenuContext.Provider>
+  );
+}
 
 interface Tenant {
   id: string;
@@ -140,12 +159,38 @@ interface AdminSidebarProps {
   tenants: Tenant[];
 }
 
+export function MobileMenuButton({ primaryColor, secondaryColor }: { primaryColor?: string; secondaryColor?: string }) {
+  const { isOpen, setIsOpen } = useMobileMenu();
+  return (
+    <button
+      onClick={() => setIsOpen(!isOpen)}
+      className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-lg flex items-center justify-center shadow-lg transition-colors"
+      style={{
+        backgroundColor: primaryColor || '#541409',
+        color: secondaryColor || '#EAD6D6',
+      }}
+      aria-label="Toggle menu"
+    >
+      {isOpen ? (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      ) : (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 export function AdminSidebar({ userEmail, currentTenant, tenants }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [tenantDropdownOpen, setTenantDropdownOpen] = useState(false);
   const [switching, setSwitching] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { isOpen: mobileMenuOpen, setIsOpen: setMobileMenuOpen } = useMobileMenu();
 
   // Determine if using dark theme (LeanGo)
   const isDarkTheme = currentTenant.id === 'leango';
@@ -185,6 +230,11 @@ export function AdminSidebar({ userEmail, currentTenant, tenants }: AdminSidebar
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname, setMobileMenuOpen]);
 
   const handleLogout = async () => {
     await fetch('/api/admin/logout', { method: 'POST' });
@@ -230,7 +280,15 @@ export function AdminSidebar({ userEmail, currentTenant, tenants }: AdminSidebar
   // Dark theme sidebar (LeanGo)
   if (isDarkTheme) {
     return (
-      <aside className="fixed left-0 top-0 bottom-0 w-64 flex flex-col bg-gray-950 text-white border-r border-gray-800">
+      <>
+        {/* Mobile backdrop */}
+        {mobileMenuOpen && (
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+        <aside className={`fixed left-0 top-0 bottom-0 w-64 flex flex-col bg-gray-950 text-white border-r border-gray-800 z-40 transition-transform duration-300 ease-in-out ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         {/* Tenant Switcher */}
         <div className="p-6 border-b border-gray-800" ref={dropdownRef}>
           {tenants.length > 1 && (
@@ -369,15 +427,24 @@ export function AdminSidebar({ userEmail, currentTenant, tenants }: AdminSidebar
           </a>
         </div>
       </aside>
+      </>
     );
   }
 
   // Light theme sidebar (Bakes by Coral)
   return (
-    <aside
-      className="fixed left-0 top-0 bottom-0 w-64 flex flex-col"
-      style={{ backgroundColor: secondaryColor, color: primaryColor }}
-    >
+    <>
+      {/* Mobile backdrop */}
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+      <aside
+        className={`fixed left-0 top-0 bottom-0 w-64 flex flex-col z-40 transition-transform duration-300 ease-in-out ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+        style={{ backgroundColor: secondaryColor, color: primaryColor }}
+      >
       {/* Tenant Switcher */}
       <div className="p-6 border-b" style={{ borderColor: `${primaryColor}20` }} ref={dropdownRef}>
         {tenants.length > 1 && (
@@ -556,5 +623,6 @@ export function AdminSidebar({ userEmail, currentTenant, tenants }: AdminSidebar
         </a>
       </div>
     </aside>
+    </>
   );
 }

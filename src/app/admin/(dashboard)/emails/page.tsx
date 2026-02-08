@@ -145,7 +145,7 @@ export default function EmailsPage() {
   if (loading) {
     return (
       <div>
-        <h1 className="text-2xl font-bold text-[#541409] mb-8">Email Templates</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-[#541409] mb-6 md:mb-8">Email Templates</h1>
         <div className="bg-white rounded-xl p-6 shadow-sm border border-[#EAD6D6]">
           <div className="animate-pulse space-y-4">
             <div className="h-10 bg-[#EAD6D6]/50 rounded w-1/3"></div>
@@ -159,7 +159,7 @@ export default function EmailsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h1 className="text-2xl font-bold text-[#541409]">Messages</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-[#541409]">Messages</h1>
         <a
           href="/admin/emails/preview"
           className="text-sm text-[#541409]/70 hover:text-[#541409] transition-colors"

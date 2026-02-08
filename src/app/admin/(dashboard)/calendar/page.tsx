@@ -239,9 +239,9 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-[#541409]">Calendar</h1>
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between mb-4 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-bold text-[#541409]">Calendar</h1>
+        <div className="flex items-center gap-2 md:gap-4">
           <Link
             href={`/admin/calendar?month=${prevMonth}&year=${prevYear}`}
             className="p-2 hover:bg-[#EAD6D6]/30 rounded-lg transition-colors text-[#541409]"
@@ -250,7 +250,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
-          <span className="text-lg font-semibold text-[#541409]">
+          <span className="text-base md:text-lg font-semibold text-[#541409]">
             {monthNames[month]} {year}
           </span>
           <Link
@@ -270,9 +270,10 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
           <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-[#EAD6D6]">
             {/* Day headers */}
             <div className="grid grid-cols-7 bg-[#EAD6D6]/30 border-b border-[#EAD6D6]">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                <div key={day} className="p-3 text-center text-sm font-medium text-[#541409]">
-                  {day}
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                <div key={i} className="p-1.5 md:p-3 text-center text-xs md:text-sm font-medium text-[#541409]">
+                  <span className="md:hidden">{day}</span>
+                  <span className="hidden md:inline">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i]}</span>
                 </div>
               ))}
             </div>
@@ -294,7 +295,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                     key={index}
                     href={day ? `/admin/calendar?month=${month}&year=${year}&day=${day}` : '#'}
                     className={`
-                      min-h-[100px] p-2 border-b border-r border-[#EAD6D6] transition-colors relative
+                      min-h-[48px] md:min-h-[100px] p-1 md:p-2 border-b border-r border-[#EAD6D6] transition-colors relative
                       ${!day ? 'bg-[#EAD6D6]/20 pointer-events-none' : 'hover:bg-[#EAD6D6]/20 cursor-pointer'}
                       ${isBlocked ? 'bg-neutral-100' : isToday ? 'bg-[#EAD6D6]/40' : capacityBgColor}
                       ${isSelected ? 'ring-2 ring-inset ring-[#541409]' : ''}
@@ -302,53 +303,62 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                   >
                     {day && (
                       <>
-                        <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center justify-between mb-0.5 md:mb-1">
                           <span className={`
-                            text-sm font-medium
+                            text-xs md:text-sm font-medium
                             ${isBlocked ? 'text-neutral-400 line-through' : isToday ? 'text-[#541409]' : 'text-[#541409]/80'}
                           `}>
                             {day}
                           </span>
                           {isBlocked ? (
-                            <span className="w-2 h-2 rounded-full bg-neutral-400" title="Blocked" />
+                            <span className="w-1.5 md:w-2 h-1.5 md:h-2 rounded-full bg-neutral-400" title="Blocked" />
                           ) : dayOrders.length > 0 ? (
                             <span className={`
-                              w-2 h-2 rounded-full
+                              w-1.5 md:w-2 h-1.5 md:h-2 rounded-full
                               ${capacityColor}
                             `} title={`${dayOrders.length} orders`} />
                           ) : null}
                         </div>
                         {isBlocked ? (
-                          <div className="mt-2">
-                            <div className="px-1.5 py-1 text-xs rounded bg-neutral-200 text-neutral-600 font-medium">
+                          <div className="mt-0.5 md:mt-2">
+                            <div className="hidden md:block px-1.5 py-1 text-xs rounded bg-neutral-200 text-neutral-600 font-medium">
                               Blocked
                             </div>
                             {blockedReason && (
-                              <div className="text-xs text-neutral-500 mt-1 px-1.5 truncate">
+                              <div className="hidden md:block text-xs text-neutral-500 mt-1 px-1.5 truncate">
                                 {blockedReason}
                               </div>
                             )}
                           </div>
                         ) : (
-                          <div className="space-y-1">
-                            {dayOrders.slice(0, 2).map((order) => (
-                              <div
-                                key={order.id}
-                                className={`
-                                  px-1.5 py-0.5 text-xs rounded truncate
-                                  ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6] text-[#541409]'}
-                                `}
-                                title={`${order.customer_name} - ${formatTime(order.pickup_time)}`}
-                              >
-                                {order.customer_name.split(' ')[0]}
-                              </div>
-                            ))}
-                            {dayOrders.length > 2 && (
-                              <div className="text-xs text-[#541409]/60 px-1.5">
-                                +{dayOrders.length - 2} more
-                              </div>
-                            )}
-                          </div>
+                          <>
+                            {/* Mobile: just show count dot */}
+                            <div className="md:hidden text-center">
+                              {dayOrders.length > 0 && (
+                                <span className="text-[10px] text-[#541409]/60">{dayOrders.length}</span>
+                              )}
+                            </div>
+                            {/* Desktop: show order names */}
+                            <div className="hidden md:block space-y-1">
+                              {dayOrders.slice(0, 2).map((order) => (
+                                <div
+                                  key={order.id}
+                                  className={`
+                                    px-1.5 py-0.5 text-xs rounded truncate
+                                    ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6] text-[#541409]'}
+                                  `}
+                                  title={`${order.customer_name} - ${formatTime(order.pickup_time)}`}
+                                >
+                                  {order.customer_name.split(' ')[0]}
+                                </div>
+                              ))}
+                              {dayOrders.length > 2 && (
+                                <div className="text-xs text-[#541409]/60 px-1.5">
+                                  +{dayOrders.length - 2} more
+                                </div>
+                              )}
+                            </div>
+                          </>
                         )}
                       </>
                     )}
@@ -359,8 +369,8 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
           </div>
 
           {/* Legend */}
-          <div className="mt-4 flex flex-wrap gap-4 items-center">
-            <div className="flex items-center gap-4">
+          <div className="mt-3 md:mt-4 flex flex-wrap gap-2 md:gap-4 items-center">
+            <div className="hidden md:flex items-center gap-4">
               {Object.entries(orderTypeLabels).map(([type, label]) => (
                 <div key={type} className="flex items-center gap-1.5">
                   <div className={`w-3 h-3 rounded ${orderTypeColors[type]?.split(' ')[0] || 'bg-[#EAD6D6]'}`} />
@@ -368,7 +378,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                 </div>
               ))}
             </div>
-            <div className="flex items-center gap-4 ml-auto">
+            <div className="flex items-center gap-3 md:gap-4 md:ml-auto">
               <div className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full bg-green-500" />
                 <span className="text-xs text-[#541409]/70">Available</span>
@@ -600,7 +610,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
       </div>
 
       {/* This Month's Orders */}
-      <div className="mt-8 grid md:grid-cols-2 gap-6">
+      <div className="mt-6 md:mt-8 grid gap-4 md:gap-6 md:grid-cols-2">
         {/* Pickups */}
         <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
           <div className="flex items-center gap-2 mb-4">

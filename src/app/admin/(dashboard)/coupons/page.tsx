@@ -163,13 +163,13 @@ export default function CouponsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-[#541409]">Coupons</h1>
+      <div className="flex items-center justify-between mb-6 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-bold text-[#541409]">Coupons</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity"
+          className="px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity"
         >
-          {showForm ? 'Cancel' : '+ Create Coupon'}
+          {showForm ? 'Cancel' : '+ Create'}
         </button>
       </div>
 
@@ -330,10 +330,10 @@ export default function CouponsPage() {
           <div className="divide-y divide-[#EAD6D6]">
             {coupons.map((coupon) => (
               <div key={coupon.id} className="p-4 hover:bg-[#EAD6D6]/10 transition-colors">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="font-mono font-bold text-[#541409] text-lg">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 md:gap-3 mb-1 flex-wrap">
+                      <span className="font-mono font-bold text-[#541409] text-base md:text-lg">
                         {coupon.code}
                       </span>
                       <span className={`px-2 py-0.5 text-xs rounded-full ${
@@ -350,14 +350,13 @@ export default function CouponsPage() {
                     {coupon.description && (
                       <p className="text-sm text-[#541409]/70 mb-2">{coupon.description}</p>
                     )}
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#541409]/60">
+                    <div className="flex flex-wrap gap-x-3 md:gap-x-4 gap-y-1 text-xs text-[#541409]/60">
                       <span>Used: {coupon.current_uses}{coupon.max_uses ? `/${coupon.max_uses}` : ''}</span>
                       {coupon.min_order_amount > 0 && (
-                        <span>Min order: ${(coupon.min_order_amount / 100).toFixed(2)}</span>
+                        <span>Min: ${(coupon.min_order_amount / 100).toFixed(2)}</span>
                       )}
                       {coupon.valid_from && <span>From: {coupon.valid_from}</span>}
                       {coupon.valid_until && <span>Until: {coupon.valid_until}</span>}
-                      <span>For: {formatOrderTypes(coupon.order_types)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

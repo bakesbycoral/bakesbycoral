@@ -129,16 +129,16 @@ export default function CustomersPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-[#541409]">Customers</h1>
+      <div className="flex items-center justify-between mb-6 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-bold text-[#541409]">Customers</h1>
         <button
           onClick={() => {
             resetForm();
             setShowForm(!showForm);
           }}
-          className="px-4 py-2 bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity"
+          className="px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity"
         >
-          {showForm && !editingCustomer ? 'Cancel' : '+ Add Customer'}
+          {showForm && !editingCustomer ? 'Cancel' : '+ Add'}
         </button>
       </div>
 
@@ -242,90 +242,123 @@ export default function CustomersPage() {
       )}
 
       {/* Customers List */}
-      <div className="bg-white rounded-xl shadow-sm border border-[#EAD6D6] overflow-hidden">
-        {customers.length === 0 ? (
-          <div className="p-8 text-center text-[#541409]/60">
-            <p>{search ? 'No customers found matching your search.' : 'No customers yet.'}</p>
-            <p className="text-sm mt-1">
-              {search ? 'Try a different search term.' : 'Add your first customer to get started.'}
-            </p>
+      {customers.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm p-8 text-center text-[#541409]/60 border border-[#EAD6D6]">
+          <p>{search ? 'No customers found matching your search.' : 'No customers yet.'}</p>
+          <p className="text-sm mt-1">
+            {search ? 'Try a different search term.' : 'Add your first customer to get started.'}
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-3">
+            {customers.map((customer) => (
+              <div key={customer.id} className="bg-white rounded-xl shadow-sm p-4 border border-[#EAD6D6]">
+                <div className="flex items-start justify-between mb-2">
+                  <span className="font-medium text-[#541409]">{customer.name}</span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(customer)}
+                      className="px-2.5 py-1 text-xs bg-[#EAD6D6] text-[#541409] rounded-lg"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteCustomer(customer.id)}
+                      className="px-2.5 py-1 text-xs bg-red-50 text-red-600 rounded-lg"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-1 text-sm">
+                  {customer.email && (
+                    <a href={`mailto:${customer.email}`} className="block text-[#541409]/70">{customer.email}</a>
+                  )}
+                  {customer.phone && (
+                    <a href={`tel:${customer.phone}`} className="block text-[#541409]/70">{customer.phone}</a>
+                  )}
+                  {customer.notes && (
+                    <p className="text-[#541409]/50 text-xs mt-1">{customer.notes}</p>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-[#EAD6D6]/30 border-b border-[#EAD6D6]">
-                <tr>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-[#541409]">Name</th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-[#541409]">Email</th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-[#541409]">Phone</th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-[#541409]">Address</th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-[#541409]">Notes</th>
-                  <th className="text-right px-6 py-3 text-sm font-medium text-[#541409]">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#EAD6D6]">
-                {customers.map((customer) => (
-                  <tr key={customer.id} className="hover:bg-[#EAD6D6]/10 transition-colors">
-                    <td className="px-6 py-4">
-                      <span className="font-medium text-[#541409]">{customer.name}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      {customer.email ? (
-                        <a
-                          href={`mailto:${customer.email}`}
-                          className="text-[#541409] hover:underline"
-                        >
-                          {customer.email}
-                        </a>
-                      ) : (
-                        <span className="text-[#541409]/40">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      {customer.phone ? (
-                        <a
-                          href={`tel:${customer.phone}`}
-                          className="text-[#541409] hover:underline"
-                        >
-                          {customer.phone}
-                        </a>
-                      ) : (
-                        <span className="text-[#541409]/40">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-[#541409]/70 max-w-xs truncate block">
-                        {customer.address || <span className="text-[#541409]/40">-</span>}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-[#541409]/70 max-w-xs truncate block">
-                        {customer.notes || <span className="text-[#541409]/40">-</span>}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => handleEdit(customer)}
-                          className="px-3 py-1.5 text-sm bg-[#EAD6D6] text-[#541409] rounded-lg hover:bg-[#EAD6D6]/70 transition-colors"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => deleteCustomer(customer.id)}
-                          className="px-3 py-1.5 text-sm bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+
+          {/* Desktop Table */}
+          <div className="hidden md:block bg-white rounded-xl shadow-sm border border-[#EAD6D6] overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-[#EAD6D6]/30 border-b border-[#EAD6D6]">
+                  <tr>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-[#541409]">Name</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-[#541409]">Email</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-[#541409]">Phone</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-[#541409]">Address</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-[#541409]">Notes</th>
+                    <th className="text-right px-6 py-3 text-sm font-medium text-[#541409]">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-[#EAD6D6]">
+                  {customers.map((customer) => (
+                    <tr key={customer.id} className="hover:bg-[#EAD6D6]/10 transition-colors">
+                      <td className="px-6 py-4">
+                        <span className="font-medium text-[#541409]">{customer.name}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {customer.email ? (
+                          <a href={`mailto:${customer.email}`} className="text-[#541409] hover:underline">
+                            {customer.email}
+                          </a>
+                        ) : (
+                          <span className="text-[#541409]/40">-</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        {customer.phone ? (
+                          <a href={`tel:${customer.phone}`} className="text-[#541409] hover:underline">
+                            {customer.phone}
+                          </a>
+                        ) : (
+                          <span className="text-[#541409]/40">-</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-[#541409]/70 max-w-xs truncate block">
+                          {customer.address || <span className="text-[#541409]/40">-</span>}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-[#541409]/70 max-w-xs truncate block">
+                          {customer.notes || <span className="text-[#541409]/40">-</span>}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => handleEdit(customer)}
+                            className="px-3 py-1.5 text-sm bg-[#EAD6D6] text-[#541409] rounded-lg hover:bg-[#EAD6D6]/70 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteCustomer(customer.id)}
+                            className="px-3 py-1.5 text-sm bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
 
       {/* Summary */}
       {customers.length > 0 && (

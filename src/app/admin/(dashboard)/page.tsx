@@ -202,12 +202,12 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className={`text-2xl font-bold ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Dashboard</h1>
-        <p className={`mt-1 ${isDarkTheme ? 'text-gray-400' : 'text-gray-500'}`}>Welcome back! Here&apos;s what&apos;s happening.</p>
+        <h1 className={`text-xl md:text-2xl font-bold ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Dashboard</h1>
+        <p className={`mt-1 text-sm md:text-base ${isDarkTheme ? 'text-gray-400' : 'text-gray-500'}`}>Welcome back! Here&apos;s what&apos;s happening.</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {isBakery ? (
           <>
             <StatCard
@@ -283,9 +283,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className={`rounded-xl border p-6 ${isDarkTheme ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-        <h2 className={`text-lg font-semibold mb-4 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className={`rounded-xl border p-4 md:p-6 ${isDarkTheme ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <h2 className={`text-base md:text-lg font-semibold mb-3 md:mb-4 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Quick Actions</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {isBakery ? (
             <>
               <QuickAction href="/admin/orders" icon={<ClipboardIcon />} label="View Orders" isDark={isDarkTheme} />
@@ -505,15 +505,15 @@ function StatCard({
   const colorClasses = isDark ? colorClassesDark : colorClassesLight;
 
   return (
-    <div className={`rounded-xl border p-6 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-      <div className="flex items-center gap-3 mb-3">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClasses[color]}`}>
+    <div className={`rounded-xl border p-4 md:p-6 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+      <div className="flex items-center gap-3 mb-2 md:mb-3">
+        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center ${colorClasses[color]}`}>
           {icon}
         </div>
       </div>
-      <div className={`${isText ? 'text-2xl' : 'text-3xl'} font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{value}</div>
-      <div className={`text-sm mt-1 ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>{label}</div>
-      <div className={`text-xs mt-0.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{sublabel}</div>
+      <div className={`${isText ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'} font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{value}</div>
+      <div className={`text-xs md:text-sm mt-1 ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>{label}</div>
+      <div className={`text-xs mt-0.5 hidden md:block ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{sublabel}</div>
     </div>
   );
 }
@@ -523,14 +523,14 @@ function QuickAction({ href, icon, label, isDark = false }: { href: string; icon
   return (
     <Link
       href={href}
-      className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
+      className={`flex items-center gap-2 md:gap-3 p-3 md:p-4 rounded-lg border transition-colors ${
         isDark
           ? 'border-gray-700 hover:border-gray-600 hover:bg-gray-700/50'
           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
       }`}
     >
       <div className={isDark ? 'text-gray-400' : 'text-gray-400'}>{icon}</div>
-      <span className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{label}</span>
+      <span className={`text-sm md:text-base font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{label}</span>
     </Link>
   );
 }

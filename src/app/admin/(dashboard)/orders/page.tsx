@@ -128,11 +128,11 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-[#541409]">Orders</h1>
+      <div className="flex items-center justify-between mb-6 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-bold text-[#541409]">Orders</h1>
         <Link
           href="/admin/orders/new"
-          className="px-4 py-2 bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity font-medium"
+          className="px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity font-medium"
         >
           + Add Order
         </Link>
@@ -185,8 +185,48 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-[#EAD6D6]">
+      {/* Orders - Mobile Cards */}
+      <div className="md:hidden space-y-3">
+        {orders.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm p-8 text-center text-[#541409]/60 border border-[#EAD6D6]">
+            No orders found
+          </div>
+        ) : (
+          orders.map((order) => (
+            <Link
+              key={order.id}
+              href={`/admin/orders/${order.id}`}
+              className="block bg-white rounded-xl shadow-sm p-4 border border-[#EAD6D6] active:bg-[#EAD6D6]/20 transition-colors"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <div className="font-medium text-[#541409]">{order.customer_name}</div>
+                  <div className="text-xs text-[#541409]/60">{order.order_number}</div>
+                </div>
+                <span className="font-semibold text-[#541409]">
+                  {formatCurrency(order.total_amount)}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6] text-[#541409]'}`}>
+                  {orderTypeLabels[order.order_type] || order.order_type}
+                </span>
+                <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded capitalize ${statusColors[order.status] || 'bg-[#EAD6D6]'}`}>
+                  {order.status.replace('_', ' ')}
+                </span>
+                {order.pickup_date && (
+                  <span className="text-xs text-[#541409]/60 ml-auto">
+                    {formatDate(order.pickup_date)}{order.pickup_time ? ` ${formatTime(order.pickup_time)}` : ''}
+                  </span>
+                )}
+              </div>
+            </Link>
+          ))
+        )}
+      </div>
+
+      {/* Orders - Desktop Table */}
+      <div className="hidden md:block bg-white rounded-xl shadow-sm overflow-hidden border border-[#EAD6D6]">
         <table className="w-full">
           <thead className="bg-[#EAD6D6]/30 border-b border-[#EAD6D6]">
             <tr>
@@ -250,34 +290,34 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
             )}
           </tbody>
         </table>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-[#EAD6D6]">
-            <div className="text-sm text-[#541409]/60">
-              Showing {(page - 1) * perPage + 1} - {Math.min(page * perPage, totalOrders)} of {totalOrders}
-            </div>
-            <div className="flex gap-2">
-              {page > 1 && (
-                <Link
-                  href={buildUrl({ page: String(page - 1) })}
-                  className="px-3 py-1.5 text-sm bg-[#EAD6D6] text-[#541409] rounded hover:bg-[#EAD6D6]/70"
-                >
-                  Previous
-                </Link>
-              )}
-              {page < totalPages && (
-                <Link
-                  href={buildUrl({ page: String(page + 1) })}
-                  className="px-3 py-1.5 text-sm bg-[#EAD6D6] text-[#541409] rounded hover:bg-[#EAD6D6]/70"
-                >
-                  Next
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 md:px-6 py-4 bg-white rounded-xl md:rounded-none shadow-sm md:shadow-none border border-[#EAD6D6] md:border-t md:border-x-0 md:border-b-0 mt-3 md:mt-0">
+          <div className="text-sm text-[#541409]/60">
+            {(page - 1) * perPage + 1}-{Math.min(page * perPage, totalOrders)} of {totalOrders}
+          </div>
+          <div className="flex gap-2">
+            {page > 1 && (
+              <Link
+                href={buildUrl({ page: String(page - 1) })}
+                className="px-3 py-1.5 text-sm bg-[#EAD6D6] text-[#541409] rounded hover:bg-[#EAD6D6]/70"
+              >
+                Previous
+              </Link>
+            )}
+            {page < totalPages && (
+              <Link
+                href={buildUrl({ page: String(page + 1) })}
+                className="px-3 py-1.5 text-sm bg-[#EAD6D6] text-[#541409] rounded hover:bg-[#EAD6D6]/70"
+              >
+                Next
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
