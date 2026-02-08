@@ -1,0 +1,91 @@
+{
+  "hero": {
+    "label": "Success Stories",
+    "title": "Real Results from Real Partnerships",
+    "description": "See how we've helped organizations transform their operations, eliminate waste, and achieve measurable improvements."
+  },
+  "stories": [
+    {
+      "company": "Regional Manufacturing Co.",
+      "industry": "Manufacturing",
+      "challenge": "Struggling with high defect rates, long lead times, and inconsistent quality across production lines.",
+      "solution": "Implemented lean manufacturing principles, established visual management systems, and trained team leads in problem-solving methodologies.",
+      "results": [
+        "67% reduction in defect rates",
+        "40% improvement in on-time delivery",
+        "25% increase in throughput",
+        "$1.2M annual cost savings"
+      ],
+      "quote": "LeanGo didn't just give us tools—they helped us change how we think about problems. Our team now owns continuous improvement.",
+      "author": "Operations Director"
+    },
+    {
+      "company": "Metro Construction Group",
+      "industry": "Construction",
+      "challenge": "Projects consistently over budget and behind schedule, with poor communication between field teams and office.",
+      "solution": "Developed custom project tracking dashboards, streamlined daily standup processes, and implemented visual scheduling boards.",
+      "results": [
+        "35% reduction in project delays",
+        "20% improvement in budget accuracy",
+        "50% faster issue resolution",
+        "Improved client satisfaction scores"
+      ],
+      "quote": "The visibility we gained into our projects was game-changing. We catch problems early now instead of reacting to crises.",
+      "author": "Project Manager"
+    },
+    {
+      "company": "Healthcare Services Network",
+      "industry": "Healthcare",
+      "challenge": "Patient wait times were excessive, staff felt overwhelmed, and satisfaction scores were declining.",
+      "solution": "Mapped patient flow, identified bottlenecks, redesigned scheduling system, and created real-time capacity dashboards.",
+      "results": [
+        "45% reduction in patient wait times",
+        "30% increase in daily patient capacity",
+        "Improved staff morale and retention",
+        "15-point increase in satisfaction scores"
+      ],
+      "quote": "We were skeptical that manufacturing principles could work in healthcare. LeanGo showed us how to adapt the concepts to our context.",
+      "author": "Clinical Operations Manager"
+    },
+    {
+      "company": "Distribution Logistics Inc.",
+      "industry": "Logistics",
+      "challenge": "Warehouse operations were inefficient, with excessive walking time, picking errors, and inventory discrepancies.",
+      "solution": "Redesigned warehouse layout using spaghetti diagrams, implemented 5S methodology, and built inventory tracking dashboards.",
+      "results": [
+        "55% reduction in picking errors",
+        "30% improvement in picks per hour",
+        "98.5% inventory accuracy achieved",
+        "Reduced overtime by 40%"
+      ],
+      "quote": "The team actually got excited about organizing the warehouse. When people understand the 'why,' they become champions for change.",
+      "author": "Warehouse Manager"
+    }
+  ],
+  "metrics": {
+    "label": "By the Numbers",
+    "title": "Measurable Impact Across Industries",
+    "items": [
+      {
+        "value": "40%",
+        "label": "Average efficiency gain"
+      },
+      {
+        "value": "50+",
+        "label": "Organizations transformed"
+      },
+      {
+        "value": "95%",
+        "label": "Client satisfaction rate"
+      },
+      {
+        "value": "$10M+",
+        "label": "Client cost savings"
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Write Your Success Story?",
+    "description": "Every transformation starts with a conversation. Let's discuss how we can help your organization achieve real, lasting results."
+  }
+}

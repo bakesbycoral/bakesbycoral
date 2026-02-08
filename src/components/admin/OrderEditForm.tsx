@@ -594,7 +594,7 @@ export function OrderEditForm({ order, onCancel, onSave }: OrderEditFormProps) {
                   <option value="cookies-and-cream">Cookies & Cream (+$5)</option>
                   <option value="vanilla-bean-ganache">Vanilla Bean Ganache (+$10)</option>
                   <option value="fresh-strawberries">Fresh Strawberries (+$8)</option>
-                  <option value="lemon-curd">Lemon Curd (+$5)</option>
+                  <option value="lemon-ganache">Lemon Ganache (+$5)</option>
                   <option value="raspberry">Raspberry (+$8)</option>
                 </select>
               </div>
@@ -874,7 +874,7 @@ export function OrderEditForm({ order, onCancel, onSave }: OrderEditFormProps) {
                       <option value="cookies-and-cream">Cookies & Cream (+$5)</option>
                       <option value="vanilla-bean-ganache">Vanilla Bean Ganache (+$10)</option>
                       <option value="fresh-strawberries">Fresh Strawberries (+$8)</option>
-                      <option value="lemon-curd">Lemon Curd (+$5)</option>
+                      <option value="lemon-ganache">Lemon Ganache (+$5)</option>
                       <option value="raspberry">Raspberry (+$8)</option>
                     </select>
                   </div>

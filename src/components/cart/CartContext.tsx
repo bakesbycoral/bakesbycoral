@@ -1,7 +1,12 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
-import { FlavorSelection, CartState, COOKIES_PER_DOZEN, HALF_DOZEN } from '@/types/cart';
+import { FlavorSelection, CartState, COOKIES_PER_DOZEN, HALF_DOZEN, DOUBLE_COUNT_FLAVOR } from '@/types/cart';
+
+// Helper to calculate the "cookie cost" of a flavor (lemon shortbread counts as 2x)
+function getCookieCost(flavor: string, quantity: number): number {
+  return flavor === DOUBLE_COUNT_FLAVOR ? quantity * 2 : quantity;
+}
 
 interface CartContextType {
   dozens: CartState['dozens'];
@@ -17,6 +22,7 @@ interface CartContextType {
   targetCookies: number;
   remainingCookies: number;
   isComplete: boolean;
+  getCookieCostForFlavor: (flavor: string, quantity: number) => number;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -101,8 +107,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const targetCookies = dozens ? dozens * COOKIES_PER_DOZEN : 0;
       let newFlavors = prev.flavors;
 
-      // Calculate current total
-      const currentTotal = prev.flavors.reduce((sum, f) => sum + f.quantity, 0);
+      // Calculate current total (accounting for double-count flavors)
+      const currentTotal = prev.flavors.reduce((sum, f) => sum + getCookieCost(f.flavor, f.quantity), 0);
 
       // If current exceeds new target, clear flavors
       if (currentTotal > targetCookies) {
@@ -122,10 +128,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (!prev.dozens) return prev;
 
       const targetCookies = prev.dozens * COOKIES_PER_DOZEN;
-      const currentTotal = prev.flavors.reduce((sum, f) => sum + f.quantity, 0);
+      const currentTotal = prev.flavors.reduce((sum, f) => sum + getCookieCost(f.flavor, f.quantity), 0);
 
-      // Can't add if already at target
-      if (currentTotal >= targetCookies) return prev;
+      // For lemon shortbread: add 3 sandwiches (costs 6 cookies worth)
+      // For others: add 6 cookies
+      const isDouble = flavor === DOUBLE_COUNT_FLAVOR;
+      const addAmount = isDouble ? 3 : HALF_DOZEN;
+      const additionCost = isDouble ? HALF_DOZEN : HALF_DOZEN; // both cost 6 cookies worth
+
+      // Can't add if not enough room
+      if (currentTotal + additionCost > targetCookies) return prev;
 
       const existing = prev.flavors.find((f) => f.flavor === flavor);
 
@@ -133,13 +145,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return {
           ...prev,
           flavors: prev.flavors.map((f) =>
-            f.flavor === flavor ? { ...f, quantity: f.quantity + HALF_DOZEN } : f
+            f.flavor === flavor ? { ...f, quantity: f.quantity + addAmount } : f
           ),
         };
       } else {
         return {
           ...prev,
-          flavors: [...prev.flavors, { flavor, label, quantity: HALF_DOZEN }],
+          flavors: [...prev.flavors, { flavor, label, quantity: addAmount }],
         };
       }
     });
@@ -150,18 +162,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existing = prev.flavors.find((f) => f.flavor === flavor);
       if (!existing) return prev;
 
-      if (existing.quantity <= HALF_DOZEN) {
+      // For lemon shortbread: remove 3 sandwiches at a time
+      // For others: remove 6 cookies at a time
+      const isDouble = flavor === DOUBLE_COUNT_FLAVOR;
+      const removeAmount = isDouble ? 3 : HALF_DOZEN;
+
+      if (existing.quantity <= removeAmount) {
         // Remove entirely
         return {
           ...prev,
           flavors: prev.flavors.filter((f) => f.flavor !== flavor),
         };
       } else {
-        // Reduce by half dozen
+        // Reduce by the appropriate amount
         return {
           ...prev,
           flavors: prev.flavors.map((f) =>
-            f.flavor === flavor ? { ...f, quantity: f.quantity - HALF_DOZEN } : f
+            f.flavor === flavor ? { ...f, quantity: f.quantity - removeAmount } : f
           ),
         };
       }
@@ -186,10 +203,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  const totalCookies = cartState.flavors.reduce((sum, f) => sum + f.quantity, 0);
+  const totalCookies = cartState.flavors.reduce((sum, f) => sum + getCookieCost(f.flavor, f.quantity), 0);
   const targetCookies = cartState.dozens ? cartState.dozens * COOKIES_PER_DOZEN : 0;
   const remainingCookies = targetCookies - totalCookies;
   const isComplete = cartState.dozens !== null && totalCookies === targetCookies;
+  const getCookieCostForFlavor = getCookieCost;
 
   return (
     <CartContext.Provider
@@ -207,6 +225,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         targetCookies,
         remainingCookies,
         isComplete,
+        getCookieCostForFlavor,
       }}
     >
       {children}

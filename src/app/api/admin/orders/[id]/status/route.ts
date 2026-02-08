@@ -1,10 +1,6 @@
-
-
-
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getDB, getEnvVar } from '@/lib/db';
-import { verifySession } from '@/lib/auth/session';
+import { getDB } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth/admin-session';
 
 interface StatusUpdateRequest {
   status: string;
@@ -18,29 +14,13 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id } = await params;
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const db = getDB();
-
-    const userId = await verifySession(sessionToken, getEnvVar('bakesbycoral_session_secret'));
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Verify user is admin
-    const user = await db.prepare('SELECT role FROM users WHERE id = ?')
-      .bind(userId)
-      .first<{ role: string }>();
-
-    if (!user || user.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
 
     const { status, totalAmount }: StatusUpdateRequest = await request.json();
 
@@ -48,9 +28,9 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
-    // Get current order
-    const order = await db.prepare('SELECT * FROM orders WHERE id = ?')
-      .bind(id)
+    // Get current order (with tenant check)
+    const order = await db.prepare('SELECT * FROM orders WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
       .first<{ status: string; order_type: string }>();
 
     if (!order) {
@@ -79,8 +59,8 @@ export async function PUT(
       updateQuery += `, completed_at = datetime('now')`;
     }
 
-    updateQuery += ` WHERE id = ?`;
-    bindings.push(id);
+    updateQuery += ` WHERE id = ? AND tenant_id = ?`;
+    bindings.push(id, session.tenantId);
 
     await db.prepare(updateQuery).bind(...bindings).run();
 

@@ -12,6 +12,11 @@ binding = "DB"
 database_name = "bakes-coral-db"
 database_id = "2ea77357-2926-4597-8fae-d5f3646cf1ab"
 
+# R2 Storage for uploads (inspiration images, etc.)
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "bakes-coral-uploads"
+
 # Environment variables (secrets set via `wrangler secret put`)
 [vars]
 NEXT_PUBLIC_SITE_URL = "https://bakes-by-coral.coral-44f.workers.dev"

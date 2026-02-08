@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { getDB } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth/admin-session';
 
 interface UpdateOrderBody {
   customer_name?: string;
@@ -23,11 +23,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check for admin auth
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -101,15 +98,16 @@ export async function PATCH(
     updates.push('updated_at = ?');
     values.push(new Date().toISOString());
 
-    // Add the id for the WHERE clause
+    // Add the id and tenant_id for the WHERE clause
     values.push(id);
+    values.push(session.tenantId);
 
-    const query = `UPDATE orders SET ${updates.join(', ')} WHERE id = ?`;
+    const query = `UPDATE orders SET ${updates.join(', ')} WHERE id = ? AND tenant_id = ?`;
     await db.prepare(query).bind(...values).run();
 
     // Fetch the updated order
-    const updatedOrder = await db.prepare('SELECT * FROM orders WHERE id = ?')
-      .bind(id)
+    const updatedOrder = await db.prepare('SELECT * FROM orders WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
       .first();
 
     return NextResponse.json({ success: true, order: updatedOrder });
@@ -127,19 +125,16 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check for admin auth
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
     const db = getDB();
 
-    const order = await db.prepare('SELECT * FROM orders WHERE id = ?')
-      .bind(id)
+    const order = await db.prepare('SELECT * FROM orders WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
       .first();
 
     if (!order) {
@@ -161,20 +156,17 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check for admin auth
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
     const db = getDB();
 
-    // First check if order exists
-    const order = await db.prepare('SELECT id FROM orders WHERE id = ?')
-      .bind(id)
+    // First check if order exists for this tenant
+    const order = await db.prepare('SELECT id FROM orders WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
       .first();
 
     if (!order) {
@@ -185,7 +177,9 @@ export async function DELETE(
     await db.prepare('DELETE FROM order_notes WHERE order_id = ?').bind(id).run();
 
     // Delete the order
-    await db.prepare('DELETE FROM orders WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM orders WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
+      .run();
 
     return NextResponse.json({ success: true });
   } catch (error) {

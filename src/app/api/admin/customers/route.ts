@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth/admin-session';
 
 interface Customer {
   id: string;
@@ -16,16 +17,21 @@ interface Customer {
 // GET all customers
 export async function GET(request: NextRequest) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
 
     const db = getDB();
 
-    let query = 'SELECT * FROM customers';
-    const bindings: string[] = [];
+    let query = 'SELECT * FROM customers WHERE tenant_id = ?';
+    const bindings: string[] = [session.tenantId];
 
     if (search) {
-      query += ' WHERE name LIKE ? OR email LIKE ? OR phone LIKE ?';
+      query += ' AND (name LIKE ? OR email LIKE ? OR phone LIKE ?)';
       const searchTerm = `%${search}%`;
       bindings.push(searchTerm, searchTerm, searchTerm);
     }
@@ -44,6 +50,11 @@ export async function GET(request: NextRequest) {
 // POST create new customer
 export async function POST(request: NextRequest) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json() as {
       name?: string;
       email?: string;
@@ -62,15 +73,16 @@ export async function POST(request: NextRequest) {
     const id = `cust_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
     await db.prepare(`
-      INSERT INTO customers (id, name, email, phone, address, notes)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO customers (id, name, email, phone, address, notes, tenant_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `).bind(
       id,
       name.trim(),
       email?.trim() || null,
       phone?.trim() || null,
       address?.trim() || null,
-      notes?.trim() || null
+      notes?.trim() || null,
+      session.tenantId
     ).run();
 
     return NextResponse.json({ success: true, id });
@@ -86,6 +98,11 @@ export async function POST(request: NextRequest) {
 // PATCH update customer
 export async function PATCH(request: NextRequest) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json() as {
       id?: string;
       name?: string;
@@ -110,14 +127,15 @@ export async function PATCH(request: NextRequest) {
     await db.prepare(`
       UPDATE customers
       SET name = ?, email = ?, phone = ?, address = ?, notes = ?, updated_at = datetime('now')
-      WHERE id = ?
+      WHERE id = ? AND tenant_id = ?
     `).bind(
       name.trim(),
       email?.trim() || null,
       phone?.trim() || null,
       address?.trim() || null,
       notes?.trim() || null,
-      id
+      id,
+      session.tenantId
     ).run();
 
     return NextResponse.json({ success: true });
@@ -133,6 +151,11 @@ export async function PATCH(request: NextRequest) {
 // DELETE a customer
 export async function DELETE(request: NextRequest) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -141,7 +164,9 @@ export async function DELETE(request: NextRequest) {
     }
 
     const db = getDB();
-    await db.prepare('DELETE FROM customers WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM customers WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
+      .run();
 
     return NextResponse.json({ success: true });
   } catch (error) {

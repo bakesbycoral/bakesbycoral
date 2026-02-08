@@ -1,0 +1,148 @@
+{
+  "hero": {
+    "label": "Our Approach",
+    "title": "Tools don't solve problems. People do.",
+    "description": "Lean methods, Lean Apps, analytics, and training are tools we use to help you solve real problems. We use them intentionally and collaboratively, always with your team at the center.",
+    "primaryCta": {
+      "label": "Schedule Your First Session",
+      "href": "/book/consultation"
+    }
+  },
+  "toolsIntro": {
+    "title": "Tools Are Not the Solution. They Support the Solution.",
+    "description": "Most companies buy apps or run training and hope performance improves. It rarely works.",
+    "why": "Because the work isn't built around the people who actually run the process.",
+    "flip": "We work with your front-line teams to understand what they need, then use the right tools to help the solution stick."
+  },
+  "lean": {
+    "label": "Lean Problem Solving",
+    "subtitle": "For clarity and simplicity.",
+    "title": "Lean gives structure to the conversations your team is already having",
+    "questions": [
+      "Why is this happening?",
+      "What is the right way?",
+      "How do we make it easier to do it right?",
+      "How do we make the improvement stick?"
+    ],
+    "helpTitle": "We use Lean to help teams:",
+    "benefits": [
+      "Reduce scrap and rework",
+      "Improve flow and throughput",
+      "Stabilize processes",
+      "Build better standards"
+    ],
+    "closing": "Lean isn't the goal. The goal is better performance.",
+    "closingSub": "Lean is simply the structure that makes it possible.",
+    "href": "/lean-problem-solving"
+  },
+  "apps": {
+    "label": "Digitization (Apps + Automation)",
+    "subtitle": "For eliminating friction, paperwork, and confusion.",
+    "title": "We don't sell off-the-shelf apps.",
+    "description": "We build simple Lean Apps tools with your team that match exactly how your process works. We leverage the digital tools already in place to fill in the workflow gaps.",
+    "examplesTitle": "Examples include:",
+    "examples": [
+      "Scrap and downtime logging",
+      "Standard work checklists",
+      "Skill tracking and training systems",
+      "Tier meeting boards",
+      "Maintenance or quality workflows"
+    ],
+    "benefitsTitle": "These gap solutions:",
+    "benefits": [
+      "Reduce errors",
+      "Speed up communication",
+      "Improve ownership",
+      "Keep the process consistent",
+      "Make problems visible sooner"
+    ],
+    "closing": "Digital solutions help us work smarter.",
+    "href": "/apps"
+  },
+  "analytics": {
+    "label": "Analytics & Dashboards",
+    "subtitle": "For visibility, accountability, and sustainment.",
+    "title": "We build performance dashboards your team actually uses",
+    "description": "Because they helped design them.",
+    "helpTitle": "Dashboards help your people:",
+    "benefits": [
+      "See problems earlier",
+      "Make decisions faster",
+      "Understand flow and capacity",
+      "Track improvements",
+      "Stay aligned shift-to-shift"
+    ],
+    "closing": "We make analytics simple, not overwhelming.",
+    "closingSub": "The goal is not \"data.\" The goal is better daily, weekly, monthly, quarterly decisions.",
+    "href": "/analytics"
+  },
+  "training": {
+    "label": "Lean Training & Certifications",
+    "subtitle": "For leaders and front-line teams to succeed on their own.",
+    "title": "We build capability, not dependency.",
+    "weTrainTitle": "We train:",
+    "weTrain": [
+      "Team leads",
+      "Supervisors",
+      "Operators",
+      "Quality and maintenance techs",
+      "Future leaders"
+    ],
+    "focusTitle": "Our training focuses on:",
+    "focus": [
+      "Problem solving",
+      "Standard work",
+      "Communication",
+      "Daily management routines",
+      "Using digital tools confidently",
+      "Running effective meetings"
+    ],
+    "closing": "When your people grow, performance grows.",
+    "certifications": [
+      {
+        "title": "Lean Lego Simulation",
+        "color": "yellow",
+        "who": "Frontline team members, Leaders & Supervisors, Direct & Support managers or anyone new to Lean",
+        "cta": "Get Yellow Belt Certified"
+      },
+      {
+        "title": "Lean Six Sigma",
+        "color": "green",
+        "who": "Operations & Production professionals, Quality & Process improvement teams, Supply chain & Logistics leaders, or anyone wanting to upgrade their Lean skills",
+        "cta": "Get Green Belt Certified"
+      },
+      {
+        "title": "Lean Practitioner",
+        "color": "blue",
+        "who": "Production & Operations leaders, Continuous Improvement professionals, Mid-level managers & supervisors, Process owners & Frontline champions",
+        "cta": "Get Lean Certified"
+      }
+    ],
+    "href": "/training"
+  },
+  "together": {
+    "title": "How Can It All Come Together?",
+    "subtitle": "Each solution works well alone and the sum of the parts is even better.",
+    "weaveTitle": "Here's how we weave them together:",
+    "weave": [
+      "Your team brings the real experience and insight",
+      "We bring the structure, tools, and horsepower",
+      "Together we create a solution that fits your operation",
+      "Tools support the solution, not replace it",
+      "Your people sustain and improve the system long after we leave"
+    ],
+    "resultsTitle": "This is why our clients see:",
+    "results": [
+      "More stable performance",
+      "Faster improvements",
+      "Less firefighting",
+      "Better morale",
+      "Higher ownership",
+      "Results that last"
+    ]
+  },
+  "cta": {
+    "title": "Ready to start improving?",
+    "description": "Schedule a free consultation to discuss your challenges and discover how we can help."
+  }
+}

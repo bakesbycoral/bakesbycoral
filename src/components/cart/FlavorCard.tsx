@@ -1,7 +1,7 @@
 'use client';
 
 import { useCart } from './CartContext';
-import { HALF_DOZEN } from '@/types/cart';
+import { HALF_DOZEN, DOUBLE_COUNT_FLAVOR } from '@/types/cart';
 
 interface FlavorCardProps {
   flavorKey: string;
@@ -11,9 +11,14 @@ interface FlavorCardProps {
 export function FlavorCard({ flavorKey, label }: FlavorCardProps) {
   const { dozens, flavors, addHalfDozen, removeHalfDozen, remainingCookies } = useCart();
 
+  const isDoubleCount = flavorKey === DOUBLE_COUNT_FLAVOR;
   const flavorData = flavors.find((f) => f.flavor === flavorKey);
   const quantity = flavorData?.quantity || 0;
-  const canAdd = dozens !== null && remainingCookies >= HALF_DOZEN;
+
+  // For lemon shortbread: adding 3 sandwiches costs 6 cookies worth
+  // For others: adding 6 cookies costs 6 cookies worth
+  const costToAdd = HALF_DOZEN; // Always costs half dozen worth
+  const canAdd = dozens !== null && remainingCookies >= costToAdd;
   const canRemove = quantity > 0;
 
   const handleAdd = () => {
@@ -27,7 +32,11 @@ export function FlavorCard({ flavorKey, label }: FlavorCardProps) {
   return (
     <div className="bg-white rounded-lg p-3 shadow-sm border border-[#EAD6D6] flex flex-col">
       <h3 className="text-sm sm:text-base font-serif text-[#541409] mb-0.5">{label}</h3>
-      <p className="text-xs text-[#541409]/70 mb-2">$30/dozen</p>
+      {isDoubleCount ? (
+        <p className="text-xs text-[#541409]/70 mb-2">$30 for 6 sandwiches</p>
+      ) : (
+        <p className="text-xs text-[#541409]/70 mb-2">$30/dozen</p>
+      )}
 
       {dozens === null ? (
         <p className="text-xs text-[#541409]/50 italic">Select quantity first</p>
@@ -46,7 +55,7 @@ export function FlavorCard({ flavorKey, label }: FlavorCardProps) {
 
           <div className="text-center">
             <span className="text-lg font-medium text-[#541409]">{quantity}</span>
-            <p className="text-[10px] text-[#541409]/60">cookies</p>
+            <p className="text-[10px] text-[#541409]/60">{isDoubleCount ? 'sandwiches' : 'cookies'}</p>
           </div>
 
           <button

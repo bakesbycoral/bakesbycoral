@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getDB, getEnvVar } from '@/lib/db';
-import { verifySession } from '@/lib/auth/session';
+import { getDB } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth/admin-session';
 import type { Quote, QuoteLineItem } from '@/types';
 
 interface UpdateQuoteRequest {
@@ -11,40 +10,14 @@ interface UpdateQuoteRequest {
   valid_until?: string;
 }
 
-// Verify admin session helper
-async function verifyAdmin() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get('session')?.value;
-
-  if (!sessionToken) {
-    return null;
-  }
-
-  const userId = await verifySession(sessionToken, getEnvVar('bakesbycoral_session_secret'));
-  if (!userId) {
-    return null;
-  }
-
-  const db = getDB();
-  const user = await db.prepare('SELECT role FROM users WHERE id = ?')
-    .bind(userId)
-    .first<{ role: string }>();
-
-  if (!user || user.role !== 'admin') {
-    return null;
-  }
-
-  return userId;
-}
-
 // GET /api/admin/quotes/[id] - Get a single quote with line items
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const adminId = await verifyAdmin();
-    if (!adminId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -55,8 +28,8 @@ export async function GET(
       SELECT q.*, o.order_number as order_order_number, o.customer_name, o.customer_email
       FROM quotes q
       JOIN orders o ON q.order_id = o.id
-      WHERE q.id = ?
-    `).bind(id).first<Quote & { order_order_number: string; customer_name: string; customer_email: string }>();
+      WHERE q.id = ? AND q.tenant_id = ?
+    `).bind(id, session.tenantId).first<Quote & { order_order_number: string; customer_name: string; customer_email: string }>();
 
     if (!quote) {
       return NextResponse.json({ error: 'Quote not found' }, { status: 404 });
@@ -85,8 +58,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const adminId = await verifyAdmin();
-    if (!adminId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -95,8 +68,8 @@ export async function PUT(
     const db = getDB();
 
     // Verify quote exists and is still editable
-    const quote = await db.prepare('SELECT id, status FROM quotes WHERE id = ?')
-      .bind(id)
+    const quote = await db.prepare('SELECT id, status FROM quotes WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
       .first<{ id: string; status: string }>();
 
     if (!quote) {
@@ -129,8 +102,9 @@ export async function PUT(
     }
 
     values.push(id);
+    values.push(session.tenantId);
 
-    await db.prepare(`UPDATE quotes SET ${updates.join(', ')} WHERE id = ?`)
+    await db.prepare(`UPDATE quotes SET ${updates.join(', ')} WHERE id = ? AND tenant_id = ?`)
       .bind(...values)
       .run();
 
@@ -150,8 +124,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const adminId = await verifyAdmin();
-    if (!adminId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -159,8 +133,8 @@ export async function DELETE(
     const db = getDB();
 
     // Verify quote exists and is deletable
-    const quote = await db.prepare('SELECT id, status FROM quotes WHERE id = ?')
-      .bind(id)
+    const quote = await db.prepare('SELECT id, status FROM quotes WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
       .first<{ id: string; status: string }>();
 
     if (!quote) {
@@ -175,7 +149,9 @@ export async function DELETE(
     await db.prepare('DELETE FROM quote_line_items WHERE quote_id = ?').bind(id).run();
 
     // Delete quote
-    await db.prepare('DELETE FROM quotes WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM quotes WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
+      .run();
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,0 +1,111 @@
+{
+  "hero": {
+    "label": "Lean Certifications",
+    "title": "Build Real Improvement Capability",
+    "description": "Certification programs that develop practical skills. Your team learns by solving real problems, not studying for tests.",
+    "primaryCta": {
+      "label": "Discuss Certification Options",
+      "href": "/book/consultation"
+    }
+  },
+  "intro": {
+    "title": "Two Paths to Lean Expertise",
+    "description": "Whether you need foundational skills or advanced project leadership, we have a program that fits. Both certifications focus on practical application in your organization."
+  },
+  "practitioner": {
+    "label": "Foundation Level",
+    "title": "Lean Practitioner",
+    "color": "blue",
+    "duration": "2 days",
+    "description": "Foundation-level training for anyone involved in improvement work. Learn to see waste, understand flow, and contribute to problem-solving efforts.",
+    "idealFor": [
+      "Team members participating in improvement projects",
+      "Supervisors and team leads",
+      "Support staff in quality, maintenance, or logistics",
+      "Anyone new to lean methodology"
+    ],
+    "outcomes": [
+      "Identify and categorize the 8 wastes",
+      "Map simple processes and identify improvement opportunities",
+      "Participate effectively in problem-solving activities",
+      "Use basic visual management techniques",
+      "Apply 5S principles to your work area",
+      "Understand the foundation of continuous improvement"
+    ],
+    "format": {
+      "title": "How It Works",
+      "points": [
+        "2 days of hands-on training",
+        "Mix of instruction and practical exercises",
+        "Apply concepts to your actual work environment",
+        "Certification upon completion"
+      ]
+    }
+  },
+  "sixSigma": {
+    "label": "Advanced Level",
+    "title": "Lean Six Sigma Green Belt",
+    "color": "green",
+    "duration": "8 days + project",
+    "description": "Project leadership skills for those who will lead improvement initiatives. Learn to scope projects, lead teams, analyze data, and sustain results.",
+    "idealFor": [
+      "Continuous improvement professionals",
+      "Operations and production leaders",
+      "Quality and process engineers",
+      "Mid-level managers driving change",
+      "Anyone leading improvement projects"
+    ],
+    "outcomes": [
+      "Scope and charter improvement projects",
+      "Lead cross-functional improvement teams",
+      "Use data analysis to identify root causes",
+      "Apply advanced problem-solving tools",
+      "Implement control systems that sustain gains",
+      "Coach others in lean methodology"
+    ],
+    "format": {
+      "title": "How It Works",
+      "points": [
+        "8 days of training spread over several weeks",
+        "Complete a real improvement project in your organization",
+        "Receive coaching support throughout the project",
+        "Present results and demonstrate measurable impact",
+        "Certification upon successful project completion"
+      ]
+    }
+  },
+  "comparison": {
+    "title": "Which Program Is Right?",
+    "practitioner": {
+      "title": "Choose Lean Practitioner if:",
+      "points": [
+        "You're new to lean concepts",
+        "You participate in but don't lead projects",
+        "You want foundational skills quickly",
+        "You need a common language for your team"
+      ]
+    },
+    "sixSigma": {
+      "title": "Choose Lean Six Sigma if:",
+      "points": [
+        "You'll lead improvement projects",
+        "You need advanced analytical skills",
+        "You want to coach and develop others",
+        "You're building a formal improvement program"
+      ]
+    }
+  },
+  "whyOurs": {
+    "title": "Why Our Certifications Are Different",
+    "points": [
+      "Real projects, not case studies. You work on actual problems in your organization.",
+      "Coaching included. You get support between sessions to apply what you learn.",
+      "Practical focus. Every tool we teach has been proven in real organizations.",
+      "Flexible delivery. In-person, virtual, or hybrid to fit how your team works."
+    ]
+  },
+  "cta": {
+    "title": "Ready to build your team's capability?",
+    "description": "Let's discuss which certification program would best serve your team's development goals."
+  }
+}

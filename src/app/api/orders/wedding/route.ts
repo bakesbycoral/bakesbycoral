@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
 import { sendEmail, buildWeddingInquiryNotification } from '@/lib/email';
+import { uploadInspirationImages } from '@/lib/uploads';
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,9 +56,11 @@ export async function POST(request: NextRequest) {
 
     const db = getDB();
 
-    // Count inspiration images
+    // Upload inspiration images to R2
     const inspirationImages = formData.getAll('inspiration_images') as File[];
-    const imageCount = inspirationImages.filter(f => f && f.size > 0).length;
+    const validImages = inspirationImages.filter(f => f && f.size > 0);
+    const imageUrls = await uploadInspirationImages(validImages, 'wedding');
+    const imageCount = validImages.length;
 
     // Create inquiry in database
     const orderId = crypto.randomUUID();
@@ -110,6 +113,7 @@ export async function POST(request: NextRequest) {
         dietary_restrictions: sanitizeInput(dietaryRestrictions),
         how_found_us: sanitizeInput(howFoundUs),
         inspiration_image_count: imageCount,
+        inspiration_image_urls: imageUrls,
       })
     ).run();
 

@@ -4,13 +4,24 @@ const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 interface SessionPayload {
   userId: string;
+  tenantId: string;
   exp: number;
 }
 
+export interface SessionData {
+  userId: string;
+  tenantId: string;
+}
+
 // Create a signed session token
-export async function createSession(userId: string, secret: string): Promise<string> {
+export async function createSession(
+  userId: string,
+  tenantId: string,
+  secret: string
+): Promise<string> {
   const payload: SessionPayload = {
     userId,
+    tenantId,
     exp: Date.now() + SESSION_DURATION_MS,
   };
 
@@ -39,7 +50,7 @@ export async function createSession(userId: string, secret: string): Promise<str
 }
 
 // Verify and decode a session token
-export async function verifySession(token: string, secret: string): Promise<string | null> {
+export async function verifySession(token: string, secret: string): Promise<SessionData | null> {
   try {
     const [base64Data, base64Signature] = token.split('.');
     if (!base64Data || !base64Signature) return null;
@@ -72,8 +83,23 @@ export async function verifySession(token: string, secret: string): Promise<stri
     // Check expiration
     if (payload.exp < Date.now()) return null;
 
-    return payload.userId;
+    return {
+      userId: payload.userId,
+      tenantId: payload.tenantId || 'bakes-by-coral', // Fallback for old sessions
+    };
   } catch {
     return null;
   }
+}
+
+// Update tenant in existing session (for tenant switching)
+export async function updateSessionTenant(
+  token: string,
+  newTenantId: string,
+  secret: string
+): Promise<string | null> {
+  const session = await verifySession(token, secret);
+  if (!session) return null;
+
+  return createSession(session.userId, newTenantId, secret);
 }

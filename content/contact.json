@@ -1,0 +1,42 @@
+{
+  "hero": {
+    "label": "Contact",
+    "title": "Let's Start a Conversation",
+    "description": "Have a question or want to discuss how we might help? We'd love to hear from you."
+  },
+  "form": {
+    "title": "Send Us a Message",
+    "fields": {
+      "name": "Your Name",
+      "email": "Email Address",
+      "company": "Company",
+      "phone": "Phone (optional)",
+      "message": "How can we help?"
+    },
+    "submit": "Send Message",
+    "success": "Thanks for reaching out! We'll get back to you within one business day."
+  },
+  "info": {
+    "title": "Other Ways to Reach Us",
+    "email": {
+      "label": "Email",
+      "value": "hello@leango.com"
+    },
+    "phone": {
+      "label": "Phone",
+      "value": "(513) 582-7714"
+    },
+    "location": {
+      "label": "Location",
+      "value": "Cincinnati, OH"
+    }
+  },
+  "schedule": {
+    "title": "Prefer to Talk Live?",
+    "description": "Schedule a free 30-minute consultation. We'll discuss your challenges and share how we might help.",
+    "cta": {
+      "label": "Schedule a Call",
+      "href": "/book/consultation"
+    }
+  }
+}

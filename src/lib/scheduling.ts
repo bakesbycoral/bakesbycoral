@@ -25,6 +25,7 @@ const DEFAULT_LEAD_TIMES: Record<OrderType, number> = {
   cake: 14,
   wedding: 30,
   tasting: 14,
+  cookie_cups: 7,
 };
 
 // Generate time slots with configurable duration
@@ -127,7 +128,7 @@ export async function isWithinLeadTime(date: Date, orderType: OrderType): Promis
   return date >= minDate;
 }
 
-export async function validateRequestedDate(dateStr: string, orderType: OrderType): Promise<string | null> {
+export async function validateRequestedDate(dateStr: string, orderType: OrderType, tenantId: string = 'bakes-by-coral'): Promise<string | null> {
   if (!dateStr) return 'Date is required';
 
   const date = new Date(dateStr + 'T12:00:00');
@@ -140,7 +141,7 @@ export async function validateRequestedDate(dateStr: string, orderType: OrderTyp
     return `Date must be on or after ${minDateStr}`;
   }
 
-  const available = await isDateAvailable(dateStr);
+  const available = await isDateAvailable(dateStr, tenantId);
   if (!available) {
     return 'Selected date is not available for pickup';
   }
@@ -149,9 +150,9 @@ export async function validateRequestedDate(dateStr: string, orderType: OrderTyp
 }
 
 // Check if a date is available for pickup
-export async function isDateAvailable(dateStr: string): Promise<boolean> {
+export async function isDateAvailable(dateStr: string, tenantId: string = 'bakes-by-coral'): Promise<boolean> {
   // Check if it's a blackout date
-  if (await isBlackoutDate(dateStr)) {
+  if (await isBlackoutDate(tenantId, dateStr)) {
     return false;
   }
 
@@ -163,7 +164,7 @@ export async function isDateAvailable(dateStr: string): Promise<boolean> {
 
 // Get available slots for a date
 // Get next available date for order type
-export async function getNextAvailableDate(orderType: OrderType): Promise<string> {
+export async function getNextAvailableDate(orderType: OrderType, tenantId: string = 'bakes-by-coral'): Promise<string> {
   const minDate = await getMinimumDate(orderType);
   const maxIterations = 90; // Don't look more than 90 days ahead
 
@@ -176,7 +177,7 @@ export async function getNextAvailableDate(orderType: OrderType): Promise<string
     if (hours) {
       const dateStr = checkDate.toISOString().split('T')[0];
       // Also check it's not a blackout date
-      if (!(await isBlackoutDate(dateStr))) {
+      if (!(await isBlackoutDate(tenantId, dateStr))) {
         return dateStr;
       }
     }

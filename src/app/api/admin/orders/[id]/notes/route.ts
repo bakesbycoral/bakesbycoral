@@ -1,13 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { getOrderNotes, addOrderNote } from '@/lib/db/notes';
+import { getAdminSession } from '@/lib/auth/admin-session';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id: orderId } = await params;
+    const db = getDB();
+
+    // Verify order belongs to this tenant
+    const order = await db.prepare('SELECT id FROM orders WHERE id = ? AND tenant_id = ?')
+      .bind(orderId, session.tenantId)
+      .first();
+
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
     const notes = await getOrderNotes(orderId);
     return NextResponse.json({ notes });
   } catch (error) {
@@ -24,6 +41,11 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id: orderId } = await params;
     const body = await request.json() as { note?: string };
     const { note } = body;
@@ -35,10 +57,10 @@ export async function POST(
       );
     }
 
-    // Verify order exists
+    // Verify order exists and belongs to this tenant
     const db = getDB();
-    const order = await db.prepare('SELECT id FROM orders WHERE id = ?')
-      .bind(orderId)
+    const order = await db.prepare('SELECT id FROM orders WHERE id = ? AND tenant_id = ?')
+      .bind(orderId, session.tenantId)
       .first();
 
     if (!order) {
@@ -51,8 +73,8 @@ export async function POST(
     const noteId = await addOrderNote(orderId, note.trim());
 
     // Update order's updated_at timestamp
-    await db.prepare('UPDATE orders SET updated_at = datetime("now") WHERE id = ?')
-      .bind(orderId)
+    await db.prepare('UPDATE orders SET updated_at = datetime("now") WHERE id = ? AND tenant_id = ?')
+      .bind(orderId, session.tenantId)
       .run();
 
     return NextResponse.json({ success: true, noteId });

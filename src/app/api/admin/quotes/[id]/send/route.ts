@@ -1,36 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { getDB, getEnvVar } from '@/lib/db';
-import { verifySession } from '@/lib/auth/session';
+import { getAdminSession } from '@/lib/auth/admin-session';
 import { sendEmail, buildQuoteFromTemplate } from '@/lib/email';
 import { sendSms, buildSmsMessage, DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
 import type { Quote, QuoteLineItem } from '@/types';
-
-// Verify admin session helper
-async function verifyAdmin() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get('session')?.value;
-
-  if (!sessionToken) {
-    return null;
-  }
-
-  const userId = await verifySession(sessionToken, getEnvVar('bakesbycoral_session_secret'));
-  if (!userId) {
-    return null;
-  }
-
-  const db = getDB();
-  const user = await db.prepare('SELECT role FROM users WHERE id = ?')
-    .bind(userId)
-    .first<{ role: string }>();
-
-  if (!user || user.role !== 'admin') {
-    return null;
-  }
-
-  return userId;
-}
 
 // POST /api/admin/quotes/[id]/send - Send quote to customer
 export async function POST(
@@ -38,21 +11,21 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const adminId = await verifyAdmin();
-    if (!adminId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
     const db = getDB();
 
-    // Get quote with order details
+    // Get quote with order details (with tenant check)
     const quote = await db.prepare(`
       SELECT q.*, o.order_number, o.order_type, o.customer_name, o.customer_email, o.customer_phone
       FROM quotes q
       JOIN orders o ON q.order_id = o.id
-      WHERE q.id = ?
-    `).bind(id).first<Quote & {
+      WHERE q.id = ? AND q.tenant_id = ?
+    `).bind(id, session.tenantId).first<Quote & {
       order_number: string;
       order_type: string;
       customer_name: string;

@@ -1,6 +1,8 @@
 import Link from 'next/link';
-import { getDB } from '@/lib/db';
+import { cookies } from 'next/headers';
+import { getDB, getEnvVar } from '@/lib/db';
 import { getBlackoutDates } from '@/lib/db/blackout';
+import { verifySession } from '@/lib/auth/session';
 
 interface Order {
   id: string;
@@ -98,8 +100,17 @@ function getCapacityBgColor(orderCount: number, maxCapacity: number): string {
   return '';
 }
 
+async function getTenantId(): Promise<string> {
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get('session')?.value;
+  if (!sessionToken) return 'bakes-by-coral';
+  const session = await verifySession(sessionToken, getEnvVar('bakesbycoral_session_secret'));
+  return session?.tenantId || 'bakes-by-coral';
+}
+
 export default async function CalendarPage({ searchParams }: CalendarPageProps) {
   const params = await searchParams;
+  const tenantId = await getTenantId();
   const now = new Date();
   const year = params.year ? parseInt(params.year) : now.getFullYear();
   const month = params.month ? parseInt(params.month) : now.getMonth();
@@ -116,8 +127,9 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
     FROM orders
     WHERE pickup_date >= ? AND pickup_date <= ?
       AND status NOT IN ('cancelled', 'pending_payment')
+      AND tenant_id = ?
     ORDER BY pickup_date, pickup_time
-  `).bind(startDate, endDate).all<Order>();
+  `).bind(startDate, endDate, tenantId).all<Order>();
 
   // Parse orders to determine pickup vs delivery
   const orders: ParsedOrder[] = (results.results || []).map((order) => {
@@ -165,7 +177,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
   const deliveryOrders = orders.filter(o => o.isDelivery);
 
   // Fetch blackout dates for this month
-  const allBlackoutDates = await getBlackoutDates();
+  const allBlackoutDates = await getBlackoutDates(tenantId);
   const blackoutDateMap: Record<string, BlackoutDate> = {};
   for (const blackout of allBlackoutDates) {
     if (blackout.date >= startDate && blackout.date <= endDate) {

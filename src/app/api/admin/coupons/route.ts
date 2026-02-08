@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth/admin-session';
 
 interface Coupon {
   id: string;
@@ -20,10 +21,15 @@ interface Coupon {
 // GET all coupons
 export async function GET() {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const db = getDB();
     const results = await db.prepare(`
-      SELECT * FROM coupons ORDER BY created_at DESC
-    `).all<Coupon>();
+      SELECT * FROM coupons WHERE tenant_id = ? ORDER BY created_at DESC
+    `).bind(session.tenantId).all<Coupon>();
 
     return NextResponse.json({ coupons: results.results || [] });
   } catch (error) {
@@ -35,6 +41,11 @@ export async function GET() {
 // POST create new coupon
 export async function POST(request: NextRequest) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json() as {
       code?: string;
       description?: string;
@@ -57,8 +68,8 @@ export async function POST(request: NextRequest) {
     const id = `coupon_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
     await db.prepare(`
-      INSERT INTO coupons (id, code, description, discount_type, discount_value, min_order_amount, max_uses, valid_from, valid_until, order_types)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO coupons (id, code, description, discount_type, discount_value, min_order_amount, max_uses, valid_from, valid_until, order_types, tenant_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       id,
       code.toUpperCase().trim(),
@@ -69,7 +80,8 @@ export async function POST(request: NextRequest) {
       max_uses || null,
       valid_from || null,
       valid_until || null,
-      order_types ? JSON.stringify(order_types) : null
+      order_types ? JSON.stringify(order_types) : null,
+      session.tenantId
     ).run();
 
     return NextResponse.json({ success: true, id });
@@ -85,6 +97,11 @@ export async function POST(request: NextRequest) {
 // DELETE a coupon
 export async function DELETE(request: NextRequest) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -93,7 +110,9 @@ export async function DELETE(request: NextRequest) {
     }
 
     const db = getDB();
-    await db.prepare('DELETE FROM coupons WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM coupons WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
+      .run();
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -105,6 +124,11 @@ export async function DELETE(request: NextRequest) {
 // PATCH toggle coupon active status
 export async function PATCH(request: NextRequest) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json() as { id?: string; is_active?: boolean };
     const { id, is_active } = body;
 
@@ -113,8 +137,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     const db = getDB();
-    await db.prepare('UPDATE coupons SET is_active = ?, updated_at = datetime("now") WHERE id = ?')
-      .bind(is_active ? 1 : 0, id)
+    await db.prepare('UPDATE coupons SET is_active = ?, updated_at = datetime("now") WHERE id = ? AND tenant_id = ?')
+      .bind(is_active ? 1 : 0, id, session.tenantId)
       .run();
 
     return NextResponse.json({ success: true });

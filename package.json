@@ -18,6 +18,12 @@
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.14.9",
+    "@tiptap/extension-image": "^3.19.0",
+    "@tiptap/extension-link": "^3.19.0",
+    "@tiptap/react": "^3.19.0",
+    "@tiptap/starter-kit": "^3.19.0",
+    "date-fns-tz": "^3.2.0",
+    "isomorphic-dompurify": "^2.35.0",
     "next": "15.5.9",
     "react": "18.3.1",
     "react-dom": "18.3.1",

@@ -53,8 +53,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create session
-    const sessionToken = await createSession(user.id, getEnvVar('bakesbycoral_session_secret'));
+    // Get user's default tenant (or first tenant they have access to)
+    const userTenant = await db.prepare(`
+      SELECT tenant_id FROM user_tenants
+      WHERE user_id = ?
+      ORDER BY is_default DESC, created_at ASC
+      LIMIT 1
+    `).bind(user.id).first<{ tenant_id: string }>();
+
+    // Default to bakes-by-coral for backwards compatibility
+    const tenantId = userTenant?.tenant_id || 'bakes-by-coral';
+
+    // Create session with tenant
+    const sessionToken = await createSession(
+      user.id,
+      tenantId,
+      getEnvVar('bakesbycoral_session_secret')
+    );
 
     // Update last login
     await db.prepare(`
@@ -62,7 +77,7 @@ export async function POST(request: NextRequest) {
     `).bind(user.id).run();
 
     // Set session cookie
-    const response = NextResponse.json({ success: true });
+    const response = NextResponse.json({ success: true, tenantId });
     response.cookies.set('session', sessionToken, {
       httpOnly: true,
       secure: true,

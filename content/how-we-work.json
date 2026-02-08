@@ -1,0 +1,110 @@
+{
+  "hero": {
+    "label": "How We Work",
+    "title": "Improvements that stick.",
+    "description": "Real improvement happens when the people who do the work help create the solution. We work side-by-side with your team to solve Cost, Quality, and Delivery challenges — together.",
+    "primaryCta": {
+      "label": "Schedule Your First Session",
+      "href": "/book/consultation"
+    }
+  },
+  "valueProps": {
+    "items": [
+      {
+        "title": "Co-Create",
+        "description": "We start where the work happens",
+        "icon": "users"
+      },
+      {
+        "title": "Extended Team",
+        "description": "We help push improvement work forward",
+        "icon": "target"
+      },
+      {
+        "title": "Flexible Support",
+        "description": "On-site when it matters or remote when efficient",
+        "icon": "clock"
+      },
+      {
+        "title": "Real Results",
+        "description": "Visible improvements in Cost, Quality, Delivery",
+        "icon": "chart"
+      }
+    ]
+  },
+  "process": {
+    "label": "How We Work",
+    "title": "An extension of your team. A partner to your front line.",
+    "subtitle": "We become part of your team.",
+    "steps": [
+      {
+        "title": "Co-Create with Front-Line Teams",
+        "description": "We go to the front-line and build solutions with the people who use them. That's why your improvements last."
+      },
+      {
+        "title": "Extend Your Team",
+        "description": "We become added expertise and extra horsepower to stay focused on improvements while your team is dealing with their day to day. That's how your improvements speed up."
+      },
+      {
+        "title": "Gain Flexible Support (On-Site + Remote)",
+        "description": "Hands-on when needed. We model success on-site with the team to show them how. Efficient at the right times. We stay efficient by working remotely with the right people to transfer ownership. That's what makes your improvement progress consistent."
+      },
+      {
+        "title": "Get Real Results, Measured Weekly",
+        "description": "We make progress transparent and central with clear dashboards and simple routines. The outcomes show up in cost, quality, and delivery results. That's how you know your improvements are working."
+      }
+    ]
+  },
+  "whyMatters": {
+    "label": "Why This Matters",
+    "title": "Most teams already know where the problems are.",
+    "description": "What's missing is:",
+    "points": [
+      "The time to drive improvement while running daily operations",
+      "The structure to solve problems permanently",
+      "The horsepower to push projects across the finish line",
+      "The experience to avoid rework, stalls, or wasted effort"
+    ],
+    "closing": "We don't replace your people. We work with them — so the solutions are adopted, sustained, and owned."
+  },
+  "ourRole": {
+    "label": "Our Role",
+    "title": "We become an extension of your team",
+    "subtitle": "Helping drive improvement while your team stays focused.",
+    "weProvide": [
+      { "title": "Expertise", "description": "clarity on what works and what doesn't" },
+      { "title": "Horsepower", "description": "the focus and follow-through to make progress" },
+      { "title": "Coaching", "description": "so your people gain capability, not just direction" }
+    ],
+    "youProvide": [
+      "Process knowledge",
+      "Practical insight",
+      "Ownership and engagement"
+    ],
+    "closing": "Together, we create solutions that actually stick."
+  },
+  "tools": {
+    "intro": "We don't lead with Lean, Apps, Analytics, or Training. We use them as needed to solve problems efficiently.",
+    "items": [
+      { "tool": "Practical Lean Problem Solving", "benefit": "Fix issues simply & permanently" },
+      { "tool": "Lean Apps & Digital Workflows", "benefit": "Replace spreadsheets, email, & tribal knowledge" },
+      { "tool": "Dashboards & Performance Visuals", "benefit": "Create clarity, accountability & sustainment" },
+      { "tool": "Lean Training & Skill Development", "benefit": "Gains independence & confidence" }
+    ]
+  },
+  "feelsLike": {
+    "title": "What It Feels Like to Work with Us",
+    "points": [
+      "We're on the floor, not just in meeting rooms.",
+      "We ask questions, not give lectures.",
+      "We help your people discover solutions, not impose them.",
+      "We celebrate wins with your team.",
+      "We measure progress together."
+    ],
+    "closing": "We're not outsiders. We become part of the team."
+  },
+  "cta": {
+    "title": "Ready to start improving?",
+    "description": "Schedule a free consultation to discuss your challenges and discover how we can help."
+  }
+}

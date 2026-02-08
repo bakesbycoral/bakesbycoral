@@ -1,0 +1,91 @@
+{
+  "hero": {
+    "label": "Training",
+    "title": "Build Your Team's Improvement Capability",
+    "description": "Practical, hands-on training that develops real skills. Your team learns by solving real problems in your organization.",
+    "primaryCta": {
+      "label": "Discuss Training Options",
+      "href": "/book/consultation"
+    }
+  },
+  "whenCertification": {
+    "label": "When Certification Makes Sense",
+    "title": "Training That Creates Real Value",
+    "description": "Certification is only valuable when it leads to actual improvement. Here's when our programs make sense:",
+    "scenarios": [
+      "You're launching a formal improvement program and need skilled practitioners",
+      "Your team needs a common language and methodology for problem-solving",
+      "You want to develop internal capability to reduce reliance on consultants",
+      "Career development is important to your retention strategy"
+    ]
+  },
+  "delivery": {
+    "label": "How We Deliver",
+    "title": "Learning by Doing",
+    "description": "Our training is different. Instead of weeks in a classroom, we combine focused instruction with immediate application.",
+    "approach": [
+      {
+        "title": "Real Projects",
+        "description": "Participants work on actual improvement projects in your organization, not hypothetical case studies."
+      },
+      {
+        "title": "Coaching Support",
+        "description": "Between sessions, participants get coaching to help them apply what they're learning."
+      },
+      {
+        "title": "Practical Tools",
+        "description": "Every technique we teach has been proven in real organizations. Theory without application isn't helpful."
+      },
+      {
+        "title": "Flexible Format",
+        "description": "In-person, virtual, or hybrid delivery. We adapt to how your team works best."
+      }
+    ]
+  },
+  "certifications": {
+    "label": "Certification Programs",
+    "title": "Programs for Every Level",
+    "items": [
+      {
+        "title": "Lean Lego Simulation",
+        "color": "yellow",
+        "description": "Problem-solving skills for team members who participate in improvement projects. Learn structured approaches to identifying root causes and testing solutions.",
+        "duration": "4 days",
+        "outcomes": [
+          "Define problems clearly",
+          "Collect and analyze data",
+          "Identify root causes",
+          "Develop and test solutions"
+        ]
+      },
+      {
+        "title": "Lean Practitioner",
+        "color": "blue",
+        "description": "Foundation-level training for anyone involved in improvement work. Learn to see waste, understand flow, and contribute to problem-solving.",
+        "duration": "2 days",
+        "outcomes": [
+          "Identify and categorize waste",
+          "Map simple processes",
+          "Participate in problem-solving",
+          "Use basic visual management"
+        ]
+      },
+      {
+        "title": "Lean Six Sigma",
+        "color": "green",
+        "description": "Project leadership skills for those who will lead improvement initiatives. Learn to scope projects, manage teams, and sustain results.",
+        "duration": "8 days + project",
+        "outcomes": [
+          "Scope and charter projects",
+          "Lead improvement teams",
+          "Use advanced analysis tools",
+          "Implement control systems"
+        ]
+      }
+    ]
+  },
+  "cta": {
+    "title": "Build your improvement capability",
+    "description": "Let's discuss which training program would best serve your team's development."
+  }
+}

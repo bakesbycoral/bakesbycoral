@@ -1,0 +1,114 @@
+{
+  "hero": {
+    "title": "Real People. Real Improvements. Real Results.",
+    "description": "We help organizations build sustainable improvement capabilities through lean methodology, custom apps, and actionable analytics.",
+    "primaryCta": {
+      "label": "Schedule Your First Session",
+      "href": "/book/consultation"
+    },
+    "secondaryCta": {
+      "label": "Learn How We Work",
+      "href": "/how-we-work"
+    }
+  },
+  "logos": {
+    "title": "Trusted by leading organizations",
+    "items": [
+      { "name": "Acme Corp" },
+      { "name": "TechStart" },
+      { "name": "BuildRight" },
+      { "name": "Innovate Inc" },
+      { "name": "GrowthCo" }
+    ]
+  },
+  "challenges": {
+    "label": "The Challenge",
+    "title": "What Teams Are Facing Today",
+    "description": "You're stretched thin — and the problems aren't waiting. Most front-line teams know exactly where the issues are. What's missing is the time, clarity, and extra horsepower to fix them.",
+    "items": [
+      {
+        "title": "Cost Issues",
+        "description": "Scrap, rework, and waste taking margin. Overtime or turnover driving costs up. Too much WIP or inventory tying up cash. Improvement work stalling because people are overloaded.",
+        "icon": "chart"
+      },
+      {
+        "title": "Quality Issues",
+        "description": "Defects recurring even after \"fixes.\" Standards not followed consistently. Training gaps and tribal knowledge. Customer complaints costing time and credibility.",
+        "icon": "target"
+      },
+      {
+        "title": "Delivery Issues",
+        "description": "Customers wanting shorter lead times. Wasting time on expediting. Waiting on supplier materials. Demands fluctuating above capacity.",
+        "icon": "clock"
+      }
+    ]
+  },
+  "process": {
+    "label": "How We Work",
+    "title": "We help your team improve Cost, Quality, and Delivery — together.",
+    "intro": "We don't hand over a report or give you a list of recommendations. We work directly with your people to solve real operational problems and build solutions that actually stick.",
+    "tagline": "We become an extension of your team.",
+    "whatItLooksLike": [
+      "Co-creating improvements with operators, leads, and supervisors",
+      "Helping your leaders stay focused on the operation while we advance the improvement work",
+      "Making processes simpler, clearer, and easier to follow",
+      "Tracking progress weekly with your team",
+      "Leaving your people more capable than when we arrived"
+    ],
+    "approach": {
+      "title": "We weave our approach with how we work:",
+      "items": [
+        "Your team brings the real experience and insight",
+        "We bring the structure, tools, and horsepower",
+        "Together we create a solution that fits your operation",
+        "Tools support the solution — they are not the solution",
+        "Your people sustain and improve the system long after we leave"
+      ]
+    },
+    "results": {
+      "title": "This is why our clients see:",
+      "items": [
+        "More stable performance",
+        "Faster improvements",
+        "Less firefighting",
+        "Better morale",
+        "Higher ownership",
+        "Results that last"
+      ]
+    }
+  },
+  "approach": {
+    "label": "Our Approach",
+    "title": "Tools That Drive Results",
+    "items": [
+      {
+        "title": "Lean Problem Solving",
+        "description": "Time-tested principles adapted to your context. We teach while we do, building your team's capability.",
+        "href": "/lean-problem-solving"
+      },
+      {
+        "title": "Lean Apps",
+        "description": "Simple digital workflows that solve your specific problems. No bloated software, just what you need.",
+        "href": "/apps"
+      },
+      {
+        "title": "Dashboards & Visuals",
+        "description": "Performance visuals that drive decisions, not just display data. See what matters, act on insights.",
+        "href": "/analytics"
+      },
+      {
+        "title": "Lean Training",
+        "description": "Capability building programs that develop real skills. Your team learns by solving real problems.",
+        "href": "/training"
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to start improving?",
+    "description": "Schedule a free consultation to discuss your challenges and discover how we can help.",
+    "primaryCta": {
+      "label": "Schedule Your First Session",
+      "href": "/book/consultation"
+    }
+  }
+}

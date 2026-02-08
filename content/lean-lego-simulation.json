@@ -1,0 +1,251 @@
+{
+  "hero": {
+    "label": "FUN. ENGAGING. HANDS-ON. REAL-WORLD IMPACT.",
+    "title": "Lean Lego Simulation Training",
+    "subtitle": "The fastest way to understand Lean is to experience it.",
+    "description": "Our Lean Lego Simulation and Yellow Belt experience gives teams a hands-on, high-energy introduction to Lean thinking, helping people see waste, flow, and improvement in action.",
+    "highlights": [
+      "Hands-On Lean Training",
+      "Immediate Impact",
+      "Get Yellow Belt Certified",
+      "On-Site Training or Get Your Own Kit"
+    ],
+    "primaryCta": {
+      "label": "Schedule Your First Session",
+      "href": "/book/consultation"
+    }
+  },
+  "whyThisWorks": {
+    "title": "Why This Works",
+    "intro": "Most Lean training explains concepts.",
+    "introHighlight": "This experience makes them real.",
+    "teamsCanTitle": "In just a few hours, teams can:",
+    "teamsCan": [
+      "See how flow actually works",
+      "Experience the impact of waste",
+      "Understand why systems matter more than effort",
+      "Feel the difference between \"busy\" and \"productive\""
+    ],
+    "funIntro": "And yes, it's fun.",
+    "funPoints": [
+      "People laugh.",
+      "They compete.",
+      "They get frustrated.",
+      "Then they improve."
+    ],
+    "closing": "That emotional connection is what makes the learning stick."
+  },
+  "whatIsIt": {
+    "title": "What is the",
+    "titleHighlight": "Lean Lego Simulation?",
+    "intro": "This is not a lecture.",
+    "description": "It's a fast-paced, interactive simulation where teams build LEGO products through multiple production rounds.",
+    "challengesTitle": "Each round introduces new challenges:",
+    "challenges": [
+      "Poor layouts",
+      "Unclear priorities",
+      "Batch vs flow",
+      "Quality issues",
+      "Communication breakdowns"
+    ],
+    "impactTitle": "Teams experiment with improvements and immediately see the impact on:",
+    "impacts": [
+      "Output",
+      "Lead time",
+      "Quality",
+      "Team stress"
+    ],
+    "closing": "It turns Lean concepts into lived experience.",
+    "ctaText": "Schedule a FREE session to talk to us about Training!"
+  },
+  "whyTeamsLove": {
+    "title": "Why Teams Love It!",
+    "points": [
+      "It's engaging and high-energy",
+      "Everyone participates, not just leaders",
+      "It creates shared language and understanding",
+      "It breaks down silos",
+      "It sparks real improvement conversations"
+    ],
+    "mostImportantly": "Most Importantly:",
+    "quote": "People leave saying, \"Now I get it.\""
+  },
+  "yellowBelt": {
+    "title": "How Yellow Belt Fits In",
+    "intro": "The Lego Simulation is paired with Lean Foundations / Yellow Belt learning.",
+    "focusTitle": "Yellow Belt focuses on:",
+    "focus": [
+      "Basic Lean principles",
+      "Identifying waste",
+      "Understanding flow",
+      "Supporting daily improvement",
+      "Participating effectively in problem solving"
+    ],
+    "reinforcedTitle": "Instead of abstract examples, Yellow Belt concepts are reinforced using:",
+    "reinforced": [
+      "The simulation experience",
+      "Real examples from your operation",
+      "Simple, practical application"
+    ],
+    "closing": "This helps teams connect learning directly to their day-to-day work."
+  },
+  "howWeDeliver": {
+    "title": "How We Deliver It",
+    "intro": "We don't treat this as a standalone event.",
+    "useTitle": "We use the simulation to:",
+    "uses": [
+      "Build awareness and excitement",
+      "Create a shared baseline understanding",
+      "Prepare teams for real improvement work",
+      "Support broader Cost, Quality, and Delivery initiatives"
+    ],
+    "teamsUseTitle": "Many teams use this as:",
+    "teamsUse": [
+      "A kickoff to a larger improvement effort",
+      "An onboarding experience for new leaders",
+      "A reset for teams stuck in firefighting mode",
+      "A safe way to introduce Lean thinking"
+    ]
+  },
+  "leaderValue": {
+    "title": "Leaders consistently tell us the biggest value is:",
+    "points": [
+      "Teams seeing the system, not blaming people",
+      "Faster alignment around priorities",
+      "Better conversations about flow and waste",
+      "More openness to change",
+      "Energy instead of resistance"
+    ],
+    "closing": "And yes, people have a good time doing it."
+  },
+  "comparison": {
+    "title": "Why LeanGo Training Over Others?",
+    "items": [
+      {
+        "leango": "Proven Expertise",
+        "leangoDesc": "Led by experienced Lean practitioners who've worked in real manufacturing environments",
+        "others": "Generic facilitators with little hands-on industry experience"
+      },
+      {
+        "leango": "Hands-On & Fun",
+        "leangoDesc": "Engaging Lego Simulation makes concepts stick through real-time problem-solving",
+        "others": "Lecture-heavy, theory-based, easy to forget once the class ends"
+      },
+      {
+        "leango": "Flexible Options",
+        "leangoDesc": "On-site sessions, train-the-trainer, or DIY kits so you can train at your own pace",
+        "others": "One-size-fits-all, limited delivery options"
+      },
+      {
+        "leango": "Sustainable Impact",
+        "leangoDesc": "Builds lasting systems and culture of continuous improvement",
+        "others": "Short-term focus, little reinforcement after training"
+      }
+    ]
+  },
+  "trainingOptions": {
+    "title": "Training Options That Fit Your Team",
+    "subtitle": "Choose the way you want to experience the Lean Lego Simulation.",
+    "options": [
+      {
+        "title": "On-Site Training",
+        "description": "We come to you and lead the simulation for your team. Fun, interactive, and packed with insights your people can apply right away."
+      },
+      {
+        "title": "License a Kit",
+        "description": "Run the simulation in-house, on your schedule:",
+        "details": [
+          {
+            "title": "Train-the-Trainer",
+            "description": "We coach your champion in one session, then they lead future simulations with your team."
+          },
+          {
+            "title": "DIY",
+            "description": "A complete do-it-yourself package with everything you need to run the simulation anytime."
+          },
+          {
+            "title": "Ongoing Support",
+            "description": "Included in your licensing, we check-in and ensure your continuous improvement is going smoothly."
+          }
+        ]
+      }
+    ]
+  },
+  "perfectFor": {
+    "title": "This Training is Perfect For:",
+    "audiences": [
+      "Front-line leaders and supervisors",
+      "Team leads responsible for process improvements",
+      "Managers looking to engage their teams in hands-on Lean learning",
+      "Anyone ready to see real change and build problem-solving skills"
+    ],
+    "note": "The Lean Lego Simulation can be delivered as a standalone experience or integrated into broader Cost, Quality, and Delivery improvement work."
+  },
+  "benefits": {
+    "title": "Benefits of the Lean Lego Simulation",
+    "items": [
+      {
+        "title": "Hands-On Learning",
+        "description": "Experience Lean concepts in a fun, interactive way that sticks far better than lectures or slides."
+      },
+      {
+        "title": "Real-Time Results",
+        "description": "Watch how small improvements lead to big gains in efficiency, collaboration, and problem-solving."
+      },
+      {
+        "title": "Yellow Belt Certification",
+        "description": "Every participant earns a Lean Six Sigma Yellow Belt, boosting both skills and career growth."
+      },
+      {
+        "title": "Flexible Training Options",
+        "description": "Choose from On-Site Training or Buy the Kit (Train-the-Trainer or DIY) so the simulation fits your schedule, team size, and goals."
+      },
+      {
+        "title": "Team Alignment",
+        "description": "Break down silos and build stronger communication, teamwork, and continuous improvement mindsets."
+      },
+      {
+        "title": "Proven Impact",
+        "description": "Companies that run the simulation see higher engagement, faster improvements, and lasting cultural change."
+      }
+    ]
+  },
+  "realResults": {
+    "title": "How It Connects to Real Results",
+    "intro": "Teams that pair the Lego Simulation with real improvement work see:",
+    "results": [
+      "Faster adoption of Lean thinking",
+      "Better participation in problem solving",
+      "Stronger front-line engagement",
+      "Less resistance to new processes"
+    ],
+    "closing": "Learning sticks because people felt it."
+  },
+  "testimonials": [
+    {
+      "headline": "DO NOT WAIT ON THIS CLASS!",
+      "quote": "My advice is to NOT wait to make the tradeoff for the training time. It has really paid off quickly. At first, I thought we didn't have the time because of the production demand. I quickly realized that I was mistaken. We have completed the training and are dedicating time for changes while still meeting the demands.",
+      "name": "Jeff Cross",
+      "title": "Plant Manager",
+      "company": "Terrasmart"
+    },
+    {
+      "headline": "SMALL CHANGES MAKE A BIG DIFFERENCE.",
+      "quote": "Practicing with Legos really improved our teamwork and showed us how beneficial getting yellow belt certified is. It was fun and I enjoyed the team-building and hands-on experience.",
+      "name": "Aaron Heller",
+      "title": "",
+      "company": "GMi Companies"
+    },
+    {
+      "headline": "THIS CLASS IS A GREAT REFRESHER!",
+      "quote": "This was a great refresher to go back and say, 'this is why we're doing it'. There's always opportunity. One of my favorite subjects is 5S. It's difficult, but a great process because it's changing your culture. Changing your team's mindset. Change is good.",
+      "name": "Jeff Cross",
+      "title": "Plant Manager",
+      "company": "Terrasmart"
+    }
+  ],
+  "cta": {
+    "title": "Ready to experience Lean?",
+    "description": "Schedule a session to bring the Lean Lego Simulation to your team."
+  }
+}

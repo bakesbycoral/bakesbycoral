@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { getBlackoutDates, addBlackoutDate, removeBlackoutDate } from '@/lib/db/blackout';
+import { getAdminSession } from '@/lib/auth/admin-session';
 
 export async function GET() {
   try {
-    // Check for admin auth
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const blackoutDates = await getBlackoutDates();
+    const blackoutDates = await getBlackoutDates(session.tenantId);
     return NextResponse.json({ blackoutDates });
   } catch (error) {
     console.error('Get blackout dates error:', error);
@@ -25,11 +22,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check for admin auth
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -40,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Date is required' }, { status: 400 });
     }
 
-    const blackoutDate = await addBlackoutDate(date, reason);
+    const blackoutDate = await addBlackoutDate(session.tenantId, date, reason);
     return NextResponse.json({ success: true, blackoutDate });
   } catch (error) {
     console.error('Add blackout date error:', error);
@@ -53,11 +47,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // Check for admin auth
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -68,7 +59,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Date is required' }, { status: 400 });
     }
 
-    const removed = await removeBlackoutDate(date);
+    const removed = await removeBlackoutDate(session.tenantId, date);
     return NextResponse.json({ success: removed });
   } catch (error) {
     console.error('Remove blackout date error:', error);

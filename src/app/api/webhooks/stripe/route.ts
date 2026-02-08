@@ -87,7 +87,7 @@ async function verifyStripeSignature(
 export async function POST(request: NextRequest) {
   try {
     const db = getDB();
-    
+
 
     const payload = await request.text();
     const signature = request.headers.get('stripe-signature');

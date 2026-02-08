@@ -401,7 +401,7 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                 )}
                 {(formData.inspiration_links?.length > 0 || formData.inspiration) && (
                   <div>
-                    <dt className="text-sm text-[#541409]/60 mb-1">Inspiration</dt>
+                    <dt className="text-sm text-[#541409]/60 mb-1">Inspiration Links</dt>
                     <dd className="space-y-1">
                       {formData.inspiration_links?.map((link: string, i: number) => (
                         <a
@@ -417,6 +417,37 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                       {formData.inspiration && (
                         <p className="text-[#541409] whitespace-pre-wrap">{formData.inspiration}</p>
                       )}
+                    </dd>
+                  </div>
+                )}
+                {formData.inspiration_image_urls?.length > 0 && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60 mb-2">Inspiration Photos ({formData.inspiration_image_urls.length})</dt>
+                    <dd className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {formData.inspiration_image_urls.map((url: string, i: number) => (
+                        <a
+                          key={i}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block aspect-square rounded-lg overflow-hidden border border-[#EAD6D6] hover:border-[#541409] transition-colors"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={url}
+                            alt={`Inspiration photo ${i + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </a>
+                      ))}
+                    </dd>
+                  </div>
+                )}
+                {formData.inspiration_image_count > 0 && !formData.inspiration_image_urls?.length && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60">Inspiration Photos</dt>
+                    <dd className="text-[#541409]/60 italic">
+                      {formData.inspiration_image_count} photo(s) were uploaded but not stored (submitted before image storage was enabled)
                     </dd>
                   </div>
                 )}
@@ -449,6 +480,37 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                   <div>
                     <dt className="text-sm text-[#541409]/60">Color Palette</dt>
                     <dd className="text-[#541409]">{formData.color_palette}</dd>
+                  </div>
+                )}
+                {formData.inspiration_image_urls?.length > 0 && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60 mb-2">Inspiration Photos ({formData.inspiration_image_urls.length})</dt>
+                    <dd className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {formData.inspiration_image_urls.map((url: string, i: number) => (
+                        <a
+                          key={i}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block aspect-square rounded-lg overflow-hidden border border-[#EAD6D6] hover:border-[#541409] transition-colors"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={url}
+                            alt={`Inspiration photo ${i + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </a>
+                      ))}
+                    </dd>
+                  </div>
+                )}
+                {formData.inspiration_image_count > 0 && !formData.inspiration_image_urls?.length && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60">Inspiration Photos</dt>
+                    <dd className="text-[#541409]/60 italic">
+                      {formData.inspiration_image_count} photo(s) were uploaded but not stored (submitted before image storage was enabled)
+                    </dd>
                   </div>
                 )}
               </dl>

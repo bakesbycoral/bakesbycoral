@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       leadTimeDays = 14; // 2 weeks for tasting boxes
     } else {
       const leadTimeKey =
-        orderType === 'cookies'
+        orderType === 'cookies' || orderType === 'cookie_cups'
           ? 'lead_time_small_cookie'
           : orderType === 'cookies_large'
             ? 'lead_time_large_cookie'

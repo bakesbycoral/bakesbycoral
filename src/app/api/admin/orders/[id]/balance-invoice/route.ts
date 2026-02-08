@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth/admin-session';
 import Stripe from 'stripe';
 import { sendEmail, buildBalanceInvoiceFromTemplate } from '@/lib/email';
 import { sendSms, buildSmsMessage, DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
@@ -22,14 +23,19 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { id: orderId } = await params;
     const db = getDB();
 
-    // Get the order
+    // Get the order (with tenant check)
     const order = await db.prepare(`
       SELECT id, order_number, customer_name, customer_email, customer_phone, pickup_date, total_amount, deposit_amount, stripe_invoice_id, form_data
-      FROM orders WHERE id = ?
-    `).bind(orderId).first<Order>();
+      FROM orders WHERE id = ? AND tenant_id = ?
+    `).bind(orderId, session.tenantId).first<Order>();
 
     if (!order) {
       return NextResponse.json(

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import { isSpamSubmission, sanitizeInput } from '@/lib/validation';
-import { sendEmail, buildContactFormNotification } from '@/lib/email';
+import { sendEmail, buildContactFormNotification, parseAdminEmails } from '@/lib/email';
+
+function generateId(): string {
+  return crypto.randomUUID();
+}
 
 interface ContactFormData {
   name: string;
@@ -9,14 +13,18 @@ interface ContactFormData {
   message: string;
   website?: string;
   company?: string;
+  phone?: string;
+  subject?: string;
+  tenantId?: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const data: ContactFormData = await request.json();
+    const tenantId = data.tenantId || 'bakes-by-coral';
 
-    // Spam check
-    if (isSpamSubmission(data.website, data.company)) {
+    // Spam check (only for non-LeanGo, since LeanGo uses company field legitimately)
+    if (tenantId === 'bakes-by-coral' && isSpamSubmission(data.website, data.company)) {
       return NextResponse.json({ error: 'Invalid submission' }, { status: 400 });
     }
 
@@ -34,13 +42,38 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
+    const db = getDB();
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
+
+    // For LeanGo tenant, save to contact_submissions table
+    if (tenantId === 'leango') {
+      const id = generateId();
+      const forwardedFor = request.headers.get('x-forwarded-for');
+      const ipAddress = forwardedFor ? forwardedFor.split(',')[0] : 'unknown';
+      const userAgent = request.headers.get('user-agent') || 'unknown';
+
+      await db.prepare(`
+        INSERT INTO contact_submissions (
+          id, tenant_id, name, email, phone, company, subject, message,
+          source, ip_address, user_agent
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'website', ?, ?)
+      `).bind(
+        id,
+        tenantId,
+        sanitizeInput(data.name),
+        sanitizeInput(data.email),
+        data.phone ? sanitizeInput(data.phone) : null,
+        data.company ? sanitizeInput(data.company) : null,
+        data.subject ? sanitizeInput(data.subject) : null,
+        sanitizeInput(data.message),
+        ipAddress,
+        userAgent.substring(0, 500)
+      ).run();
+    }
 
     // Send email via Resend if configured
     if (resendApiKey) {
       try {
-        const db = getDB();
-
         // Get email template from settings
         const contactTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
           .bind('email_template_contact_form')
@@ -59,8 +92,17 @@ export async function POST(request: NextRequest) {
           }
         );
 
+        // Determine recipient based on tenant
+        let toEmail: string | string[];
+        if (tenantId === 'leango') {
+          const adminEmailSetting = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('admin_email').first<{ value: string }>();
+          toEmail = parseAdminEmails(adminEmailSetting?.value, 'hello@leango.com');
+        } else {
+          toEmail = 'coral@bakesbycoral.com';
+        }
+
         await sendEmail(resendApiKey, {
-          to: 'coral@bakesbycoral.com',
+          to: toEmail,
           subject: email.subject,
           html: email.html,
           replyTo: data.email,

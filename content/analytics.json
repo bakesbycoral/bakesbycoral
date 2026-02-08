@@ -1,0 +1,115 @@
+{
+  "hero": {
+    "label": "Analytics",
+    "title": "Analytics Should Turn Data Into Action",
+    "description": "Most dashboards just display numbers. Ours tell you what's happening, why it matters, and what to do about it.",
+    "primaryCta": {
+      "label": "See How It Works",
+      "href": "/book/consultation"
+    }
+  },
+  "problem": {
+    "label": "The Problem",
+    "title": "Why Most Analytics Fail",
+    "description": "You have data everywhere — in spreadsheets, systems, and people's heads. But turning that data into decisions? That's where most organizations struggle.",
+    "issues": [
+      "Data lives in silos, requiring manual consolidation",
+      "Dashboards show lagging indicators when it's too late to act",
+      "Too much data, not enough insight",
+      "Reports generated but never acted upon"
+    ]
+  },
+  "approach": {
+    "label": "Our Approach",
+    "title": "Analytics That Drive Action",
+    "description": "We design analytics around decisions, not data. Every metric has a purpose. Every dashboard drives behavior.",
+    "principles": [
+      {
+        "title": "Leading Indicators",
+        "description": "We measure what predicts outcomes, not just what happened. You can act before problems become crises."
+      },
+      {
+        "title": "Visual Management",
+        "description": "At-a-glance understanding. Anyone can see status, trend, and priority in seconds."
+      },
+      {
+        "title": "Tiered Views",
+        "description": "Operators see their line. Supervisors see their area. Leaders see the whole operation. Same data, right level."
+      },
+      {
+        "title": "Action Triggers",
+        "description": "Automatic alerts when metrics go out of bounds. No more hoping someone notices."
+      }
+    ]
+  },
+  "useCases": {
+    "label": "Dashboard Solutions",
+    "title": "Common Applications",
+    "items": [
+      {
+        "title": "Production Performance",
+        "description": "Real-time OEE, downtime analysis, and schedule adherence.",
+        "outcomes": [
+          "Live OEE tracking",
+          "Downtime Pareto analysis",
+          "Rate and quality trends",
+          "Shift comparison"
+        ]
+      },
+      {
+        "title": "Quality Analytics",
+        "description": "Defect trends, Pareto analysis, and SPC for critical characteristics.",
+        "outcomes": [
+          "First-pass yield tracking",
+          "Defect categorization",
+          "Control charts",
+          "Supplier quality"
+        ]
+      },
+      {
+        "title": "Maintenance Metrics",
+        "description": "Equipment reliability, PM compliance, and failure analysis.",
+        "outcomes": [
+          "MTBF/MTTR tracking",
+          "PM compliance",
+          "Top equipment issues",
+          "Parts usage"
+        ]
+      },
+      {
+        "title": "Safety Scorecards",
+        "description": "Leading indicators, incident trends, and audit results.",
+        "outcomes": [
+          "Near-miss reporting",
+          "Observation rates",
+          "Incident trends",
+          "Audit scores"
+        ]
+      },
+      {
+        "title": "Improvement Tracking",
+        "description": "Project status, savings realization, and participation metrics.",
+        "outcomes": [
+          "Active projects",
+          "Savings tracking",
+          "Idea funnel",
+          "Participation rates"
+        ]
+      },
+      {
+        "title": "Executive Dashboards",
+        "description": "Roll-up views that connect operational metrics to business outcomes.",
+        "outcomes": [
+          "Cross-site comparison",
+          "Trend analysis",
+          "Goal progress",
+          "Key risks"
+        ]
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to turn data into decisions?",
+    "description": "Let's discuss what metrics matter most for your operation."
+  }
+}

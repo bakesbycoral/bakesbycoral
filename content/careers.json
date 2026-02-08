@@ -1,0 +1,235 @@
+{
+  "hero": {
+    "label": "Careers",
+    "title": "Build Something That Matters",
+    "description": "Join a team that's transforming how organizations operate. We're looking for people who want to make a real impact—not just collect a paycheck.",
+    "primaryCta": {
+      "label": "View Open Positions",
+      "href": "#positions"
+    }
+  },
+  "intro": {
+    "title": "We're Not Your Typical Consulting Firm",
+    "description": "At LeanGo, we believe the best consultants don't just advise—they roll up their sleeves and work alongside clients. We're a small, focused team that values depth over breadth, quality over quantity, and lasting results over quick wins.",
+    "highlights": [
+      "No bureaucracy or endless meetings",
+      "Direct client impact on every project",
+      "Work with people who genuinely want to improve",
+      "Your ideas matter—regardless of your title"
+    ]
+  },
+  "whyWork": {
+    "label": "Why Join Us",
+    "title": "What Makes LeanGo Different",
+    "items": [
+      {
+        "icon": "impact",
+        "title": "Meaningful Work",
+        "description": "Every project makes a real difference. You'll see the direct impact of your work in improved operations, empowered teams, and measurable results."
+      },
+      {
+        "icon": "growth",
+        "title": "Continuous Learning",
+        "description": "We invest heavily in your development. Training, certifications, conferences, and dedicated learning time are all part of the package."
+      },
+      {
+        "icon": "flexibility",
+        "title": "True Flexibility",
+        "description": "We trust you to manage your time. Remote work, flexible hours, and a focus on outcomes over face time. Your life, your schedule."
+      },
+      {
+        "icon": "team",
+        "title": "Great People",
+        "description": "Work alongside smart, humble people who genuinely want to help each other succeed. No egos, no politics, just good work."
+      }
+    ]
+  },
+  "benefits": {
+    "label": "Benefits & Perks",
+    "title": "We Take Care of Our Team",
+    "items": [
+      {
+        "category": "Health & Wellness",
+        "perks": [
+          "Comprehensive health, dental, and vision insurance",
+          "Mental health support and resources",
+          "Wellness stipend for gym, apps, or equipment"
+        ]
+      },
+      {
+        "category": "Time Off",
+        "perks": [
+          "Unlimited PTO (and we mean it)",
+          "Paid holidays plus winter break",
+          "Sabbatical after 5 years"
+        ]
+      },
+      {
+        "category": "Growth",
+        "perks": [
+          "Annual learning & development budget",
+          "Conference attendance covered",
+          "Certification support and bonuses"
+        ]
+      },
+      {
+        "category": "Work Setup",
+        "perks": [
+          "Home office stipend",
+          "Latest equipment provided",
+          "Co-working space allowance"
+        ]
+      }
+    ]
+  },
+  "positions": {
+    "label": "Open Positions",
+    "title": "Current Opportunities",
+    "items": [
+      {
+        "title": "Senior Lean Consultant",
+        "location": "Remote (US)",
+        "type": "Full-time",
+        "department": "Consulting",
+        "description": "Lead improvement engagements with manufacturing and construction clients. You'll work directly with leadership teams to identify opportunities, facilitate workshops, and coach teams through transformation.",
+        "requirements": [
+          "5+ years of hands-on lean/continuous improvement experience",
+          "Experience leading kaizen events and value stream mapping",
+          "Strong facilitation and coaching skills",
+          "Manufacturing or construction industry background preferred",
+          "Lean Six Sigma certification (Green Belt minimum)"
+        ],
+        "responsibilities": [
+          "Lead client assessments and develop improvement roadmaps",
+          "Facilitate workshops, training sessions, and kaizen events",
+          "Coach client teams on lean principles and problem-solving",
+          "Build lasting relationships with client stakeholders",
+          "Contribute to LeanGo's methodology and training materials"
+        ]
+      },
+      {
+        "title": "Full-Stack Developer",
+        "location": "Remote (US)",
+        "type": "Full-time",
+        "department": "Technology",
+        "description": "Build custom applications that solve real operational problems. You'll work closely with consultants and clients to understand needs, then design and build solutions that make a tangible difference.",
+        "requirements": [
+          "3+ years full-stack development experience",
+          "Proficiency in React/Next.js and Node.js",
+          "Strong SQL skills and database design experience",
+          "Experience with cloud platforms (AWS, GCP, or Azure)",
+          "Ability to translate business problems into technical solutions"
+        ],
+        "responsibilities": [
+          "Design and build custom web applications for clients",
+          "Create intuitive interfaces that non-technical users love",
+          "Integrate with existing client systems and data sources",
+          "Maintain and improve internal tools and platforms",
+          "Collaborate with consultants to understand client needs"
+        ]
+      },
+      {
+        "title": "Data Analyst",
+        "location": "Remote (US)",
+        "type": "Full-time",
+        "department": "Analytics",
+        "description": "Transform client data into actionable insights. You'll design dashboards, build reports, and help organizations see their operations in a whole new way.",
+        "requirements": [
+          "2+ years of data analysis experience",
+          "Advanced SQL and Excel skills",
+          "Experience with visualization tools (Power BI, Tableau, or similar)",
+          "Basic scripting skills (Python or R preferred)",
+          "Strong communication and presentation abilities"
+        ],
+        "responsibilities": [
+          "Analyze client data to identify trends and opportunities",
+          "Design and build interactive dashboards and reports",
+          "Work with clients to understand their metrics and KPIs",
+          "Document data sources, transformations, and calculations",
+          "Train client teams on using analytics tools"
+        ]
+      }
+    ]
+  },
+  "process": {
+    "label": "Hiring Process",
+    "title": "What to Expect",
+    "description": "We keep things simple and respectful of your time. Here's how it works:",
+    "steps": [
+      {
+        "step": "1",
+        "title": "Apply",
+        "description": "Send us your resume and a brief note about why you're interested. No cover letter required—just tell us what excites you."
+      },
+      {
+        "step": "2",
+        "title": "Initial Chat",
+        "description": "A 30-minute call with someone from our team to learn about each other. Casual conversation, no trick questions."
+      },
+      {
+        "step": "3",
+        "title": "Skills Discussion",
+        "description": "A deeper conversation about your experience and approach. We might look at a past project or work through a scenario together."
+      },
+      {
+        "step": "4",
+        "title": "Team Meet",
+        "description": "Meet a few team members you'd work with. This is as much for you to evaluate us as it is for us to evaluate you."
+      },
+      {
+        "step": "5",
+        "title": "Decision",
+        "description": "We move fast. You'll hear back within a few days with a clear answer and feedback either way."
+      }
+    ]
+  },
+  "culture": {
+    "label": "Our Culture",
+    "title": "How We Work Together",
+    "description": "We're a small team that punches above our weight. Here's what that looks like day-to-day:",
+    "points": [
+      {
+        "title": "Outcome-Focused",
+        "description": "We care about results, not hours logged. Get your work done well, and how you structure your day is up to you."
+      },
+      {
+        "title": "Radically Honest",
+        "description": "We give direct feedback because we care about each other's growth. No passive-aggression, no politics."
+      },
+      {
+        "title": "Continuously Improving",
+        "description": "We practice what we preach. Regular retrospectives, experiments, and a genuine commitment to getting better."
+      },
+      {
+        "title": "Supportive",
+        "description": "We celebrate wins, learn from failures together, and always have each other's backs. No blame games."
+      }
+    ]
+  },
+  "values": {
+    "label": "Our Values",
+    "title": "What We Stand For",
+    "items": [
+      {
+        "title": "Impact Over Activity",
+        "description": "We'd rather do one thing that matters than ten things that don't. Every effort should move the needle."
+      },
+      {
+        "title": "Teach, Don't Tell",
+        "description": "Our goal is to make clients self-sufficient, not dependent on us. We share knowledge freely."
+      },
+      {
+        "title": "Simplicity Wins",
+        "description": "The best solutions are usually the simplest. We resist the urge to overcomplicate."
+      },
+      {
+        "title": "Respect Everyone",
+        "description": "Frontline workers often have the best insights. We listen to everyone, regardless of title."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Don't See the Right Role?",
+    "description": "We're always interested in talented people who share our values. Send us your resume and tell us what you'd bring to the team—we'll keep you in mind for future opportunities."
+  }
+}

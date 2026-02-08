@@ -1,0 +1,106 @@
+{
+  "hero": {
+    "label": "FAQ",
+    "title": "Frequently Asked Questions",
+    "description": "Answers to the questions we hear most from teams exploring continuous improvement."
+  },
+  "categories": [
+    {
+      "title": "Getting Started",
+      "questions": [
+        {
+          "question": "What does LeanGo do?",
+          "answer": "We help manufacturing and operations teams solve Cost, Quality, and Delivery challenges using Lean methods, custom apps, analytics, and hands-on training. We work side-by-side with your team to build lasting improvement capability."
+        },
+        {
+          "question": "How do we get started?",
+          "answer": "Schedule a free consultation. We'll learn about your challenges, walk through how we work, and figure out if we're a good fit. No commitment required."
+        },
+        {
+          "question": "Do you work with companies outside of manufacturing?",
+          "answer": "Our core experience is in manufacturing and operations, but Lean principles apply to any process-driven organization. We've worked with teams in logistics, healthcare, and professional services."
+        },
+        {
+          "question": "How long does a typical engagement last?",
+          "answer": "It depends on the scope. Some projects are a few weeks, others are ongoing partnerships. We tailor the timeline to your goals and always focus on building your team's capability so you don't need us forever."
+        }
+      ]
+    },
+    {
+      "title": "Lean Problem Solving",
+      "questions": [
+        {
+          "question": "What is Lean problem solving?",
+          "answer": "Lean problem solving is a structured approach to identifying root causes and testing solutions. Instead of guessing or firefighting, your team learns to define problems clearly, analyze data, and implement changes that stick."
+        },
+        {
+          "question": "Do you do the improvement work for us?",
+          "answer": "No. We work with your team, not instead of them. Our goal is to build your internal capability so improvements continue long after we leave."
+        },
+        {
+          "question": "What tools do you use?",
+          "answer": "We use proven methods like A3 Thinking, 5 Whys Analysis, Process Mapping, and PDCA Cycles. The specific tools depend on the problem. We pick what fits, not what's trendy."
+        }
+      ]
+    },
+    {
+      "title": "Training & Certification",
+      "questions": [
+        {
+          "question": "What is the Lean Lego Simulation?",
+          "answer": "It's a hands-on training experience where teams build products using LEGO, identify waste, and implement improvements in real time. It's the fastest way to help people understand Lean concepts because they experience them firsthand."
+        },
+        {
+          "question": "What certifications do you offer?",
+          "answer": "We offer Lean Practitioner certification (2 days) for foundational skills and Lean Six Sigma Green Belt certification (8 days plus a project) for those leading improvement initiatives."
+        },
+        {
+          "question": "Is training done on-site or virtual?",
+          "answer": "Both. We offer in-person, virtual, and hybrid training options. For the Lean Lego Simulation, we can come to you or you can license a kit to run it in-house."
+        },
+        {
+          "question": "Can we buy the Lego Simulation kit?",
+          "answer": "Yes. We offer Train-the-Trainer and DIY kit options so your team can run the simulation on your own schedule. Ongoing support is included with every license."
+        }
+      ]
+    },
+    {
+      "title": "Apps & Analytics",
+      "questions": [
+        {
+          "question": "What kind of apps do you build?",
+          "answer": "We build simple, custom Lean Apps that match how your process actually works. Think digital checklists, workflow trackers, audit tools, and dashboards that replace spreadsheets and manual processes."
+        },
+        {
+          "question": "Do we need special software or licenses?",
+          "answer": "We leverage the digital tools your organization already has in place. We work with what you have to fill in the workflow gaps."
+        },
+        {
+          "question": "What does your analytics work look like?",
+          "answer": "We help teams turn raw data into clear, actionable insights. That means building dashboards, identifying trends, and connecting metrics to real operational decisions."
+        }
+      ]
+    },
+    {
+      "title": "Working With Us",
+      "questions": [
+        {
+          "question": "Where are you located?",
+          "answer": "We're based in Cincinnati, OH, but we work with teams across the country. Many of our engagements combine on-site visits with virtual support."
+        },
+        {
+          "question": "How much does it cost?",
+          "answer": "Every engagement is different. We'll scope the work together during your free consultation and provide transparent pricing before anything starts."
+        },
+        {
+          "question": "What makes LeanGo different from other consultants?",
+          "answer": "We're practitioners, not just consultants. We've led operations and improvement programs in real organizations. We work with your team, not above them. And our goal is always to build your capability, not create dependency."
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "title": "Still have questions?",
+    "description": "Schedule a free consultation and we'll answer anything you want to know."
+  }
+}

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getDB, getEnvVar } from '@/lib/db';
-import { verifySession } from '@/lib/auth/session';
+import { getDB } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth/admin-session';
 import type { QuoteLineItem } from '@/types';
 
 interface CreateLineItemRequest {
@@ -19,32 +18,6 @@ interface UpdateLineItemsRequest {
     unit_price: number;
     sort_order: number;
   }>;
-}
-
-// Verify admin session helper
-async function verifyAdmin() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get('session')?.value;
-
-  if (!sessionToken) {
-    return null;
-  }
-
-  const userId = await verifySession(sessionToken, getEnvVar('bakesbycoral_session_secret'));
-  if (!userId) {
-    return null;
-  }
-
-  const db = getDB();
-  const user = await db.prepare('SELECT role FROM users WHERE id = ?')
-    .bind(userId)
-    .first<{ role: string }>();
-
-  if (!user || user.role !== 'admin') {
-    return null;
-  }
-
-  return userId;
 }
 
 // Helper function to recalculate quote totals
@@ -75,13 +48,22 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const adminId = await verifyAdmin();
-    if (!adminId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
     const db = getDB();
+
+    // Verify quote belongs to this tenant
+    const quote = await db.prepare('SELECT id FROM quotes WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
+      .first();
+
+    if (!quote) {
+      return NextResponse.json({ error: 'Quote not found' }, { status: 404 });
+    }
 
     const result = await db.prepare(`
       SELECT * FROM quote_line_items WHERE quote_id = ? ORDER BY sort_order ASC
@@ -100,8 +82,8 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const adminId = await verifyAdmin();
-    if (!adminId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -109,9 +91,9 @@ export async function POST(
     const body: CreateLineItemRequest = await request.json();
     const db = getDB();
 
-    // Verify quote exists and is editable
-    const quote = await db.prepare('SELECT id, status FROM quotes WHERE id = ?')
-      .bind(id)
+    // Verify quote exists, is editable, and belongs to this tenant
+    const quote = await db.prepare('SELECT id, status FROM quotes WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
       .first<{ id: string; status: string }>();
 
     if (!quote) {
@@ -169,8 +151,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const adminId = await verifyAdmin();
-    if (!adminId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -178,9 +160,9 @@ export async function PUT(
     const body: UpdateLineItemsRequest = await request.json();
     const db = getDB();
 
-    // Verify quote exists and is editable
-    const quote = await db.prepare('SELECT id, status FROM quotes WHERE id = ?')
-      .bind(id)
+    // Verify quote exists, is editable, and belongs to this tenant
+    const quote = await db.prepare('SELECT id, status FROM quotes WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
       .first<{ id: string; status: string }>();
 
     if (!quote) {
@@ -219,8 +201,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const adminId = await verifyAdmin();
-    if (!adminId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -234,9 +216,9 @@ export async function DELETE(
 
     const db = getDB();
 
-    // Verify quote exists and is editable
-    const quote = await db.prepare('SELECT id, status FROM quotes WHERE id = ?')
-      .bind(id)
+    // Verify quote exists, is editable, and belongs to this tenant
+    const quote = await db.prepare('SELECT id, status FROM quotes WHERE id = ? AND tenant_id = ?')
+      .bind(id, session.tenantId)
       .first<{ id: string; status: string }>();
 
     if (!quote) {

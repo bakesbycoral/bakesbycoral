@@ -334,6 +334,7 @@ export function TimeSlotPicker({
       {/* Lead time notice */}
       <p className="mt-2 text-xs text-stone-500">
         {orderType === 'cookies' && 'Cookie orders require at least 7 days notice.'}
+        {orderType === 'cookie_cups' && 'Cookie cup orders require at least 7 days notice.'}
         {orderType === 'cookies_large' && 'Large cookie orders require at least 14 days notice.'}
         {orderType === 'cake' && 'Cake orders require at least 14 days notice.'}
         {orderType === 'wedding' && 'Wedding orders require at least 30 days notice.'}

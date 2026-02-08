@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getDB, getEnvVar } from '@/lib/db';
-import { verifySession } from '@/lib/auth/session';
+import { getDB } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth/admin-session';
+import { getTenantSetting } from '@/lib/db/settings';
 
 interface CreateQuoteRequest {
   order_id: string;
@@ -15,37 +15,11 @@ function generateQuoteNumber(): string {
   return `Q-${Date.now().toString(36).toUpperCase()}`;
 }
 
-// Verify admin session helper
-async function verifyAdmin() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get('session')?.value;
-
-  if (!sessionToken) {
-    return null;
-  }
-
-  const userId = await verifySession(sessionToken, getEnvVar('bakesbycoral_session_secret'));
-  if (!userId) {
-    return null;
-  }
-
-  const db = getDB();
-  const user = await db.prepare('SELECT role FROM users WHERE id = ?')
-    .bind(userId)
-    .first<{ role: string }>();
-
-  if (!user || user.role !== 'admin') {
-    return null;
-  }
-
-  return userId;
-}
-
 // GET /api/admin/quotes - List all quotes, optionally filtered by order_id
 export async function GET(request: NextRequest) {
   try {
-    const adminId = await verifyAdmin();
-    if (!adminId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -58,17 +32,18 @@ export async function GET(request: NextRequest) {
       SELECT q.*, o.order_number as order_order_number, o.customer_name
       FROM quotes q
       JOIN orders o ON q.order_id = o.id
+      WHERE o.tenant_id = ?
     `;
+    const bindings: string[] = [session.tenantId];
 
     if (orderId) {
-      query += ` WHERE q.order_id = ?`;
+      query += ` AND q.order_id = ?`;
+      bindings.push(orderId);
     }
 
     query += ` ORDER BY q.created_at DESC`;
 
-    const result = orderId
-      ? await db.prepare(query).bind(orderId).all()
-      : await db.prepare(query).all();
+    const result = await db.prepare(query).bind(...bindings).all();
 
     return NextResponse.json({ quotes: result.results || [] });
   } catch (error) {
@@ -80,8 +55,8 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/quotes - Create a new quote
 export async function POST(request: NextRequest) {
   try {
-    const adminId = await verifyAdmin();
-    if (!adminId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -93,20 +68,18 @@ export async function POST(request: NextRequest) {
 
     const db = getDB();
 
-    // Verify order exists
-    const order = await db.prepare('SELECT id, status FROM orders WHERE id = ?')
-      .bind(body.order_id)
+    // Verify order exists and belongs to this tenant
+    const order = await db.prepare('SELECT id, status FROM orders WHERE id = ? AND tenant_id = ?')
+      .bind(body.order_id, session.tenantId)
       .first<{ id: string; status: string }>();
 
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    // Get validity days from settings
-    const validityDaysSetting = await db.prepare('SELECT value FROM settings WHERE key = ?')
-      .bind('quote_validity_days')
-      .first<{ value: string }>();
-    const validityDays = body.valid_days ?? (validityDaysSetting ? parseInt(validityDaysSetting.value) : 7);
+    // Get validity days from tenant settings
+    const validityDaysSetting = await getTenantSetting(session.tenantId, 'quote_validity_days');
+    const validityDays = body.valid_days ?? (validityDaysSetting ? parseInt(validityDaysSetting) : 7);
 
     // Calculate valid_until date
     const validUntil = new Date();
@@ -119,8 +92,8 @@ export async function POST(request: NextRequest) {
     await db.prepare(`
       INSERT INTO quotes (
         id, order_id, quote_number, status, subtotal, deposit_percentage,
-        notes, customer_message, valid_until, approval_token, created_at, updated_at
-      ) VALUES (?, ?, ?, 'draft', 0, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+        notes, customer_message, valid_until, approval_token, tenant_id, created_at, updated_at
+      ) VALUES (?, ?, ?, 'draft', 0, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     `).bind(
       quoteId,
       body.order_id,
@@ -129,7 +102,8 @@ export async function POST(request: NextRequest) {
       body.notes || null,
       body.customer_message || null,
       validUntil.toISOString().split('T')[0],
-      approvalToken
+      approvalToken,
+      session.tenantId
     ).run();
 
     return NextResponse.json({

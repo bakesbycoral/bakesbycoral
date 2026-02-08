@@ -1,10 +1,6 @@
-
-
-
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getDB, getEnvVar } from '@/lib/db';
-import { verifySession } from '@/lib/auth/session';
+import { getDB } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth/admin-session';
 
 interface SettingsUpdateRequest {
   settings: Record<string, string>;
@@ -12,44 +8,26 @@ interface SettingsUpdateRequest {
 
 export async function PUT(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const db = getDB();
-
-    const userId = await verifySession(sessionToken, getEnvVar('bakesbycoral_session_secret'));
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Verify user is admin
-    const user = await db.prepare('SELECT role FROM users WHERE id = ?')
-      .bind(userId)
-      .first<{ role: string }>();
-
-    if (!user || user.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
     const { settings }: SettingsUpdateRequest = await request.json();
 
     if (!settings || typeof settings !== 'object') {
       return NextResponse.json({ error: 'Invalid settings data' }, { status: 400 });
     }
 
-    // Update each setting
+    // Update each setting in tenant_settings table
     const statements = Object.entries(settings).map(([key, value]) => {
       return db.prepare(`
-        INSERT INTO settings (key, value, updated_at)
-        VALUES (?, ?, datetime('now'))
-        ON CONFLICT(key) DO UPDATE SET
-          value = excluded.value,
-          updated_at = excluded.updated_at
-      `).bind(key, value);
+        INSERT INTO tenant_settings (tenant_id, key, value)
+        VALUES (?, ?, ?)
+        ON CONFLICT(tenant_id, key) DO UPDATE SET
+          value = excluded.value
+      `).bind(session.tenantId, key, value);
     });
 
     // Execute all updates in a batch
@@ -68,26 +46,29 @@ export async function PUT(request: NextRequest) {
 
 export async function GET() {
   try {
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('session')?.value;
-
-    if (!sessionToken) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const db = getDB();
 
-    const userId = await verifySession(sessionToken, getEnvVar('bakesbycoral_session_secret'));
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Get tenant-specific settings first
+    const tenantResults = await db.prepare(`
+      SELECT key, value FROM tenant_settings WHERE tenant_id = ?
+    `).bind(session.tenantId).all<{ key: string; value: string }>();
 
-    const results = await db.prepare(`
+    // Get global settings as fallback
+    const globalResults = await db.prepare(`
       SELECT key, value, description FROM settings
     `).all<{ key: string; value: string; description: string | null }>();
 
+    // Merge with tenant settings taking precedence
     const settings: Record<string, string> = {};
-    for (const setting of results.results || []) {
+    for (const setting of globalResults.results || []) {
+      settings[setting.key] = setting.value;
+    }
+    for (const setting of tenantResults.results || []) {
       settings[setting.key] = setting.value;
     }
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
-import { cookies } from 'next/headers';
+import { getAdminSession } from '@/lib/auth/admin-session';
 
 interface CreateOrderRequest {
   order_type?: string;
@@ -13,22 +13,20 @@ interface CreateOrderRequest {
   notes?: string;
 }
 
-function generateOrderNumber(): string {
+function generateOrderNumber(tenantId: string): string {
   const now = new Date();
   const year = now.getFullYear().toString().slice(-2);
   const month = (now.getMonth() + 1).toString().padStart(2, '0');
   const day = now.getDate().toString().padStart(2, '0');
   const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  return `BC${year}${month}${day}-${random}`;
+  const prefix = tenantId === 'leango' ? 'LG' : 'BC';
+  return `${prefix}${year}${month}${day}-${random}`;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // Check for admin auth
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('admin_session')?.value;
-
-    if (!sessionToken) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -57,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     const db = getDB();
     const id = crypto.randomUUID();
-    const orderNumber = generateOrderNumber();
+    const orderNumber = generateOrderNumber(session.tenantId);
 
     // Calculate deposit amount (50% for large orders/cake/wedding, 100% for regular cookies)
     let depositAmount = null;
@@ -72,8 +70,8 @@ export async function POST(request: NextRequest) {
     await db.prepare(`
       INSERT INTO orders (
         id, order_number, order_type, status, customer_name, customer_email, customer_phone,
-        pickup_date, pickup_time, total_amount, deposit_amount, notes, form_data, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+        pickup_date, pickup_time, total_amount, deposit_amount, notes, form_data, tenant_id, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `).bind(
       id,
       orderNumber,
@@ -87,7 +85,8 @@ export async function POST(request: NextRequest) {
       total_amount || null,
       depositAmount,
       notes || null,
-      JSON.stringify({ manually_created: true })
+      JSON.stringify({ manually_created: true }),
+      session.tenantId
     ).run();
 
     return NextResponse.json({ id, order_number: orderNumber });

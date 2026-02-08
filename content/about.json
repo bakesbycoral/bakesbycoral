@@ -1,0 +1,64 @@
+{
+  "hero": {
+    "label": "About LeanGo",
+    "title": "We're Practitioners, Not Just Consultants",
+    "description": "Founded by people who've led operations and improvement in real organizations. We know what works because we've done it."
+  },
+  "story": {
+    "label": "Our Story",
+    "title": "Built on Real Experience",
+    "content": "LeanGo was founded on a simple belief: improvement should stick. Too many organizations invest in initiatives that fade as soon as the consultants leave. We built a different model — one focused on building capability, not dependency.\n\nOur team has led operations, managed improvement programs, and built systems in real organizations. We've experienced the challenges you face because we've faced them too. That experience shapes everything we do."
+  },
+  "team": {
+    "label": "Our Team",
+    "title": "People Who've Been There",
+    "members": [
+      {
+        "name": "Dave Bishop",
+        "role": "Founder & CI Partner",
+        "bio": "Lean practitioner with decades of hands-on experience leading continuous improvement initiatives in manufacturing and operations."
+      },
+      {
+        "name": "Zack Bishop",
+        "role": "Apps & Analytics",
+        "bio": "Builds custom Lean Apps and dashboards that help teams track performance and make better decisions."
+      },
+      {
+        "name": "Katie Myers",
+        "role": "Training",
+        "bio": "Delivers engaging Lean training and certifications that build real capability in front-line teams."
+      },
+      {
+        "name": "Coralyn Brown",
+        "role": "Marketing & Social Media",
+        "bio": "Shares the LeanGo story and connects with organizations looking to improve their operations."
+      }
+    ]
+  },
+  "values": {
+    "label": "Our Values",
+    "title": "What We Believe",
+    "items": [
+      {
+        "title": "Respect for People",
+        "description": "We believe the people doing the work know it best. Our job is to listen, learn, and help them succeed."
+      },
+      {
+        "title": "Results Over Activity",
+        "description": "We measure success by outcomes, not effort. If it's not creating value, we stop doing it."
+      },
+      {
+        "title": "Practical Over Perfect",
+        "description": "Done is better than perfect. We'd rather implement something good today than plan something ideal forever."
+      },
+      {
+        "title": "Build Capability",
+        "description": "Our goal is to work ourselves out of a job. Your team should be more capable after we leave than before we arrived."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Want to learn more?",
+    "description": "Schedule a conversation. We'd love to hear about your challenges and share how we might help."
+  }
+}

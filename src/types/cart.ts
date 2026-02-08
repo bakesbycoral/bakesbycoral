@@ -18,8 +18,18 @@ export const FLAVORS = [
   { key: 'lemon_sugar', label: 'Lemon Sugar' },
 ] as const;
 
+export const SEASONAL_FLAVORS = [
+  { key: 'key_lime_cheesecake', label: 'Key Lime Cheesecake' },
+  { key: 'blueberry_muffin', label: 'Blueberry Muffin' },
+  { key: 'lemon_shortbread_sandwiches', label: 'Lemon Shortbread Sandwiches' },
+  { key: 'white_chocolate_raspberry', label: 'White Chocolate Raspberry' },
+] as const;
+
 export const PRICE_PER_DOZEN = 3000;  // cents
 export const HEAT_SEAL_FEE = 500;     // cents per dozen
 export const MAX_DOZENS = 3;
 export const COOKIES_PER_DOZEN = 12;
 export const HALF_DOZEN = 6;
+
+// Lemon shortbread sandwiches count as 2x since each sandwich uses 2 cookies
+export const DOUBLE_COUNT_FLAVOR = 'lemon_shortbread_sandwiches';
