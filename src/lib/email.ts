@@ -32,7 +32,7 @@ export async function sendEmail(
 
   try {
     const emailData: Record<string, unknown> = {
-      from: options.from || 'Bakes by Coral <onboarding@resend.dev>',
+      from: options.from || 'Bakes by Coral <hello@bakesbycoral.com>',
       to: Array.isArray(options.to) ? options.to : [options.to],
       reply_to: options.replyTo,
       subject: options.subject,
@@ -53,7 +53,8 @@ export async function sendEmail(
     });
 
     if (!response.ok) {
-      console.error('Failed to send email:', await response.text());
+      const errorText = await response.text();
+      console.error('Failed to send email:', response.status, errorText);
       return false;
     }
 

@@ -142,6 +142,7 @@ export async function POST(
     });
   } catch (error) {
     console.error('Send quote error:', error);
-    return NextResponse.json({ error: 'Failed to send quote' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Failed to send quote';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
