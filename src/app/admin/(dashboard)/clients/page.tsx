@@ -38,7 +38,7 @@ export default function ClientsPage() {
     try {
       const response = await fetch(`/api/admin/clients?search=${encodeURIComponent(search)}`);
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as { clients: Client[] };
         setClients(data.clients || []);
       }
     } catch (error) {

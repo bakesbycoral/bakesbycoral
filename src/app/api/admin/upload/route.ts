@@ -7,6 +7,22 @@ import path from 'path';
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
+// Magic byte signatures for allowed image types
+const MAGIC_BYTES: Record<string, number[][]> = {
+  'image/jpeg': [[0xFF, 0xD8, 0xFF]],
+  'image/png': [[0x89, 0x50, 0x4E, 0x47]],
+  'image/gif': [[0x47, 0x49, 0x46, 0x38]],
+  'image/webp': [[0x52, 0x49, 0x46, 0x46]], // RIFF header
+};
+
+function validateMagicBytes(buffer: Uint8Array, mimeType: string): boolean {
+  const signatures = MAGIC_BYTES[mimeType];
+  if (!signatures) return false;
+  return signatures.some(sig =>
+    sig.every((byte, i) => buffer[i] === byte)
+  );
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getAdminSession();
@@ -32,6 +48,11 @@ export async function POST(request: NextRequest) {
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+
+    // Validate file content matches MIME type (magic byte check)
+    if (!validateMagicBytes(new Uint8Array(bytes), file.type)) {
+      return NextResponse.json({ error: 'File content does not match declared type' }, { status: 400 });
+    }
 
     // Generate unique filename
     const ext = file.name.split('.').pop() || 'jpg';

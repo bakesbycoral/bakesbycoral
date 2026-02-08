@@ -34,16 +34,7 @@ export async function POST(request: NextRequest) {
     `).bind(session.userId, tenantId).first<{ tenant_id: string; name: string }>();
 
     if (!userTenant) {
-      // Check if tenant exists at all (for backwards compatibility)
-      const tenant = await db.prepare(`
-        SELECT id FROM tenants WHERE id = ?
-      `).bind(tenantId).first<{ id: string }>();
-
-      if (!tenant) {
-        return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
-      }
-
-      return NextResponse.json({ error: 'Access denied to this tenant' }, { status: 403 });
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     // Create new session with updated tenant

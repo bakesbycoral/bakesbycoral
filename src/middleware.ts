@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Security headers applied to all responses
+const securityHeaders = {
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
+
+function addSecurityHeaders(response: NextResponse): NextResponse {
+  for (const [key, value] of Object.entries(securityHeaders)) {
+    response.headers.set(key, value);
+  }
+  return response;
+}
+
 // Map of domains to tenant slugs
 const TENANT_DOMAINS: Record<string, string> = {
   'bakesbycoral.com': 'bakes-by-coral',
@@ -29,14 +45,17 @@ export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || 'localhost:3000';
   const { pathname } = request.nextUrl;
 
-  // Skip middleware for API routes, static files, and admin
+  // Skip middleware for static files
   if (
-    pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/admin') ||
     pathname.includes('.') // Static files
   ) {
-    return NextResponse.next();
+    return addSecurityHeaders(NextResponse.next());
+  }
+
+  // Add security headers to API and admin routes
+  if (pathname.startsWith('/api') || pathname.startsWith('/admin')) {
+    return addSecurityHeaders(NextResponse.next());
   }
 
   // Determine tenant from host
@@ -48,7 +67,7 @@ export function middleware(request: NextRequest) {
     if (pathname === '/') {
       const url = request.nextUrl.clone();
       url.pathname = '/leango';
-      return NextResponse.rewrite(url);
+      return addSecurityHeaders(NextResponse.rewrite(url));
     }
 
     // Rewrite LeanGo-specific paths
@@ -56,17 +75,17 @@ export function middleware(request: NextRequest) {
       if (pathname === path || pathname.startsWith(`${path}/`)) {
         const url = request.nextUrl.clone();
         url.pathname = `/leango${pathname}`;
-        return NextResponse.rewrite(url);
+        return addSecurityHeaders(NextResponse.rewrite(url));
       }
     }
   }
 
   // For development: allow direct access to /leango/* paths
   if (pathname.startsWith('/leango')) {
-    return NextResponse.next();
+    return addSecurityHeaders(NextResponse.next());
   }
 
-  return NextResponse.next();
+  return addSecurityHeaders(NextResponse.next());
 }
 
 export const config = {

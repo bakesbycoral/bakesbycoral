@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Section } from '@/components/leango';
 import { getDB } from '@/lib/db';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface BlogPost {
   id: string;
@@ -137,7 +138,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <Section background="darker">
         <article
           className="max-w-3xl mx-auto prose prose-lg prose-invert prose-headings:text-white prose-p:text-gray-300 prose-a:text-[#00a1f1] prose-strong:text-white prose-code:text-[#00a1f1]"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
         />
       </Section>
 

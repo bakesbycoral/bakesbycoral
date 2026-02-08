@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitResponse = rateLimit(request, 'newsletter', RATE_LIMITS.newsletter);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const body = await request.json() as {
       email?: string;
       tenantId?: string;

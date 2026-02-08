@@ -57,7 +57,7 @@ async function getAnalyticsData(tenantId: string) {
     WHERE b.tenant_id = ?
     ORDER BY b.created_at DESC
     LIMIT 5
-  `).bind(tenantId).all();
+  `).bind(tenantId).all<{ id: string; customer_name: string; booking_type_name: string; start_time: string }>();
 
   // Get recent contacts
   const recentContacts = await db.prepare(`
@@ -65,7 +65,7 @@ async function getAnalyticsData(tenantId: string) {
     WHERE tenant_id = ?
     ORDER BY created_at DESC
     LIMIT 5
-  `).bind(tenantId).all();
+  `).bind(tenantId).all<{ id: string; name: string; email: string; created_at: string }>();
 
   return {
     clients: {

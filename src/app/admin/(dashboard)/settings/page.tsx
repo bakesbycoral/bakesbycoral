@@ -93,13 +93,13 @@ export default function SettingsPage() {
       ]);
 
       if (tenantRes.ok) {
-        const data = await tenantRes.json();
+        const data = await tenantRes.json() as { tenant: Tenant; settings: Record<string, string> };
         setTenant(data.tenant);
         setSettings(data.settings || {});
       }
 
       if (blackoutRes.ok) {
-        const data = await blackoutRes.json();
+        const data = await blackoutRes.json() as { blackoutDates: BlackoutDate[] };
         const today = new Date().toISOString().split('T')[0];
         const futureDates = (data.blackoutDates || []).filter(
           (d: BlackoutDate) => d.date >= today
@@ -170,7 +170,7 @@ export default function SettingsPage() {
         setNewReason('');
         fetchData();
       } else {
-        const data = await response.json();
+        const data = await response.json() as { error?: string };
         setMessage({ type: 'error', text: data.error || 'Failed to add date' });
       }
     } catch {

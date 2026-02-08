@@ -103,7 +103,7 @@ export default function AvailabilityPage() {
       ]);
 
       if (windowsRes.ok) {
-        const data = await windowsRes.json();
+        const data = await windowsRes.json() as { windows: AvailabilityWindow[] };
         const windowsMap: Record<number, { start_time: string; end_time: string; is_active: boolean }> = {};
         // Initialize all days
         DAYS_OF_WEEK.forEach(day => {
@@ -121,12 +121,12 @@ export default function AvailabilityPage() {
       }
 
       if (typesRes.ok) {
-        const data = await typesRes.json();
+        const data = await typesRes.json() as { bookingTypes: BookingType[] };
         setBookingTypes(data.bookingTypes || []);
       }
 
       if (overridesRes.ok) {
-        const data = await overridesRes.json();
+        const data = await overridesRes.json() as { overrides: AvailabilityOverride[] };
         setOverrides(data.overrides || []);
       }
     } catch (error) {
@@ -199,7 +199,7 @@ export default function AvailabilityPage() {
       if (response.ok) {
         fetchData();
       } else {
-        const data = await response.json();
+        const data = await response.json() as { error?: string };
         alert(data.error || 'Failed to delete');
       }
     } catch (error) {

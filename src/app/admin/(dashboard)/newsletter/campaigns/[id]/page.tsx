@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { TipTapEditor } from '@/components/admin/TipTapEditor';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface Campaign {
   id: string;
@@ -100,7 +101,7 @@ export default function EditCampaignPage() {
         }
 
         if (countRes.ok) {
-          const data = await countRes.json();
+          const data = await countRes.json() as SubscriberCount;
           setSubscriberCount(data);
         }
       } catch (error) {
@@ -358,7 +359,7 @@ export default function EditCampaignPage() {
               <h3 className="text-lg font-medium text-gray-900 mb-4">Email Content</h3>
               <div
                 className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: originalCampaign.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(originalCampaign.content) }}
               />
             </div>
           </div>
@@ -424,7 +425,7 @@ export default function EditCampaignPage() {
               ) : (
                 <div
                   className="prose prose-sm max-w-none p-4 bg-gray-50 rounded-lg"
-                  dangerouslySetInnerHTML={{ __html: formData.content }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(formData.content) }}
                 />
               )}
             </div>
@@ -581,7 +582,7 @@ export default function EditCampaignPage() {
               </div>
               <div
                 className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: formData.content || '<p class="text-gray-400">No content yet</p>' }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(formData.content || '<p class="text-gray-400">No content yet</p>') }}
               />
             </div>
             <div className="px-6 py-4 border-t border-gray-200">

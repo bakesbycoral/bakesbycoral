@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
 import { sendEmail } from '@/lib/email';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitResponse = rateLimit(request, 'order-form', RATE_LIMITS.publicForm);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const formData = await request.formData();
 
     const name = formData.get('name') as string || '';

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
 import { sendEmail, buildLargeCookieOrderNotification } from '@/lib/email';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 interface LargeCookieOrderData {
   name: string;
@@ -33,6 +34,9 @@ interface LargeCookieOrderData {
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitResponse = rateLimit(request, 'order-form', RATE_LIMITS.publicForm);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const data: LargeCookieOrderData = await request.json();
 
     // Basic validation

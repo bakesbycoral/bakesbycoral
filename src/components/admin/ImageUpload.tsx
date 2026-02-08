@@ -37,11 +37,11 @@ export function ImageUpload({
       });
 
       if (!response.ok) {
-        const data = await response.json();
+        const data = await response.json() as { error?: string };
         throw new Error(data.error || 'Upload failed');
       }
 
-      const data = await response.json();
+      const data = await response.json() as { url: string };
       onChange(data.url);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');

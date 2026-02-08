@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import { verifyPassword } from '@/lib/auth/password';
 import { createSession } from '@/lib/auth/session';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 interface LoginRequest {
   email: string;
@@ -13,6 +14,10 @@ interface LoginRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit login attempts
+    const rateLimitResponse = rateLimit(request, 'login', RATE_LIMITS.login);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const { email, password }: LoginRequest = await request.json();
 
     if (!email || !password) {

@@ -7,6 +7,17 @@ export function parseAdminEmails(emailString: string | undefined, fallback = 'he
   return emails.length > 0 ? emails : [fallback];
 }
 
+// Escape HTML entities to prevent injection in email templates
+function escapeHtml(str: string): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 interface EmailAttachment {
   filename: string;
   content: string; // base64 encoded
@@ -68,11 +79,13 @@ export async function sendEmail(
 // Template variable replacement
 export function replaceTemplateVariables(
   template: string,
-  variables: Record<string, string>
+  variables: Record<string, string>,
+  escapeValues = true
 ): string {
   let result = template;
   for (const [key, value] of Object.entries(variables)) {
-    result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value || '');
+    const safeValue = escapeValues ? escapeHtml(value || '') : (value || '');
+    result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), safeValue);
   }
   return result;
 }
@@ -315,11 +328,11 @@ export function orderConfirmationEmail(data: {
           <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif;">Bakes by Coral</h1>
         </div>
         <div class="content">
-          <h2>Thank you for your order, ${data.customerName}!</h2>
+          <h2>Thank you for your order, ${escapeHtml(data.customerName)}!</h2>
           <p>We've received your ${orderTypeLabels[data.orderType] || 'order'} and will be in touch soon.</p>
 
           <p><strong>Order Number:</strong></p>
-          <p class="order-number">${data.orderNumber}</p>
+          <p class="order-number">${escapeHtml(data.orderNumber)}</p>
 
           ${data.pickupDate ? `
           <p><strong>Requested Pickup:</strong><br>
@@ -379,12 +392,12 @@ export function adminNewOrderEmail(data: {
           <h1 style="margin: 0;">New ${orderTypeLabels[data.orderType] || 'Order'}</h1>
         </div>
         <div class="content">
-          <p><span class="label">Order Number:</span> ${data.orderNumber}</p>
+          <p><span class="label">Order Number:</span> ${escapeHtml(data.orderNumber)}</p>
           <p><span class="label">Type:</span> ${orderTypeLabels[data.orderType]}</p>
           <hr>
-          <p><span class="label">Customer:</span> ${data.customerName}</p>
-          <p><span class="label">Email:</span> <a href="mailto:${data.customerEmail}">${data.customerEmail}</a></p>
-          <p><span class="label">Phone:</span> <a href="tel:${data.customerPhone}">${data.customerPhone}</a></p>
+          <p><span class="label">Customer:</span> ${escapeHtml(data.customerName)}</p>
+          <p><span class="label">Email:</span> <a href="mailto:${escapeHtml(data.customerEmail)}">${escapeHtml(data.customerEmail)}</a></p>
+          <p><span class="label">Phone:</span> <a href="tel:${escapeHtml(data.customerPhone)}">${escapeHtml(data.customerPhone)}</a></p>
           ${data.pickupDate ? `<p><span class="label">Requested Pickup:</span> ${data.pickupDate}</p>` : ''}
 
           ${data.formData ? `
@@ -433,12 +446,12 @@ export function pickupReminderEmail(data: {
           <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif;">Pickup Reminder</h1>
         </div>
         <div class="content">
-          <p>Hi ${data.customerName},</p>
+          <p>Hi ${escapeHtml(data.customerName)},</p>
 
           <p>Just a friendly reminder that your order is ready for pickup <strong>tomorrow</strong>!</p>
 
           <div class="highlight">
-            <p><strong>Order:</strong> <span class="order-number">${data.orderNumber}</span></p>
+            <p><strong>Order:</strong> <span class="order-number">${escapeHtml(data.orderNumber)}</span></p>
             <p><strong>Pickup Date:</strong> ${formatDate(data.pickupDate)}</p>
             <p><strong>Pickup Time:</strong> ${formatTime(data.pickupTime)}</p>
           </div>
@@ -497,13 +510,13 @@ export function adminPickupReminderEmail(data: {
           <h1 style="margin: 0;">Pickup Tomorrow</h1>
         </div>
         <div class="content">
-          <p><span class="label">Order:</span> ${data.orderNumber}</p>
+          <p><span class="label">Order:</span> ${escapeHtml(data.orderNumber)}</p>
           <p><span class="label">Type:</span> ${orderTypeLabels[data.orderType] || data.orderType}</p>
           <p><span class="label">Pickup:</span> ${formatDate(data.pickupDate)} at ${formatTime(data.pickupTime)}</p>
           <hr>
-          <p><span class="label">Customer:</span> ${data.customerName}</p>
-          <p><span class="label">Email:</span> <a href="mailto:${data.customerEmail}">${data.customerEmail}</a></p>
-          <p><span class="label">Phone:</span> <a href="tel:${data.customerPhone}">${data.customerPhone}</a></p>
+          <p><span class="label">Customer:</span> ${escapeHtml(data.customerName)}</p>
+          <p><span class="label">Email:</span> <a href="mailto:${escapeHtml(data.customerEmail)}">${escapeHtml(data.customerEmail)}</a></p>
+          <p><span class="label">Phone:</span> <a href="tel:${escapeHtml(data.customerPhone)}">${escapeHtml(data.customerPhone)}</a></p>
 
           ${data.formData ? `
           <hr>
@@ -618,16 +631,16 @@ export function quoteEmail(data: {
           <p style="margin: 10px 0 0 0; opacity: 0.9;">Quote for Your Order</p>
         </div>
         <div class="content">
-          <p>Hi ${data.customerName},</p>
+          <p>Hi ${escapeHtml(data.customerName)},</p>
 
           <p>Thank you for your inquiry! Here's your personalized quote for your ${ORDER_TYPE_LABELS[data.orderType] || data.orderType}:</p>
 
-          <p class="quote-number">${data.quoteNumber}</p>
-          <p style="color: #666; font-size: 14px;">Order: ${data.orderNumber}</p>
+          <p class="quote-number">${escapeHtml(data.quoteNumber)}</p>
+          <p style="color: #666; font-size: 14px;">Order: ${escapeHtml(data.orderNumber)}</p>
 
           ${data.customerMessage ? `
           <div style="background: #EAD6D6; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 0; color: #541409;">${data.customerMessage}</p>
+            <p style="margin: 0; color: #541409;">${escapeHtml(data.customerMessage)}</p>
           </div>
           ` : ''}
 
@@ -760,13 +773,13 @@ export function quoteApprovedEmail(data: {
           <h1>Quote Approved!</h1>
         </div>
         <div class="content">
-          <p>Hi ${data.customerName},</p>
+          <p>Hi ${escapeHtml(data.customerName)},</p>
 
           <p>Thank you for approving your quote! Your order is now confirmed and we've sent you an invoice for the deposit.</p>
 
           <div class="summary">
-            <p style="margin: 0 0 10px 0;"><strong>Quote:</strong> ${data.quoteNumber}</p>
-            <p style="margin: 0 0 10px 0;"><strong>Order:</strong> ${data.orderNumber}</p>
+            <p style="margin: 0 0 10px 0;"><strong>Quote:</strong> ${escapeHtml(data.quoteNumber)}</p>
+            <p style="margin: 0 0 10px 0;"><strong>Order:</strong> ${escapeHtml(data.orderNumber)}</p>
             <p style="margin: 0 0 10px 0;"><strong>Deposit Due:</strong> ${formatPrice(data.depositAmount)}</p>
             <p style="margin: 0;"><strong>Total Order:</strong> ${formatPrice(data.totalAmount)}</p>
           </div>
@@ -1510,6 +1523,9 @@ export function buildCakeInquiryNotification(
   const templateText = template || DEFAULT_ADMIN_TEMPLATES.cake_inquiry;
   const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.cake_inquiry;
 
+  // Validate URL protocol
+  const safeAdminUrl = data.adminUrl.startsWith('https://') || data.adminUrl.startsWith('http://') ? data.adminUrl : '#';
+
   const variables: Record<string, string> = {
     order_number: data.orderNumber,
     customer_name: data.customerName,
@@ -1528,7 +1544,7 @@ export function buildCakeInquiryNotification(
     toppings: data.toppings || 'None',
     allergies: data.allergies || 'None',
     notes: data.notes ? `**Additional Notes:** ${data.notes}` : '',
-    admin_link: `[View in Admin Dashboard](${data.adminUrl})`,
+    admin_link: `[View in Admin Dashboard](${safeAdminUrl})`,
   };
 
   const processedSubject = replaceTemplateVariables(subjectText, variables);
@@ -1568,6 +1584,9 @@ export function buildLargeCookieOrderNotification(
   const templateText = template || DEFAULT_ADMIN_TEMPLATES.large_cookie_order;
   const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.large_cookie_order;
 
+  // Validate URL protocol
+  const safeAdminUrl = data.adminUrl.startsWith('https://') || data.adminUrl.startsWith('http://') ? data.adminUrl : '#';
+
   const variables: Record<string, string> = {
     order_number: data.orderNumber,
     customer_name: data.customerName,
@@ -1584,7 +1603,7 @@ export function buildLargeCookieOrderNotification(
     pickup_time: data.pickupTime || 'TBD',
     allergies: data.allergies || 'None noted',
     notes: data.notes ? `**Additional Notes:** ${data.notes}` : '',
-    admin_link: `[View in Admin Dashboard](${data.adminUrl})`,
+    admin_link: `[View in Admin Dashboard](${safeAdminUrl})`,
   };
 
   const processedSubject = replaceTemplateVariables(subjectText, variables);
@@ -1626,6 +1645,9 @@ export function buildWeddingInquiryNotification(
   const templateText = template || DEFAULT_ADMIN_TEMPLATES.wedding_inquiry;
   const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.wedding_inquiry;
 
+  // Validate URL protocol
+  const safeAdminUrl = data.adminUrl.startsWith('https://') || data.adminUrl.startsWith('http://') ? data.adminUrl : '#';
+
   const variables: Record<string, string> = {
     order_number: data.orderNumber,
     customer_name: data.customerName,
@@ -1643,7 +1665,7 @@ export function buildWeddingInquiryNotification(
     dietary_restrictions: data.dietaryRestrictions || 'None',
     image_count: String(data.imageCount),
     design_notes: data.designNotes ? `**Design Notes:** ${data.designNotes}` : '',
-    admin_link: `[View in Admin Dashboard](${data.adminUrl})`,
+    admin_link: `[View in Admin Dashboard](${safeAdminUrl})`,
   };
 
   const processedSubject = replaceTemplateVariables(subjectText, variables);
@@ -1678,6 +1700,9 @@ export function buildTastingOrderNotification(
   const templateText = template || DEFAULT_ADMIN_TEMPLATES.tasting_order;
   const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.tasting_order;
 
+  // Validate URL protocol
+  const safeAdminUrl = data.adminUrl.startsWith('https://') || data.adminUrl.startsWith('http://') ? data.adminUrl : '#';
+
   const tastingTypeLabels: Record<string, string> = {
     cake: 'Cake Tasting',
     cookie: 'Cookie Tasting',
@@ -1694,7 +1719,7 @@ export function buildTastingOrderNotification(
     wedding_date: data.weddingDate,
     pickup_date: data.pickupDate,
     pickup_time: data.pickupTime || 'TBD',
-    admin_link: `[View in Admin Dashboard](${data.adminUrl})`,
+    admin_link: `[View in Admin Dashboard](${safeAdminUrl})`,
   };
 
   const processedSubject = replaceTemplateVariables(subjectText, variables);

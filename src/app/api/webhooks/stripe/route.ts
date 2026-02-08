@@ -60,19 +60,18 @@ async function verifyStripeSignature(
     .map(b => b.toString(16).padStart(2, '0'))
     .join('');
 
-  // Compare signatures (timing-safe comparison)
+  // Compare signatures using constant-time comparison
   if (expectedSignature.length !== v1Signature.length) {
     return null;
   }
 
-  let match = true;
+  // Use bitwise OR to avoid timing side-channels
+  let mismatch = 0;
   for (let i = 0; i < expectedSignature.length; i++) {
-    if (expectedSignature[i] !== v1Signature[i]) {
-      match = false;
-    }
+    mismatch |= expectedSignature.charCodeAt(i) ^ v1Signature.charCodeAt(i);
   }
 
-  if (!match) {
+  if (mismatch !== 0) {
     return null;
   }
 

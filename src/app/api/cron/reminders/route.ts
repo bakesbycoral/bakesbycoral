@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
   const cronSecret = getEnvVar('bakesbycoral_cron_secret');
 
-  // Allow access if no secret is set (for development) or if secret matches
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  // Require cron secret - reject if not configured or doesn't match
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

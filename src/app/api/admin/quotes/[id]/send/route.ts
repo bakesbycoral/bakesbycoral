@@ -4,6 +4,7 @@ import { getAdminSession } from '@/lib/auth/admin-session';
 import { sendEmail, buildQuoteFromTemplate } from '@/lib/email';
 import { sendSms, buildSmsMessage, DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
 import type { Quote, QuoteLineItem } from '@/types';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 // POST /api/admin/quotes/[id]/send - Send quote to customer
 export async function POST(
@@ -15,6 +16,9 @@ export async function POST(
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const rateLimitResponse = rateLimit(request, 'email-send', RATE_LIMITS.emailSend);
+    if (rateLimitResponse) return rateLimitResponse;
 
     const { id } = await params;
     const db = getDB();

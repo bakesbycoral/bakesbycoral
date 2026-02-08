@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 type CustomerTemplateKey = 'form_submission' | 'confirmation' | 'confirmation_delivery' | 'reminder' | 'reminder_delivery' | 'quote' | 'quote_approved' | 'balance_invoice' | 'balance_invoice_delivery';
 type AdminTemplateKey = 'contact_form' | 'cake_inquiry' | 'large_cookie_order' | 'wedding_inquiry' | 'tasting_order';
@@ -473,7 +474,7 @@ export function EmailTemplateEditor({ templates, subjects, onSave }: EmailTempla
           {showPreview ? (
             <div className="border border-[#EAD6D6] rounded-lg p-4 bg-white min-h-[300px]">
               <div className="prose prose-sm max-w-none" style={{ color: 'rgba(84, 20, 9, 0.5)' }}>
-                <p dangerouslySetInnerHTML={{ __html: getPreviewHtml() }} />
+                <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(getPreviewHtml()) }} />
               </div>
             </div>
           ) : (

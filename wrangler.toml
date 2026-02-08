@@ -22,7 +22,6 @@ bucket_name = "bakes-coral-uploads"
 NEXT_PUBLIC_SITE_URL = "https://bakes-by-coral.coral-44f.workers.dev"
 # Note: bakesbycoral_session_secret should be set via: wrangler secret put bakesbycoral_session_secret
 
-# Cron triggers for scheduled tasks
-# Run pickup reminders daily at 9 AM EST (14:00 UTC)
-[triggers]
-crons = ["0 14 * * *"]
+# Pickup reminders cron: OpenNext doesn't support Cloudflare scheduled events,
+# so call the HTTP endpoint externally (daily at 9 AM EST / 14:00 UTC):
+#   GET /api/cron/reminders with header: Authorization: Bearer <bakesbycoral_cron_secret>

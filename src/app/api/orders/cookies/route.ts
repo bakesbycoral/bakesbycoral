@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import { validateOrder, isSpamSubmission, sanitizeInput } from '@/lib/validation';
 import { validateRequestedDate } from '@/lib/scheduling';
 import { sendEmail, orderConfirmationEmail, adminNewOrderEmail } from '@/lib/email';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 interface CartItem {
   flavor: string;
@@ -56,6 +57,9 @@ const COOKIES_PER_DOZEN = 12;
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitResponse = rateLimit(request, 'order-form', RATE_LIMITS.publicForm);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const data: CookieOrderData = await request.json();
 
     // Spam check

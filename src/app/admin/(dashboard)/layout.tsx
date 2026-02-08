@@ -94,12 +94,6 @@ export default async function DashboardLayout({
 }) {
   const user = await getUserWithTenants();
 
-  console.log('=== DEBUG: User with tenants ===');
-  console.log('User:', user?.email);
-  console.log('Current tenant:', user?.currentTenant?.name);
-  console.log('All tenants:', user?.tenants?.map(t => t.name));
-  console.log('Tenant count:', user?.tenants?.length);
-
   if (!user || user.role !== 'admin') {
     redirect('/admin/login');
   }

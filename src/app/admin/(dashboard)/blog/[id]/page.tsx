@@ -101,12 +101,12 @@ export default function EditBlogPostPage() {
         }
 
         if (catRes.ok) {
-          const data = await catRes.json();
-          setCategories(Array.isArray(data) ? data : data.categories || []);
+          const data = await catRes.json() as Record<string, unknown>;
+          setCategories(Array.isArray(data) ? data : (data.categories as typeof categories) || []);
         }
         if (tagRes.ok) {
-          const data = await tagRes.json();
-          setAllTags(data.tags || []);
+          const data = await tagRes.json() as Record<string, unknown>;
+          setAllTags((data.tags as typeof allTags) || []);
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import type { Quote, QuoteLineItem } from '@/types';
 
 // GET /api/quotes/[token] - Public: view quote by approval token
@@ -8,6 +9,9 @@ export async function GET(
   { params }: { params: Promise<{ token: string }> }
 ) {
   try {
+    const rateLimitResponse = rateLimit(request, 'quote-token', RATE_LIMITS.quoteToken);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const { token } = await params;
     const db = getDB();
 

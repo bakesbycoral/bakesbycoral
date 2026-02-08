@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { TipTapEditor } from '@/components/admin/TipTapEditor';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface SubscriberCount {
   total: number;
@@ -34,7 +35,7 @@ export default function NewCampaignPage() {
       try {
         const response = await fetch('/api/admin/newsletter/subscribers/count');
         if (response.ok) {
-          const data = await response.json();
+          const data = await response.json() as SubscriberCount;
           setSubscriberCount(data);
         }
       } catch (error) {
@@ -61,7 +62,7 @@ export default function NewCampaignPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as { id: string };
         if (submitStatus === 'draft') {
           router.push(`/admin/newsletter/campaigns/${data.id}`);
         } else if (submitStatus === 'sending') {
@@ -487,7 +488,7 @@ export default function NewCampaignPage() {
               </div>
               <div
                 className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: formData.content || '<p class="text-gray-400">No content yet</p>' }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(formData.content || '<p class="text-gray-400">No content yet</p>') }}
               />
             </div>
             <div className="px-6 py-4 border-t border-gray-200">

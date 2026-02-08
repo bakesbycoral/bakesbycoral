@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDB, getEnvVar } from '@/lib/db';
+import { getDB, getEnvVar, generateId } from '@/lib/db';
 import { isSpamSubmission, sanitizeInput } from '@/lib/validation';
 import { sendEmail, buildContactFormNotification, parseAdminEmails } from '@/lib/email';
-
-function generateId(): string {
-  return crypto.randomUUID();
-}
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 interface ContactFormData {
   name: string;
@@ -20,6 +17,9 @@ interface ContactFormData {
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitResponse = rateLimit(request, 'contact', RATE_LIMITS.contact);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const data: ContactFormData = await request.json();
     const tenantId = data.tenantId || 'bakes-by-coral';
 

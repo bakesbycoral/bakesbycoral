@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 interface Coupon {
   id: string;
@@ -18,6 +19,9 @@ interface Coupon {
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitResponse = rateLimit(request, 'coupon', RATE_LIMITS.couponValidation);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const body = await request.json() as { code?: string; orderType?: string };
     const { code, orderType } = body;
 

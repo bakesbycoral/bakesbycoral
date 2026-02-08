@@ -1,24 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getDB, getEnvVar } from '@/lib/db';
-import { verifySession } from '@/lib/auth/session';
-
-async function getTenantId(): Promise<string | null> {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get('session')?.value;
-
-  if (!sessionToken) return null;
-
-  const session = await verifySession(sessionToken, getEnvVar('bakesbycoral_session_secret'));
-  return session?.tenantId || null;
-}
+import { getDB } from '@/lib/db';
+import { getAdminSession } from '@/lib/auth/admin-session';
 
 export async function GET() {
   try {
-    const tenantId = await getTenantId();
-    if (!tenantId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const tenantId = session.tenantId;
 
     const db = getDB();
     const result = await db.prepare(`
@@ -37,10 +27,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const tenantId = await getTenantId();
-    if (!tenantId) {
+    const session = await getAdminSession();
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const tenantId = session.tenantId;
 
     const { name, slug, description } = await request.json() as { name?: string; slug?: string; description?: string };
 

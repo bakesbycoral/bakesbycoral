@@ -3,6 +3,7 @@ import { getDB, getEnvVar } from '@/lib/db';
 import Stripe from 'stripe';
 import { sanitizeInput } from '@/lib/validation';
 import { sendEmail, buildTastingOrderNotification } from '@/lib/email';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 interface TastingOrderData {
   name: string;
@@ -22,6 +23,9 @@ interface TastingOrderData {
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimitResponse = rateLimit(request, 'order-form', RATE_LIMITS.publicForm);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const data: TastingOrderData = await request.json();
 
     // Basic validation
