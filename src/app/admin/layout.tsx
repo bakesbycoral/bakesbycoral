@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
   title: {
@@ -6,6 +6,19 @@ export const metadata: Metadata = {
     template: '%s | Bakes by Coral Admin',
   },
   robots: 'noindex, nofollow',
+  manifest: '/admin-manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'BBC Admin',
+  },
+  icons: {
+    apple: '/apple-touch-icon-admin.png',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#541409',
 };
 
 export default function AdminLayout({
