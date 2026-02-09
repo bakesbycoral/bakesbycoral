@@ -82,14 +82,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Create invoice item for deposit
-    await stripe.invoiceItems.create({
-      customer: customer.id,
-      amount: depositAmount,
-      currency: 'usd',
-      description: body.description || `Deposit for ${order.order_number}`,
-    });
-
+    // Create the invoice first
     const invoice = await stripe.invoices.create({
       customer: customer.id,
       collection_method: 'send_invoice',
@@ -99,6 +92,15 @@ export async function POST(request: NextRequest) {
         order_number: order.order_number,
         payment_type: 'deposit',
       },
+    });
+
+    // Add deposit line item explicitly attached to the invoice
+    await stripe.invoiceItems.create({
+      customer: customer.id,
+      invoice: invoice.id,
+      amount: depositAmount,
+      currency: 'usd',
+      description: body.description || `Deposit for ${order.order_number}`,
     });
 
     const finalized = await stripe.invoices.finalizeInvoice(invoice.id);

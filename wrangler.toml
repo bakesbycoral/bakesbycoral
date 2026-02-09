@@ -19,7 +19,7 @@ bucket_name = "bakes-coral-uploads"
 
 # Environment variables (secrets set via `wrangler secret put`)
 [vars]
-NEXT_PUBLIC_SITE_URL = "https://bakes-by-coral.coral-44f.workers.dev"
+NEXT_PUBLIC_SITE_URL = "https://bakesbycoral.com"
 # Note: bakesbycoral_session_secret should be set via: wrangler secret put bakesbycoral_session_secret
 
 # Pickup reminders cron: OpenNext doesn't support Cloudflare scheduled events,

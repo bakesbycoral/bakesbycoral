@@ -83,15 +83,12 @@ export async function POST(
       },
     });
 
-    // Create invoice items for deposit
-    await stripe.invoiceItems.create({
-      customer: customer.id,
-      amount: quote.deposit_amount || 0,
-      currency: 'usd',
-      description: `Deposit (${quote.deposit_percentage}%) for ${quote.order_number}`,
-    });
+    const depositAmount = quote.deposit_amount || 0;
+    if (depositAmount <= 0) {
+      return NextResponse.json({ error: 'Quote has no deposit amount' }, { status: 400 });
+    }
 
-    // Create the invoice
+    // Create the invoice first
     const invoice = await stripe.invoices.create({
       customer: customer.id,
       collection_method: 'send_invoice',
@@ -103,6 +100,15 @@ export async function POST(
         quote_number: quote.quote_number,
         payment_type: 'deposit',
       },
+    });
+
+    // Add deposit line item explicitly attached to the invoice
+    await stripe.invoiceItems.create({
+      customer: customer.id,
+      invoice: invoice.id,
+      amount: depositAmount,
+      currency: 'usd',
+      description: `Deposit (${quote.deposit_percentage}%) for ${quote.order_number}`,
     });
 
     // Finalize and send the invoice
