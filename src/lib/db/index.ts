@@ -173,3 +173,36 @@ export function generateId(): string {
 export function now(): string {
   return new Date().toISOString();
 }
+
+/**
+ * Upsert a customer from order data. If a customer with the same email exists
+ * for the tenant, update their name/phone and increment total_orders.
+ * Otherwise create a new customer.
+ */
+export async function upsertClientFromOrder(
+  customerName: string,
+  customerEmail: string,
+  customerPhone: string,
+  tenantId: string = 'bakes-by-coral'
+) {
+  try {
+    const db = getDB();
+    const existing = await db.prepare(
+      'SELECT id FROM customers WHERE email = ? AND tenant_id = ?'
+    ).bind(customerEmail, tenantId).first<{ id: string }>();
+
+    if (existing) {
+      await db.prepare(
+        'UPDATE customers SET name = ?, phone = ?, total_orders = total_orders + 1, updated_at = datetime(\'now\') WHERE id = ?'
+      ).bind(customerName, customerPhone, existing.id).run();
+    } else {
+      const id = `cust_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      await db.prepare(
+        'INSERT INTO customers (id, name, email, phone, total_orders, tenant_id) VALUES (?, ?, ?, ?, 1, ?)'
+      ).bind(id, customerName, customerEmail, customerPhone, tenantId).run();
+    }
+  } catch (error) {
+    // Non-fatal: don't break order submission if customer upsert fails
+    console.error('Customer upsert error (non-fatal):', error);
+  }
+}

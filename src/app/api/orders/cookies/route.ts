@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDB, getEnvVar } from '@/lib/db';
+import { getDB, getEnvVar, upsertClientFromOrder } from '@/lib/db';
 import Stripe from 'stripe';
 import { validateOrder, isSpamSubmission, sanitizeInput } from '@/lib/validation';
 import { validateRequestedDate } from '@/lib/scheduling';
@@ -181,6 +181,9 @@ export async function POST(request: NextRequest) {
       sanitizeInput(data.notes || ''),
       JSON.stringify(formData)
     ).run();
+
+    // Auto-add customer to clients list
+    await upsertClientFromOrder(sanitizeInput(data.name), sanitizeInput(data.email), sanitizeInput(data.phone));
 
     // Send form submission emails (non-blocking)
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');

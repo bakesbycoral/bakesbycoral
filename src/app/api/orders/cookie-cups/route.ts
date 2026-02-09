@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDB, getEnvVar } from '@/lib/db';
+import { getDB, getEnvVar, upsertClientFromOrder } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
 import { sendEmail } from '@/lib/email';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
@@ -82,6 +82,9 @@ export async function POST(request: NextRequest) {
         inspiration_image_count: imageCount,
       })
     ).run();
+
+    // Auto-add customer to clients list
+    await upsertClientFromOrder(sanitizeInput(name), sanitizeInput(email), sanitizeInput(phone));
 
     // Send email notification with attachments
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
