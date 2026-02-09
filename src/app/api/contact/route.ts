@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDB, getEnvVar, generateId } from '@/lib/db';
+import { getDB, getEnvVar, generateId, upsertClientFromOrder } from '@/lib/db';
 import { isSpamSubmission, sanitizeInput } from '@/lib/validation';
 import { sendEmail, buildContactFormNotification, parseAdminEmails } from '@/lib/email';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
@@ -69,6 +69,11 @@ export async function POST(request: NextRequest) {
         ipAddress,
         userAgent.substring(0, 500)
       ).run();
+    }
+
+    // Auto-add to customers list
+    if (tenantId === 'bakes-by-coral') {
+      await upsertClientFromOrder(sanitizeInput(data.name), sanitizeInput(data.email), data.phone ? sanitizeInput(data.phone) : '', tenantId);
     }
 
     // Send email via Resend if configured
