@@ -67,10 +67,10 @@ export default function WeddingInquiryPage() {
   const showCookieFields = ['cookies', 'cake_and_cookies', 'cookies_and_cookie_cups', 'all_three'].includes(formData.servicesNeeded);
   const showCookieCupsFields = ['cookie_cups', 'cake_and_cookie_cups', 'cookies_and_cookie_cups', 'all_three'].includes(formData.servicesNeeded);
 
-  // Cookie calculations
-  const totalCookies = Object.values(formData.cookieFlavors).reduce((a, b) => a + b, 0);
-  const maxCookies = formData.cookieQuantity ? parseInt(formData.cookieQuantity) * 12 : 0;
-  const remainingCookies = maxCookies - totalCookies;
+  // Cookie calculations (values in dozens)
+  const totalDozens = Object.values(formData.cookieFlavors).reduce((a, b) => a + b, 0);
+  const maxDozens = formData.cookieQuantity ? parseInt(formData.cookieQuantity) : 0;
+  const remainingDozens = maxDozens - totalDozens;
   const hasCookieDiscount = formData.cookieQuantity && parseInt(formData.cookieQuantity) >= 10;
   const hasCookieCupsDiscount = formData.cookieCupsQuantity && parseInt(formData.cookieCupsQuantity) >= 10;
 
@@ -700,8 +700,8 @@ export default function WeddingInquiryPage() {
                         value={formData.cookieQuantity}
                         onChange={(e) => {
                           const newQuantity = e.target.value;
-                          const newMax = newQuantity ? parseInt(newQuantity) * 12 : 0;
-                          if (totalCookies > newMax) {
+                          const newMaxDozens = newQuantity ? parseInt(newQuantity) : 0;
+                          if (totalDozens > newMaxDozens) {
                             setFormData({
                               ...formData,
                               cookieQuantity: newQuantity,
@@ -748,7 +748,7 @@ export default function WeddingInquiryPage() {
                       </label>
                       <p className="text-sm text-stone-600 mb-4">
                         {formData.cookieQuantity
-                          ? `Select how many of each flavor (total must equal ${parseInt(formData.cookieQuantity) * 12} cookies). Remaining: ${remainingCookies}`
+                          ? `Select how many dozen of each flavor (must total ${formData.cookieQuantity} dozen). Remaining: ${remainingDozens}`
                           : 'Please select how many dozen above first.'}
                       </p>
                       <div className="space-y-3">
@@ -760,7 +760,7 @@ export default function WeddingInquiryPage() {
                           { key: 'lemonSugar', label: 'Lemon Sugar' },
                         ].map((flavor) => {
                           const currentValue = formData.cookieFlavors[flavor.key as keyof typeof formData.cookieFlavors];
-                          const maxForFlavor = currentValue + Math.floor(remainingCookies / 12) * 12;
+                          const maxForFlavor = currentValue + remainingDozens;
                           return (
                             <div key={flavor.key} className="flex items-center justify-between">
                               <label className="text-stone-700">{flavor.label}</label>
@@ -768,14 +768,13 @@ export default function WeddingInquiryPage() {
                                 type="number"
                                 min="0"
                                 max={maxForFlavor}
-                                step="12"
+                                step="1"
                                 disabled={!formData.cookieQuantity}
                                 className="w-20 px-3 py-2 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-center text-[#541409] disabled:bg-stone-100 disabled:cursor-not-allowed"
                                 value={currentValue}
                                 onChange={(e) => {
                                   const value = parseInt(e.target.value) || 0;
-                                  const rounded = Math.round(value / 12) * 12;
-                                  const capped = Math.max(0, Math.min(maxForFlavor, rounded));
+                                  const capped = Math.max(0, Math.min(maxForFlavor, value));
                                   setFormData({
                                     ...formData,
                                     cookieFlavors: {
@@ -789,24 +788,21 @@ export default function WeddingInquiryPage() {
                           );
                         })}
                       </div>
-                      <p className="text-xs text-stone-500 mt-2">
-                        Quantities must be in increments of 12 (one dozen)
-                      </p>
                       <div className="mt-4 p-3 bg-[#EAD6D6] rounded text-center space-y-1">
                         <div className="font-medium text-[#541409]">
-                          Total: {totalCookies} / {maxCookies || '—'} cookies
+                          Total: {totalDozens} / {maxDozens || '—'} dozen
                         </div>
-                        {formData.cookieQuantity && remainingCookies > 0 && (
+                        {formData.cookieQuantity && remainingDozens > 0 && (
                           <div className="text-sm text-[#541409]/70">
-                            {remainingCookies} cookies remaining to select
+                            {remainingDozens} dozen remaining to select
                           </div>
                         )}
-                        {formData.cookieQuantity && remainingCookies < 0 && (
+                        {formData.cookieQuantity && remainingDozens < 0 && (
                           <div className="text-sm text-red-600">
-                            Over by {Math.abs(remainingCookies)} cookies
+                            Over by {Math.abs(remainingDozens)} dozen
                           </div>
                         )}
-                        {formData.cookieQuantity && totalCookies === maxCookies && (
+                        {formData.cookieQuantity && totalDozens === maxDozens && (
                           <div className="text-sm text-green-600">
                             Perfect!
                           </div>

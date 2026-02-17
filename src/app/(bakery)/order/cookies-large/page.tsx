@@ -50,12 +50,9 @@ export default function LargeCookieOrderPage() {
     minOrderAmount: number;
   } | null>(null);
 
-  // Lemon shortbread sandwiches count as 2x (each sandwich uses 2 cookies)
-  const totalCookies = Object.entries(formData.flavors).reduce((sum, [key, value]) => {
-    return sum + (key === 'lemonShortbreadSandwiches' ? value * 2 : value);
-  }, 0);
-  const maxCookies = formData.quantity ? parseInt(formData.quantity) * 12 : 0;
-  const remainingCookies = maxCookies - totalCookies;
+  const totalDozens = Object.values(formData.flavors).reduce((sum, value) => sum + value, 0);
+  const maxDozens = formData.quantity ? parseInt(formData.quantity) : 0;
+  const remainingDozens = maxDozens - totalDozens;
   const hasDiscount = formData.quantity && parseInt(formData.quantity) >= 10;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -298,9 +295,9 @@ export default function LargeCookieOrderPage() {
                   value={formData.quantity}
                   onChange={(e) => {
                     const newQuantity = e.target.value;
-                    const newMax = newQuantity ? parseInt(newQuantity) * 12 : 0;
+                    const newMaxDozens = newQuantity ? parseInt(newQuantity) : 0;
                     // Reset flavors if current total exceeds new max
-                    if (totalCookies > newMax) {
+                    if (totalDozens > newMaxDozens) {
                       setFormData({
                         ...formData,
                         quantity: newQuantity,
@@ -349,7 +346,7 @@ export default function LargeCookieOrderPage() {
                 <h2 className="text-xl font-serif text-[#541409] mb-4">Choose Your Flavors</h2>
                 <p className="text-sm text-stone-600 mb-4">
                   {formData.quantity
-                    ? `Select how many of each flavor you'd like (total must equal ${parseInt(formData.quantity) * 12} cookies).`
+                    ? `Select how many dozen of each flavor you'd like (must total ${formData.quantity} dozen).`
                     : 'Please select how many dozen above first.'}
                 </p>
                 <div className="space-y-4">
@@ -361,8 +358,7 @@ export default function LargeCookieOrderPage() {
                     { key: 'lemonSugar', label: 'Lemon Sugar' },
                   ].map((flavor) => {
                     const currentValue = formData.flavors[flavor.key as keyof typeof formData.flavors];
-                    // Max for this flavor is current value + remaining cookies (rounded down to nearest 12)
-                    const maxForFlavor = currentValue + Math.floor(remainingCookies / 12) * 12;
+                    const maxForFlavor = currentValue + remainingDozens;
                     return (
                       <div key={flavor.key} className="flex items-center justify-between">
                         <label className="text-stone-700">{flavor.label}</label>
@@ -370,16 +366,13 @@ export default function LargeCookieOrderPage() {
                           type="number"
                           min="0"
                           max={maxForFlavor}
-                          step="12"
+                          step="1"
                           disabled={!formData.quantity}
                           className="w-20 px-3 py-2 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-center text-[#541409] disabled:bg-stone-100 disabled:cursor-not-allowed"
                           value={currentValue}
                           onChange={(e) => {
-                            // Round to nearest 12
                             const value = parseInt(e.target.value) || 0;
-                            const rounded = Math.round(value / 12) * 12;
-                            // Cap at max allowed
-                            const capped = Math.max(0, Math.min(maxForFlavor, rounded));
+                            const capped = Math.max(0, Math.min(maxForFlavor, value));
                             setFormData({
                               ...formData,
                               flavors: {
@@ -403,37 +396,32 @@ export default function LargeCookieOrderPage() {
                         </p>
                       </div>
                       {[
-                        { key: 'keyLimeCheesecake', label: 'Key Lime Cheesecake', isDouble: false },
-                        { key: 'blueberryMuffin', label: 'Blueberry Muffin', isDouble: false },
-                        { key: 'lemonShortbreadSandwiches', label: 'Lemon Shortbread Sandwiches', isDouble: true },
-                        { key: 'whiteChocolateRaspberry', label: 'White Chocolate Raspberry', isDouble: false },
+                        { key: 'keyLimeCheesecake', label: 'Key Lime Cheesecake', note: '' },
+                        { key: 'blueberryMuffin', label: 'Blueberry Muffin', note: '' },
+                        { key: 'lemonShortbreadSandwiches', label: 'Lemon Shortbread Sandwiches', note: '6 sandwiches per dozen' },
+                        { key: 'whiteChocolateRaspberry', label: 'White Chocolate Raspberry', note: '' },
                       ].map((flavor) => {
                         const currentValue = formData.flavors[flavor.key as keyof typeof formData.flavors];
-                        // For lemon shortbread: counts as 2x, so max is based on remaining/2, increments of 6
-                        // For others: normal 12 increments
-                        const step = flavor.isDouble ? 6 : 12;
-                        const costMultiplier = flavor.isDouble ? 2 : 1;
-                        const maxForFlavor = currentValue + Math.floor(remainingCookies / (step * costMultiplier)) * step;
+                        const maxForFlavor = currentValue + remainingDozens;
                         return (
                           <div key={flavor.key} className="flex items-center justify-between">
                             <div>
                               <label className="text-stone-700">{flavor.label}</label>
-                              {flavor.isDouble && (
-                                <p className="text-xs text-[#541409]/60">6 sandwiches = 1 dozen</p>
+                              {flavor.note && (
+                                <p className="text-xs text-[#541409]/60">{flavor.note}</p>
                               )}
                             </div>
                             <input
                               type="number"
                               min="0"
                               max={maxForFlavor}
-                              step={step}
+                              step={1}
                               disabled={!formData.quantity}
                               className="w-20 px-3 py-2 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-center text-[#541409] disabled:bg-stone-100 disabled:cursor-not-allowed"
                               value={currentValue}
                               onChange={(e) => {
                                 const value = parseInt(e.target.value) || 0;
-                                const rounded = Math.round(value / step) * step;
-                                const capped = Math.max(0, Math.min(maxForFlavor, rounded));
+                                const capped = Math.max(0, Math.min(maxForFlavor, value));
                                 setFormData({
                                   ...formData,
                                   flavors: {
@@ -449,24 +437,21 @@ export default function LargeCookieOrderPage() {
                     </>
                   )}
                 </div>
-                <p className="text-xs text-stone-500 mt-2">
-                  Quantities must be in increments of 12 (one dozen)
-                </p>
                 <div className="mt-4 p-3 bg-[#EAD6D6] rounded text-center space-y-1">
                   <div className="font-medium text-[#541409]">
-                    Total: {totalCookies} / {maxCookies || '—'} cookies
+                    Total: {totalDozens} / {maxDozens || '—'} dozen
                   </div>
-                  {formData.quantity && remainingCookies > 0 && (
+                  {formData.quantity && remainingDozens > 0 && (
                     <div className="text-sm text-[#541409]/70">
-                      {remainingCookies} cookies remaining to select
+                      {remainingDozens} dozen remaining to select
                     </div>
                   )}
-                  {formData.quantity && remainingCookies < 0 && (
+                  {formData.quantity && remainingDozens < 0 && (
                     <div className="text-sm text-red-600">
-                      Over by {Math.abs(remainingCookies)} cookies
+                      Over by {Math.abs(remainingDozens)} dozen
                     </div>
                   )}
-                  {formData.quantity && totalCookies === maxCookies && (
+                  {formData.quantity && totalDozens === maxDozens && (
                     <div className="text-sm text-green-600">
                       ✓ Perfect!
                     </div>
