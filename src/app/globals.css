@@ -32,14 +32,20 @@ body {
   font-family: 'Great Vibes', cursive;
 }
 
-/* Heading styles */
-h1, h2, h3, h4, h5, h6 {
+/* Bakery heading styles */
+.bakery-fonts h1, .bakery-fonts h2, .bakery-fonts h3,
+.bakery-fonts h4, .bakery-fonts h5, .bakery-fonts h6 {
   font-family: var(--font-playfair), Georgia, serif;
 }
 
-/* Body text styles */
-p, button, a {
+/* Bakery body text styles */
+.bakery-fonts p, .bakery-fonts button, .bakery-fonts a {
   font-family: var(--font-pt-serif), Georgia, serif;
+}
+
+/* LeanGo font - Poppins everywhere */
+.leango-fonts, .leango-fonts * {
+  font-family: var(--font-poppins), sans-serif;
 }
 
 /* Placeholder and option styling - 50% maroon */

@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { TimeSlotPicker, CouponInput } from '@/components/forms';
-import { SuccessModal } from '@/components/ui';
 
 function CakeOrderContent() {
   const searchParams = useSearchParams();
@@ -35,7 +34,7 @@ function CakeOrderContent() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
+
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
     description: string | null;
@@ -110,31 +109,7 @@ function CakeOrderContent() {
         throw new Error(data.error || 'Failed to submit inquiry');
       }
 
-      setShowSuccess(true);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        pickupSlot: null,
-        eventType: '',
-        cakeSize: '',
-        cakeShape: '',
-        cakeFlavor: '',
-        filling: '',
-        baseColor: '',
-        pipingColors: '',
-        customMessaging: '',
-        messageStyle: '',
-        toppings: [],
-        inspirationFiles: [],
-        allergies: '',
-        message: '',
-        howDidYouHear: '',
-        acknowledgeDeposit: false,
-        acknowledgeAllergens: false,
-        acknowledgeLeadTime: false,
-      });
-      setAppliedCoupon(null);
+      window.location.href = '/';
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
@@ -643,12 +618,6 @@ function CakeOrderContent() {
         </div>
       </section>
 
-      <SuccessModal
-        isOpen={showSuccess}
-        onClose={() => setShowSuccess(false)}
-        title="Inquiry Submitted!"
-        message="Thank you! I'll respond within 24-48 hours with a quote and availability."
-      />
     </>
   );
 }

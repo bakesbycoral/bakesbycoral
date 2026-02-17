@@ -51,133 +51,130 @@ export default function OurApproachPage() {
 
       {/* Lean Problem Solving */}
       <Section background="gradient">
-        <Link href="/leango/lean-problem-solving" className="bg-[#66d200]/20 text-[#66d200] text-sm font-semibold px-4 py-2 rounded-t-xl inline-block mb-0 hover:bg-[#66d200]/30 transition-colors">
-          {content.lean.label}
+        <Link href="/leango/lean-problem-solving" className="group block">
+          <span className="bg-[#66d200]/20 text-[#66d200] text-sm font-semibold px-4 py-2 rounded-t-xl inline-block mb-0 group-hover:bg-[#66d200]/30 transition-colors">
+            {content.lean.label}
+          </span>
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl rounded-tl-none p-6 group-hover:border-[#66d200]/30 transition-colors">
+            <p className="text-lg italic text-white mb-4">{content.lean.subtitle}</p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-white font-medium mb-3">{content.lean.title}:</p>
+                <ul className="space-y-1 mb-4">
+                  {content.lean.questions.map((q, i) => (
+                    <li key={i} className="text-[#00a1f1] italic text-sm">• {q}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="text-white font-medium mb-3">{content.lean.helpTitle}</p>
+                <ul className="space-y-1">
+                  {content.lean.benefits.map((b, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm">
+                      <svg className="w-4 h-4 text-[#66d200] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-300">{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-gray-700/50">
+              <div>
+                <p className="text-white font-semibold">{content.lean.closing}</p>
+                <p className="text-[#00a1f1] text-sm">{content.lean.closingSub}</p>
+              </div>
+              <span className="inline-flex items-center justify-center px-5 py-2 bg-[#00a1f1] text-white text-sm font-medium rounded-lg group-hover:bg-[#0091d8] transition-colors ml-auto">
+                Learn More
+              </span>
+            </div>
+          </div>
         </Link>
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl rounded-tl-none p-6">
-          <p className="text-lg italic text-white mb-4">{content.lean.subtitle}</p>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-white font-medium mb-3">{content.lean.title}:</p>
-              <ul className="space-y-1 mb-4">
-                {content.lean.questions.map((q, i) => (
-                  <li key={i} className="text-[#00a1f1] italic text-sm">• {q}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-white font-medium mb-3">{content.lean.helpTitle}</p>
-              <ul className="space-y-1">
-                {content.lean.benefits.map((b, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm">
-                    <svg className="w-4 h-4 text-[#66d200] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">{b}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-gray-700/50">
-            <div>
-              <p className="text-white font-semibold">{content.lean.closing}</p>
-              <p className="text-[#00a1f1] text-sm">{content.lean.closingSub}</p>
-            </div>
-            <Link
-              href="/leango/lean-problem-solving"
-              className="inline-flex items-center justify-center px-5 py-2 bg-[#00a1f1] text-white text-sm font-medium rounded-lg hover:bg-[#0091d8] transition-colors ml-auto"
-            >
-              Learn More
-            </Link>
-          </div>
-        </div>
       </Section>
 
       {/* Digitization */}
       <Section background="darker">
-        <Link href="/leango/apps" className="bg-[#66d200]/20 text-[#66d200] text-sm font-semibold px-4 py-2 rounded-t-xl inline-block mb-0 hover:bg-[#66d200]/30 transition-colors">
-          {content.apps.label}
+        <Link href="/leango/apps" className="group block">
+          <span className="bg-[#66d200]/20 text-[#66d200] text-sm font-semibold px-4 py-2 rounded-t-xl inline-block mb-0 group-hover:bg-[#66d200]/30 transition-colors">
+            {content.apps.label}
+          </span>
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl rounded-tl-none p-6 group-hover:border-[#66d200]/30 transition-colors">
+            <p className="text-lg italic text-white mb-2">{content.apps.subtitle}</p>
+            <p className="text-gray-300 mb-4">{content.apps.title} {content.apps.description}</p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-white font-medium mb-3">{content.apps.examplesTitle}</p>
+                <ul className="space-y-1">
+                  {content.apps.examples.map((e, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm">
+                      <svg className="w-4 h-4 text-[#00a1f1] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-300">{e}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="text-white font-medium mb-3">{content.apps.benefitsTitle}</p>
+                <ul className="space-y-1">
+                  {content.apps.benefits.map((b, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm">
+                      <svg className="w-4 h-4 text-[#66d200] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-300">{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-gray-700/50">
+              <p className="text-white font-semibold">{content.apps.closing}</p>
+              <span className="inline-flex items-center justify-center px-5 py-2 bg-[#00a1f1] text-white text-sm font-medium rounded-lg group-hover:bg-[#0091d8] transition-colors ml-auto">
+                Explore Apps
+              </span>
+            </div>
+          </div>
         </Link>
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl rounded-tl-none p-6">
-          <p className="text-lg italic text-white mb-2">{content.apps.subtitle}</p>
-          <p className="text-gray-300 mb-4">{content.apps.title} {content.apps.description}</p>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-white font-medium mb-3">{content.apps.examplesTitle}</p>
-              <ul className="space-y-1">
-                {content.apps.examples.map((e, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm">
-                    <svg className="w-4 h-4 text-[#00a1f1] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">{e}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-white font-medium mb-3">{content.apps.benefitsTitle}</p>
-              <ul className="space-y-1">
-                {content.apps.benefits.map((b, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm">
-                    <svg className="w-4 h-4 text-[#66d200] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">{b}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-gray-700/50">
-            <p className="text-white font-semibold">{content.apps.closing}</p>
-            <Link
-              href="/leango/apps"
-              className="inline-flex items-center justify-center px-5 py-2 bg-[#00a1f1] text-white text-sm font-medium rounded-lg hover:bg-[#0091d8] transition-colors ml-auto"
-            >
-              Explore Apps
-            </Link>
-          </div>
-        </div>
       </Section>
 
       {/* Analytics */}
       <Section background="dark">
-        <Link href="/leango/analytics" className="bg-[#66d200]/20 text-[#66d200] text-sm font-semibold px-4 py-2 rounded-t-xl inline-block mb-0 hover:bg-[#66d200]/30 transition-colors">
-          {content.analytics.label}
+        <Link href="/leango/analytics" className="group block">
+          <span className="bg-[#66d200]/20 text-[#66d200] text-sm font-semibold px-4 py-2 rounded-t-xl inline-block mb-0 group-hover:bg-[#66d200]/30 transition-colors">
+            {content.analytics.label}
+          </span>
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl rounded-tl-none p-6 group-hover:border-[#66d200]/30 transition-colors">
+            <p className="text-lg italic text-white mb-2">{content.analytics.subtitle}</p>
+            <p className="text-gray-300 mb-4">{content.analytics.title} - {content.analytics.description}</p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-white font-medium mb-3">{content.analytics.helpTitle}</p>
+                <ul className="space-y-1">
+                  {content.analytics.benefits.map((b, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm">
+                      <svg className="w-4 h-4 text-[#66d200] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-300">{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-gray-700/50">
+              <div>
+                <p className="text-white font-semibold">{content.analytics.closing}</p>
+                <p className="text-gray-400 text-sm">{content.analytics.closingSub}</p>
+              </div>
+              <span className="inline-flex items-center justify-center px-5 py-2 bg-[#00a1f1] text-white text-sm font-medium rounded-lg group-hover:bg-[#0091d8] transition-colors ml-auto">
+                Improve Your Analytics
+              </span>
+            </div>
+          </div>
         </Link>
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl rounded-tl-none p-6">
-          <p className="text-lg italic text-white mb-2">{content.analytics.subtitle}</p>
-          <p className="text-gray-300 mb-4">{content.analytics.title} — {content.analytics.description}</p>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-white font-medium mb-3">{content.analytics.helpTitle}</p>
-              <ul className="space-y-1">
-                {content.analytics.benefits.map((b, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm">
-                    <svg className="w-4 h-4 text-[#66d200] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">{b}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-gray-700/50">
-            <div>
-              <p className="text-white font-semibold">{content.analytics.closing}</p>
-              <p className="text-gray-400 text-sm">{content.analytics.closingSub}</p>
-            </div>
-            <Link
-              href="/leango/analytics"
-              className="inline-flex items-center justify-center px-5 py-2 bg-[#00a1f1] text-white text-sm font-medium rounded-lg hover:bg-[#0091d8] transition-colors ml-auto"
-            >
-              Improve Your Analytics
-            </Link>
-          </div>
-        </div>
       </Section>
 
       {/* Training */}

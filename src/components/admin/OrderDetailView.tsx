@@ -114,7 +114,36 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [recordingPayment, setRecordingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
   const router = useRouter();
+
+  const handleRecordPayment = async (type: 'deposit' | 'full') => {
+    setRecordingPayment(true);
+    setPaymentError('');
+    try {
+      const newStatus = type === 'deposit' ? 'deposit_paid' : 'confirmed';
+      const response = await fetch(`/api/admin/orders/${order.id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: newStatus,
+          record_deposit_paid: type === 'deposit' || type === 'full',
+          record_full_payment: type === 'full',
+        }),
+      });
+      const data = await response.json() as { success?: boolean; error?: string };
+      if (data.success) {
+        router.refresh();
+      } else {
+        setPaymentError(data.error || 'Failed to record payment');
+      }
+    } catch {
+      setPaymentError('Something went wrong');
+    } finally {
+      setRecordingPayment(false);
+    }
+  };
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -258,14 +287,26 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                   <dd className="font-medium text-[#541409]">{formatDate(order.event_date)}</dd>
                 </div>
               )}
+              {formData.pickup_or_delivery === 'delivery' && (
+                <div className="sm:col-span-2">
+                  <dt className="text-sm text-[#541409]/60">Fulfillment</dt>
+                  <dd className="font-medium text-[#541409]">Delivery</dd>
+                </div>
+              )}
               <div>
-                <dt className="text-sm text-[#541409]/60">Pickup Date</dt>
+                <dt className="text-sm text-[#541409]/60">{formData.pickup_or_delivery === 'delivery' ? 'Delivery Date' : 'Pickup Date'}</dt>
                 <dd className="font-medium text-[#541409]">{formatDate(order.pickup_date)}</dd>
               </div>
               <div>
-                <dt className="text-sm text-[#541409]/60">Pickup Time</dt>
+                <dt className="text-sm text-[#541409]/60">{formData.pickup_or_delivery === 'delivery' ? 'Delivery Time' : 'Pickup Time'}</dt>
                 <dd className="font-medium text-[#541409]">{formatTime(order.pickup_time)}</dd>
               </div>
+              {formData.pickup_or_delivery === 'delivery' && formData.delivery_address && (
+                <div className="sm:col-span-2">
+                  <dt className="text-sm text-[#541409]/60">Delivery Address</dt>
+                  <dd className="font-medium text-[#541409]">{formData.delivery_address}</dd>
+                </div>
+              )}
               {order.backup_date && (
                 <>
                   <div>
@@ -557,10 +598,10 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                     <dt className="text-[#541409]/60">Deposit</dt>
                     <dd className="text-[#541409]">{formatCurrency(order.deposit_amount)}</dd>
                   </div>
-                  {balanceDue !== null && balanceDue > 0 && (
+                  {balanceDue !== null && balanceDue > 0 && !order.paid_at && (
                     <div className="flex justify-between pt-2 border-t border-[#EAD6D6]">
                       <dt className="text-[#541409]/60 font-medium">Balance Due</dt>
-                      <dd className={`font-semibold ${hasBalanceDue ? 'text-[#541409]' : 'text-[#541409]'}`}>
+                      <dd className="font-semibold text-[#541409]">
                         {formatCurrency(balanceDue)}
                       </dd>
                     </div>
@@ -596,7 +637,7 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
               )}
             </dl>
 
-            {/* Balance Payment Action */}
+            {/* Balance Payment Action (Stripe invoice) */}
             <div className="mt-4 pt-4 border-t border-[#EAD6D6]">
               <BalancePayment
                 orderId={order.id}
@@ -612,6 +653,35 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                 }
               />
             </div>
+
+            {/* Manual Payment Recording (cash, Venmo, etc.) */}
+            {!order.paid_at && (
+              <div className="mt-4 pt-4 border-t border-[#EAD6D6]">
+                <p className="text-sm text-[#541409]/60 mb-2">Record Manual Payment</p>
+                <p className="text-xs text-[#541409]/50 mb-3">For cash, Venmo, Zelle, or other payment methods</p>
+                {paymentError && (
+                  <p className="text-sm text-red-600 mb-2">{paymentError}</p>
+                )}
+                <div className="space-y-2">
+                  {!order.deposit_paid_at && (
+                    <button
+                      onClick={() => handleRecordPayment('deposit')}
+                      disabled={recordingPayment}
+                      className="w-full px-4 py-2 text-sm bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {recordingPayment ? 'Recording...' : `Record Deposit Paid${order.deposit_amount ? ` (${formatCurrency(order.deposit_amount)})` : ''}`}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleRecordPayment('full')}
+                    disabled={recordingPayment}
+                    className="w-full px-4 py-2 text-sm bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {recordingPayment ? 'Recording...' : `Record Paid in Full${order.total_amount ? ` (${formatCurrency(order.total_amount)})` : ''}`}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Timeline */}

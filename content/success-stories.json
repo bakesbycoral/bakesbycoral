@@ -6,81 +6,96 @@
   },
   "stories": [
     {
-      "company": "Regional Manufacturing Co.",
+      "company": "Terrasmart",
       "industry": "Manufacturing",
-      "challenge": "Struggling with high defect rates, long lead times, and inconsistent quality across production lines.",
-      "solution": "Implemented lean manufacturing principles, established visual management systems, and trained team leads in problem-solving methodologies.",
+      "challenge": "Delivery reliability for project materials to customer sites needed significant improvement, with supply chain decisions lacking the data-driven visibility to predict on-time performance.",
+      "solution": "LeanGo worked with Francisco Henriquez (VP Operations), Mick Kirby West (Supply Chain Manager), and their team to co-create and implement an MRP dashboard that predicts on-time delivery success and drives smarter inventory and supply decisions.",
       "results": [
-        "67% reduction in defect rates",
-        "40% improvement in on-time delivery",
-        "25% increase in throughput",
-        "$1.2M annual cost savings"
+        "30%+ increase in delivery reliability",
+        "20%+ reduction in inventory",
+        "Data-driven supply chain decisions",
+        "Real-time visibility into on-time performance"
       ],
-      "quote": "LeanGo didn't just give us tools—they helped us change how we think about problems. Our team now owns continuous improvement.",
-      "author": "Operations Director"
+      "quote": "LeanGo integrated with our team and built a tool we actually use every day. The dashboard changed how we make supply chain decisions - we went from reacting to predicting.",
+      "author": "Francisco Henriquez, VP Operations"
     },
     {
-      "company": "Metro Construction Group",
-      "industry": "Construction",
-      "challenge": "Projects consistently over budget and behind schedule, with poor communication between field teams and office.",
-      "solution": "Developed custom project tracking dashboards, streamlined daily standup processes, and implemented visual scheduling boards.",
+      "company": "Miller Valentine",
+      "industry": "Manufacturing",
+      "challenge": "Multiple important improvement initiatives needed to move faster, but the team lacked a structured system to accelerate and track progress across them all.",
+      "solution": "LeanGo worked with Dean Vukovic (VP Technology), Peggy Scott (Sprint Champion), and their team to co-create and implement an improvement sprint system that drives accountability and pace across initiatives.",
       "results": [
-        "35% reduction in project delays",
-        "20% improvement in budget accuracy",
-        "50% faster issue resolution",
-        "Improved client satisfaction scores"
+        "100+ improvement actions completed in first quarter",
+        "Structured sprint cadence adopted across teams",
+        "Clear ownership and accountability for every action",
+        "Visible progress across all key initiatives"
       ],
-      "quote": "The visibility we gained into our projects was game-changing. We catch problems early now instead of reacting to crises.",
-      "author": "Project Manager"
+      "quote": "The sprint system gave us a rhythm we never had before. Instead of talking about improvements, we're actually completing them - over a hundred in the first quarter alone.",
+      "author": "Dean Vukovic, VP Technology"
     },
     {
-      "company": "Healthcare Services Network",
-      "industry": "Healthcare",
-      "challenge": "Patient wait times were excessive, staff felt overwhelmed, and satisfaction scores were declining.",
-      "solution": "Mapped patient flow, identified bottlenecks, redesigned scheduling system, and created real-time capacity dashboards.",
+      "company": "Teknor Apex",
+      "industry": "Manufacturing",
+      "challenge": "Traceability gaps across the supply chain made it difficult to leverage quality as a competitive advantage and build deeper customer confidence.",
+      "solution": "LeanGo worked with Paul Burke (VP Global Operations), Tom Lepovsky (VP Manufacturing), Scott Garland (Plant Manager), and their team to develop a cross-functional process map identifying quality gates and created a traceability dashboard spanning supply to customer use.",
       "results": [
-        "45% reduction in patient wait times",
-        "30% increase in daily patient capacity",
-        "Improved staff morale and retention",
-        "15-point increase in satisfaction scores"
+        "End-to-end traceability from supply to customer",
+        "Cross-functional quality gates identified and mapped",
+        "Improved customer relationships and confidence",
+        "Business growth driven by onsite quality reviews"
       ],
-      "quote": "We were skeptical that manufacturing principles could work in healthcare. LeanGo showed us how to adapt the concepts to our context.",
-      "author": "Clinical Operations Manager"
+      "quote": "Quality used to be something we defended. Now it's something we sell. The traceability system LeanGo helped us build gave our customers a reason to grow with us.",
+      "author": "Paul Burke, VP Global Operations"
     },
     {
-      "company": "Distribution Logistics Inc.",
-      "industry": "Logistics",
-      "challenge": "Warehouse operations were inefficient, with excessive walking time, picking errors, and inventory discrepancies.",
-      "solution": "Redesigned warehouse layout using spaghetti diagrams, implemented 5S methodology, and built inventory tracking dashboards.",
+      "company": "Jet Container",
+      "industry": "Manufacturing",
+      "challenge": "Equipment downtime was limiting capacity and driving up costs, with no system in place to predict wear part failures or centralize maintenance management.",
+      "solution": "LeanGo worked with Steve Schmitt (President), Pete Grill (Plant Manager), and their team to co-create a predictive wear part replacement system and implemented a centralized computerized maintenance management system for preventive maintenance and repair requests.",
       "results": [
-        "55% reduction in picking errors",
-        "30% improvement in picks per hour",
-        "98.5% inventory accuracy achieved",
-        "Reduced overtime by 40%"
+        "25% increase in equipment uptime",
+        "13% increase in production capacity",
+        "Predictive wear part replacement system in place",
+        "Centralized maintenance management for PMs and repairs"
       ],
-      "quote": "The team actually got excited about organizing the warehouse. When people understand the 'why,' they become champions for change.",
-      "author": "Warehouse Manager"
+      "quote": "We stopped waiting for things to break. The system LeanGo helped us build lets us stay ahead of failures, and the uptime and capacity numbers speak for themselves.",
+      "author": "Steve Schmitt, President"
+    },
+    {
+      "company": "GMi",
+      "industry": "Manufacturing",
+      "challenge": "Trophy case order lead times were too long, and the team needed to be refreshed and prepared for future kaizen events.",
+      "solution": "LeanGo worked with Jay Kuhn (COO), Jeremy Leasure (CI Manager), and their team. We trained and supported the team on balanced process flow changes with point-of-use kanban material systems and 5S.",
+      "results": [
+        "30% reduction in lead time",
+        "25% reduction in production cost",
+        "40% reduction in inventory",
+        "50% reduction in defects",
+        "20% increase in productivity"
+      ],
+      "quote": "LeanGo didn't just improve the line - they re-energized our team. The results were immediate, and now our people have the skills and confidence to keep running kaizen events on their own.",
+      "author": "Jay Kuhn, COO"
     }
   ],
   "metrics": {
     "label": "By the Numbers",
-    "title": "Measurable Impact Across Industries",
+    "title": "Measurable Impact Across Our Partnerships",
     "items": [
       {
-        "value": "40%",
-        "label": "Average efficiency gain"
+        "value": "30%+",
+        "label": "Delivery & lead time improvements"
       },
       {
-        "value": "50+",
-        "label": "Organizations transformed"
+        "value": "100+",
+        "label": "Improvement actions in a single quarter"
       },
       {
-        "value": "95%",
-        "label": "Client satisfaction rate"
+        "value": "50%",
+        "label": "Defect reduction"
       },
       {
-        "value": "$10M+",
-        "label": "Client cost savings"
+        "value": "25%",
+        "label": "Equipment uptime increase"
       }
     ]
   },

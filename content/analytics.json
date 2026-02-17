@@ -11,7 +11,7 @@
   "problem": {
     "label": "The Problem",
     "title": "Why Most Analytics Fail",
-    "description": "You have data everywhere — in spreadsheets, systems, and people's heads. But turning that data into decisions? That's where most organizations struggle.",
+    "description": "You have data everywhere  - in spreadsheets, systems, and people's heads. But turning that data into decisions? That's where most organizations struggle.",
     "issues": [
       "Data lives in silos, requiring manual consolidation",
       "Dashboards show lagging indicators when it's too late to act",

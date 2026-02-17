@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDB } from '@/lib/db';
+import { getDB, upsertClientFromOrder } from '@/lib/db';
 import { getAdminSession } from '@/lib/auth/admin-session';
 
 interface CreateOrderRequest {
@@ -11,6 +11,8 @@ interface CreateOrderRequest {
   pickup_time?: string;
   total_amount?: number;
   notes?: string;
+  pickup_or_delivery?: 'pickup' | 'delivery';
+  delivery_address?: string;
 }
 
 function generateOrderNumber(tenantId: string): string {
@@ -40,10 +42,12 @@ export async function POST(request: NextRequest) {
       pickup_time,
       total_amount,
       notes,
+      pickup_or_delivery,
+      delivery_address,
     } = body;
 
     // Validate required fields
-    if (!order_type || !customer_name || !customer_email || !customer_phone || !pickup_date || !pickup_time) {
+    if (!order_type || !customer_name || !customer_email || !pickup_date || !pickup_time) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -85,9 +89,16 @@ export async function POST(request: NextRequest) {
       total_amount || null,
       depositAmount,
       notes || null,
-      JSON.stringify({ manually_created: true }),
+      JSON.stringify({
+        manually_created: true,
+        ...(pickup_or_delivery && { pickup_or_delivery }),
+        ...(pickup_or_delivery === 'delivery' && delivery_address && { delivery_address }),
+      }),
       session.tenantId
     ).run();
+
+    // Upsert customer record (non-fatal if it fails)
+    await upsertClientFromOrder(customer_name, customer_email, customer_phone || '', session.tenantId);
 
     return NextResponse.json({ id, order_number: orderNumber });
   } catch (error) {

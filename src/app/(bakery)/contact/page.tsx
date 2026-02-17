@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { SuccessModal } from '@/components/ui';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -13,7 +12,7 @@ export default function ContactPage() {
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,8 +36,7 @@ export default function ContactPage() {
         throw new Error(data.error || 'Failed to send message');
       }
 
-      setShowSuccess(true);
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      window.location.href = '/';
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -243,13 +241,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-
-      <SuccessModal
-        isOpen={showSuccess}
-        onClose={() => setShowSuccess(false)}
-        title="Message Sent!"
-        message="Thank you for reaching out! I'll get back to you soon."
-      />
 
       {/* Ready to Order */}
       <section

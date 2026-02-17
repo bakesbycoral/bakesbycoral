@@ -5,6 +5,8 @@ import { getAdminSession } from '@/lib/auth/admin-session';
 interface StatusUpdateRequest {
   status: string;
   totalAmount?: number;
+  record_deposit_paid?: boolean;
+  record_full_payment?: boolean;
 }
 
 const validStatuses = ['inquiry', 'pending_payment', 'deposit_paid', 'confirmed', 'completed', 'cancelled'];
@@ -22,7 +24,7 @@ export async function PUT(
     const { id } = await params;
     const db = getDB();
 
-    const { status, totalAmount }: StatusUpdateRequest = await request.json();
+    const { status, totalAmount, record_deposit_paid, record_full_payment }: StatusUpdateRequest = await request.json();
 
     if (!status || !validStatuses.includes(status)) {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
@@ -31,7 +33,7 @@ export async function PUT(
     // Get current order (with tenant check)
     const order = await db.prepare('SELECT * FROM orders WHERE id = ? AND tenant_id = ?')
       .bind(id, session.tenantId)
-      .first<{ status: string; order_type: string }>();
+      .first<{ status: string; order_type: string; deposit_paid_at: string | null; paid_at: string | null }>();
 
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
@@ -52,6 +54,16 @@ export async function PUT(
         ? Math.round(totalAmount / 2)
         : totalAmount;
       bindings.push(totalAmount, depositAmount);
+    }
+
+    // Record deposit paid (manual payment — cash, Venmo, etc.)
+    if (record_deposit_paid && !order.deposit_paid_at) {
+      updateQuery += `, deposit_paid_at = datetime('now')`;
+    }
+
+    // Record full payment (manual payment — cash, Venmo, etc.)
+    if (record_full_payment && !order.paid_at) {
+      updateQuery += `, paid_at = datetime('now')`;
     }
 
     // If marking as completed

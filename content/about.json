@@ -1,13 +1,13 @@
 {
   "hero": {
     "label": "About LeanGo",
-    "title": "We're Practitioners, Not Just Consultants",
-    "description": "Founded by people who've led operations and improvement in real organizations. We know what works because we've done it."
+    "title": "Your Improvement Support Team",
+    "description": "LeanGo is a support team to help you with your improvements. We bring expertise, horsepower, and sustainable systems to your goals, projects, priorities, problems, and needs."
   },
   "story": {
     "label": "Our Story",
-    "title": "Built on Real Experience",
-    "content": "LeanGo was founded on a simple belief: improvement should stick. Too many organizations invest in initiatives that fade as soon as the consultants leave. We built a different model — one focused on building capability, not dependency.\n\nOur team has led operations, managed improvement programs, and built systems in real organizations. We've experienced the challenges you face because we've faced them too. That experience shapes everything we do."
+    "title": "Built to Support Your Team",
+    "content": "LeanGo was founded on a simple idea: organizations don't need more consultants telling them what to do. They need a support team that integrates into their operation and helps drive improvements forward.\n\nWe bring expertise in CI, Lean, Six Sigma, and problem solving. We bring horsepower  - becoming an extension of your team focused on improvements. And we build sustainable systems that are co-created with your people, transferred, and supported.\n\nWhether it's improvement management, analytics, application development, or training  - we work on what you need, the way you need it."
   },
   "team": {
     "label": "Our Team",
@@ -21,7 +21,7 @@
       {
         "name": "Zack Bishop",
         "role": "Apps & Analytics",
-        "bio": "Builds custom Lean Apps and dashboards that help teams track performance and make better decisions."
+        "bio": "Builds custom applications and dashboards that help teams track performance and make better decisions."
       },
       {
         "name": "Katie Myers",
@@ -40,25 +40,25 @@
     "title": "What We Believe",
     "items": [
       {
-        "title": "Respect for People",
-        "description": "We believe the people doing the work know it best. Our job is to listen, learn, and help them succeed."
+        "title": "Integrate, Don't Disrupt",
+        "description": "We plug into your existing teams, communication structures, and improvement systems. We don't create parallel workstreams."
       },
       {
-        "title": "Results Over Activity",
-        "description": "We measure success by outcomes, not effort. If it's not creating value, we stop doing it."
+        "title": "Flexible by Design",
+        "description": "Our role adapts to what you need  - hands-on support, system enablers, developers, coaches, or trainers. Onsite as needed, remote for efficiency."
       },
       {
-        "title": "Practical Over Perfect",
-        "description": "Done is better than perfect. We'd rather implement something good today than plan something ideal forever."
+        "title": "Co-Create and Transfer",
+        "description": "Everything we build is created with your people, transferred to your team, and supported until it sticks."
       },
       {
-        "title": "Build Capability",
-        "description": "Our goal is to work ourselves out of a job. Your team should be more capable after we leave than before we arrived."
+        "title": "Work on What Matters",
+        "description": "Your goals, projects, priorities, problems, and needs drive everything we do. We bring the expertise and horsepower to move them forward."
       }
     ]
   },
   "cta": {
     "title": "Want to learn more?",
-    "description": "Schedule a conversation. We'd love to hear about your challenges and share how we might help."
+    "description": "Schedule a session to talk through your goals and see how we can support your team."
   }
 }

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   ContentHero,
   Section,
@@ -110,7 +111,7 @@ export default function HowWeWorkPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span className="text-gray-300">
-                    <strong className="text-white">{item.title}</strong> — {item.description}
+                    <strong className="text-white">{item.title}</strong> - {item.description}
                   </span>
                 </li>
               ))}
@@ -138,10 +139,13 @@ export default function HowWeWorkPage() {
       </Section>
 
       {/* Tools Table */}
-      <Section background="darker">
-        <p className="text-gray-400 mb-8 max-w-3xl">
-          {content.tools.intro}
-        </p>
+      <Section background="darker" label={content.tools.label}>
+        <SectionHeader
+          title={content.tools.title}
+          description={content.tools.intro}
+          className="mb-12"
+          dark
+        />
         <div className="bg-gray-800/30 rounded-2xl border border-gray-700/50 overflow-hidden">
           <div className="grid grid-cols-2 gap-4 p-4 border-b border-gray-700/50 bg-gray-800/50">
             <div className="text-sm font-semibold text-white uppercase tracking-wider">What We Use</div>
@@ -149,29 +153,25 @@ export default function HowWeWorkPage() {
           </div>
           {content.tools.items.map((item, index) => (
             <div key={index} className={`grid grid-cols-2 gap-4 p-4 ${index !== content.tools.items.length - 1 ? 'border-b border-gray-700/50' : ''}`}>
-              <div className="font-medium text-white">{item.tool}</div>
+              <div className="font-medium">
+                <Link href={item.href} className="text-white hover:text-[#00a1f1] transition-colors">
+                  {item.tool}
+                </Link>
+              </div>
               <div className="text-[#00a1f1]">{item.benefit}</div>
             </div>
           ))}
         </div>
-      </Section>
-
-      {/* What It Feels Like */}
-      <Section background="dark">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">
-            {content.feelsLike.title}
-          </h2>
-          <div className="space-y-4">
-            {content.feelsLike.points.map((point, index) => (
-              <p key={index} className="text-lg text-gray-300">
-                {point}
-              </p>
-            ))}
-          </div>
-          <p className="mt-8 text-xl font-semibold text-white">
-            {content.feelsLike.closing}
-          </p>
+        <div className="mt-10 text-center">
+          <Link
+            href={content.tools.ctaHref}
+            className="inline-flex items-center gap-2 bg-[#00a1f1] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0091d6] transition-colors"
+          >
+            {content.tools.ctaLabel}
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
         </div>
       </Section>
 

@@ -1,7 +1,7 @@
 {
   "hero": {
-    "title": "Real People. Real Improvements. Real Results.",
-    "description": "We help organizations build sustainable improvement capabilities through lean methodology, custom apps, and actionable analytics.",
+    "title": "Your Improvement Support Team",
+    "description": "LeanGo brings the expertise, horsepower, and sustainable systems to help you tackle your goals, projects, priorities, problems, and needs.",
     "primaryCta": {
       "label": "Schedule Your First Session",
       "href": "/book/consultation"
@@ -22,47 +22,47 @@
     ]
   },
   "challenges": {
-    "label": "The Challenge",
-    "title": "What Teams Are Facing Today",
-    "description": "You're stretched thin — and the problems aren't waiting. Most front-line teams know exactly where the issues are. What's missing is the time, clarity, and extra horsepower to fix them.",
+    "label": "What We Bring",
+    "title": "Expertise, Horsepower, and Sustainable Systems",
+    "description": "You know where the problems are. What's missing is the time and extra support to fix them. That's where we come in.",
     "items": [
       {
-        "title": "Cost Issues",
-        "description": "Scrap, rework, and waste taking margin. Overtime or turnover driving costs up. Too much WIP or inventory tying up cash. Improvement work stalling because people are overloaded.",
-        "icon": "chart"
-      },
-      {
-        "title": "Quality Issues",
-        "description": "Defects recurring even after \"fixes.\" Standards not followed consistently. Training gaps and tribal knowledge. Customer complaints costing time and credibility.",
+        "title": "Expertise",
+        "description": "Deep knowledge in continuous improvement, Lean, Six Sigma, and structured problem solving. We know what works because we've done it.",
         "icon": "target"
       },
       {
-        "title": "Delivery Issues",
-        "description": "Customers wanting shorter lead times. Wasting time on expediting. Waiting on supplier materials. Demands fluctuating above capacity.",
+        "title": "Horsepower",
+        "description": "We become an extension of your team, focused entirely on driving improvements forward while you run the day-to-day.",
+        "icon": "chart"
+      },
+      {
+        "title": "Sustainable Systems",
+        "description": "Every solution is co-created with your people, transferred to your team, and supported until it sticks.",
         "icon": "clock"
       }
     ]
   },
   "process": {
-    "label": "How We Work",
-    "title": "We help your team improve Cost, Quality, and Delivery — together.",
-    "intro": "We don't hand over a report or give you a list of recommendations. We work directly with your people to solve real operational problems and build solutions that actually stick.",
+    "label": "What We Add",
+    "title": "We add the capabilities your team needs to improve faster.",
+    "intro": "We don't hand you a report and leave. We work alongside your people to build real solutions and real skills.",
     "tagline": "We become an extension of your team.",
     "whatItLooksLike": [
-      "Co-creating improvements with operators, leads, and supervisors",
-      "Helping your leaders stay focused on the operation while we advance the improvement work",
-      "Making processes simpler, clearer, and easier to follow",
-      "Tracking progress weekly with your team",
-      "Leaving your people more capable than when we arrived"
+      "Improvement management and leadership to keep projects moving",
+      "Analytics co-creation and scalability so you see what matters",
+      "Application development and automation to eliminate friction",
+      "Hands-on support, coaching, and training for your people",
+      "Systems that your team owns and sustains long after we leave"
     ],
     "approach": {
-      "title": "We weave our approach with how we work:",
+      "title": "How we engage:",
       "items": [
-        "Your team brings the real experience and insight",
-        "We bring the structure, tools, and horsepower",
-        "Together we create a solution that fits your operation",
-        "Tools support the solution — they are not the solution",
-        "Your people sustain and improve the system long after we leave"
+        "We integrate into your existing teams and communication structures",
+        "We work onsite as needed and remote for efficiency",
+        "Our role is flexible  - hands-on support, system enablers, developers, coaches, and trainers",
+        "We work on your goals, your projects, your priorities",
+        "Everything we build is co-created, transferred, and supported"
       ]
     },
     "results": {
@@ -79,33 +79,33 @@
   },
   "approach": {
     "label": "Our Approach",
-    "title": "Tools That Drive Results",
+    "title": "What We Work On",
     "items": [
       {
         "title": "Lean Problem Solving",
-        "description": "Time-tested principles adapted to your context. We teach while we do, building your team's capability.",
+        "description": "Structured methods to fix problems permanently. We teach while we do, building your team's capability along the way.",
         "href": "/lean-problem-solving"
       },
       {
-        "title": "Lean Apps",
-        "description": "Simple digital workflows that solve your specific problems. No bloated software, just what you need.",
+        "title": "Apps & Automation",
+        "description": "Custom digital tools built around how your process actually works. No bloated software  - just what you need.",
         "href": "/apps"
       },
       {
-        "title": "Dashboards & Visuals",
-        "description": "Performance visuals that drive decisions, not just display data. See what matters, act on insights.",
+        "title": "Analytics & Dashboards",
+        "description": "Performance visuals co-created with your team so they drive decisions, not just display data.",
         "href": "/analytics"
       },
       {
-        "title": "Lean Training",
-        "description": "Capability building programs that develop real skills. Your team learns by solving real problems.",
+        "title": "Training & Certifications",
+        "description": "Practical skill building for leaders and front-line teams. Your people learn by solving real problems.",
         "href": "/training"
       }
     ]
   },
   "cta": {
     "title": "Ready to start improving?",
-    "description": "Schedule a free consultation to discuss your challenges and discover how we can help.",
+    "description": "Schedule a free session to talk through your goals and see how we can help.",
     "primaryCta": {
       "label": "Schedule Your First Session",
       "href": "/book/consultation"

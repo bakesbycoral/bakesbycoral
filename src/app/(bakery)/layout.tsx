@@ -52,7 +52,7 @@ export default function BakeryLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-[#F7F3ED] text-neutral-900 min-h-screen flex flex-col">
+    <div className="bg-[#F7F3ED] text-neutral-900 min-h-screen flex flex-col bakery-fonts">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -1,23 +1,23 @@
 {
   "hero": {
     "label": "Our Approach",
-    "title": "Tools don't solve problems. People do.",
-    "description": "Lean methods, Lean Apps, analytics, and training are tools we use to help you solve real problems. We use them intentionally and collaboratively, always with your team at the center.",
+    "title": "We work for you on what's needed.",
+    "description": "Assessments, prioritization, improvement planning and execution, training, and sustainment systems. We use the right tools to support the right solution.",
     "primaryCta": {
       "label": "Schedule Your First Session",
       "href": "/book/consultation"
     }
   },
   "toolsIntro": {
-    "title": "Tools Are Not the Solution. They Support the Solution.",
-    "description": "Most companies buy apps or run training and hope performance improves. It rarely works.",
-    "why": "Because the work isn't built around the people who actually run the process.",
-    "flip": "We work with your front-line teams to understand what they need, then use the right tools to help the solution stick."
+    "title": "Tools Support the Solution. They Are Not the Solution.",
+    "description": "We don't lead with Lean, apps, analytics, or training.",
+    "why": "We lead with your goals, your problems, and your priorities.",
+    "flip": "Then we use the right combination of tools to help your team solve problems and build systems that last."
   },
   "lean": {
     "label": "Lean Problem Solving",
     "subtitle": "For clarity and simplicity.",
-    "title": "Lean gives structure to the conversations your team is already having",
+    "title": "Structured methods to fix problems permanently",
     "questions": [
       "Why is this happening?",
       "What is the right way?",
@@ -31,15 +31,15 @@
       "Stabilize processes",
       "Build better standards"
     ],
-    "closing": "Lean isn't the goal. The goal is better performance.",
+    "closing": "Lean isn't the goal. Better performance is.",
     "closingSub": "Lean is simply the structure that makes it possible.",
     "href": "/lean-problem-solving"
   },
   "apps": {
-    "label": "Digitization (Apps + Automation)",
+    "label": "Application Development & Automation",
     "subtitle": "For eliminating friction, paperwork, and confusion.",
-    "title": "We don't sell off-the-shelf apps.",
-    "description": "We build simple Lean Apps tools with your team that match exactly how your process works. We leverage the digital tools already in place to fill in the workflow gaps.",
+    "title": "Custom tools built around how your process actually works.",
+    "description": "We don't sell off-the-shelf software. We build simple, purpose-built apps with your team that fit your workflow and fill the gaps.",
     "examplesTitle": "Examples include:",
     "examples": [
       "Scrap and downtime logging",
@@ -48,7 +48,7 @@
       "Tier meeting boards",
       "Maintenance or quality workflows"
     ],
-    "benefitsTitle": "These gap solutions:",
+    "benefitsTitle": "These tools:",
     "benefits": [
       "Reduce errors",
       "Speed up communication",
@@ -56,14 +56,14 @@
       "Keep the process consistent",
       "Make problems visible sooner"
     ],
-    "closing": "Digital solutions help us work smarter.",
+    "closing": "Automation helps your team work smarter, not harder.",
     "href": "/apps"
   },
   "analytics": {
-    "label": "Analytics & Dashboards",
+    "label": "Analytics Co-Creation & Scalability",
     "subtitle": "For visibility, accountability, and sustainment.",
-    "title": "We build performance dashboards your team actually uses",
-    "description": "Because they helped design them.",
+    "title": "Dashboards your team actually uses  - because they helped build them.",
+    "description": "We co-create analytics with your people so the data drives decisions, not just displays numbers.",
     "helpTitle": "Dashboards help your people:",
     "benefits": [
       "See problems earlier",
@@ -72,12 +72,12 @@
       "Track improvements",
       "Stay aligned shift-to-shift"
     ],
-    "closing": "We make analytics simple, not overwhelming.",
-    "closingSub": "The goal is not \"data.\" The goal is better daily, weekly, monthly, quarterly decisions.",
+    "closing": "We make analytics simple and scalable.",
+    "closingSub": "The goal is better daily, weekly, monthly, and quarterly decisions.",
     "href": "/analytics"
   },
   "training": {
-    "label": "Lean Training & Certifications",
+    "label": "Training & Certifications",
     "subtitle": "For leaders and front-line teams to succeed on their own.",
     "title": "We build capability, not dependency.",
     "weTrainTitle": "We train:",
@@ -121,14 +121,14 @@
     "href": "/training"
   },
   "together": {
-    "title": "How Can It All Come Together?",
-    "subtitle": "Each solution works well alone and the sum of the parts is even better.",
-    "weaveTitle": "Here's how we weave them together:",
+    "title": "How It All Comes Together",
+    "subtitle": "Each capability works well alone  - and together they're even more powerful.",
+    "weaveTitle": "Here's how we work:",
     "weave": [
-      "Your team brings the real experience and insight",
-      "We bring the structure, tools, and horsepower",
-      "Together we create a solution that fits your operation",
-      "Tools support the solution, not replace it",
+      "We start with your goals, projects, priorities, problems, and needs",
+      "We bring the expertise, horsepower, and systems to support you",
+      "We integrate into your team and work on what's needed",
+      "Everything is co-created, transferred, and supported",
       "Your people sustain and improve the system long after we leave"
     ],
     "resultsTitle": "This is why our clients see:",
@@ -143,6 +143,6 @@
   },
   "cta": {
     "title": "Ready to start improving?",
-    "description": "Schedule a free consultation to discuss your challenges and discover how we can help."
+    "description": "Schedule a free session to talk through your goals and see how we can help."
   }
 }

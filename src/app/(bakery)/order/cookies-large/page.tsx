@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { TimeSlotPicker, CouponInput } from '@/components/forms';
-import { SuccessModal } from '@/components/ui';
 
 // Seasonal flavors go live on March 2nd, 2026
 const SEASONAL_LIVE_DATE = new Date('2026-03-02T00:00:00');
@@ -42,7 +41,7 @@ export default function LargeCookieOrderPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
+
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
     description: string | null;
@@ -103,37 +102,7 @@ export default function LargeCookieOrderPage() {
         throw new Error(data.error || 'Failed to submit order');
       }
 
-      setShowSuccess(true);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        eventDate: '',
-        pickupSlot: null,
-        eventType: '',
-        eventLocation: '',
-        pickupOrDelivery: 'pickup',
-        quantity: '',
-        flavors: {
-          chocolateChip: 0,
-          vanillaBeanSugar: 0,
-          cherryAlmond: 0,
-          espressoButterscotch: 0,
-          lemonSugar: 0,
-          keyLimeCheesecake: 0,
-          blueberryMuffin: 0,
-          lemonShortbreadSandwiches: 0,
-          whiteChocolateRaspberry: 0,
-        },
-        packaging: '',
-        allergies: '',
-        howDidYouHear: '',
-        message: '',
-        acknowledgeDeposit: false,
-        acknowledgeAllergens: false,
-        acknowledgeLeadTime: false,
-      });
-      setAppliedCoupon(null);
+      window.location.href = '/';
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
@@ -651,12 +620,6 @@ export default function LargeCookieOrderPage() {
         </div>
       </section>
 
-      <SuccessModal
-        isOpen={showSuccess}
-        onClose={() => setShowSuccess(false)}
-        title="Inquiry Submitted!"
-        message="Thank you! I'll respond within 24-48 hours with a custom quote for your event."
-      />
     </>
   );
 }

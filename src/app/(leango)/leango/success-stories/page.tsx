@@ -121,24 +121,33 @@ export default function SuccessStoriesPage() {
         </div>
       </Section>
 
-      {/* Team Photo */}
-      <Section background="dark">
-        <div className="relative aspect-[21/9] rounded-2xl overflow-hidden">
-          <Image
-            src="/leango/northglenn-group.jpg"
-            alt="LeanGo team celebrating success with a client"
-            fill
-            className="object-cover"
-          />
+      {/* CTA */}
+      <Section background="gradient">
+        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              {content.cta.title}
+            </h2>
+            <p className="text-lg text-gray-400 mb-8">
+              {content.cta.description}
+            </p>
+            <a
+              href="/leango/book/consultation"
+              className="inline-flex items-center justify-center px-8 py-3 bg-[#00a1f1] text-white font-medium rounded-lg hover:bg-[#0091d8] transition-colors"
+            >
+              Schedule Your First Session
+            </a>
+          </div>
+          <div className="relative aspect-square rounded-2xl overflow-hidden">
+            <Image
+              src="/leango/northglenn-group.jpg"
+              alt="LeanGo team celebrating success with a client"
+              fill
+              className="object-cover object-[center_75%]"
+            />
+          </div>
         </div>
       </Section>
-
-      {/* CTA */}
-      <CTASection
-        title={content.cta.title}
-        description={content.cta.description}
-        variant="gradient"
-      />
     </>
   );
 }

@@ -14,7 +14,7 @@ export default function LeanGoLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-gray-950 text-white min-h-screen flex flex-col font-[var(--font-poppins)]">
+    <div className="bg-gray-950 text-white min-h-screen flex flex-col leango-fonts">
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />

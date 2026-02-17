@@ -101,7 +101,7 @@ function CookieOrderContent() {
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       } else {
-        window.location.href = '/order/success?type=cookies';
+        window.location.href = '/';
       }
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');

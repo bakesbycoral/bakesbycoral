@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { TimeSlotPicker, CouponInput } from '@/components/forms';
-import { SuccessModal } from '@/components/ui';
 
 export default function WeddingInquiryPage() {
   const [formData, setFormData] = useState({
@@ -55,7 +54,7 @@ export default function WeddingInquiryPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
+
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
     description: string | null;
@@ -147,54 +146,7 @@ export default function WeddingInquiryPage() {
         throw new Error(data.error || 'Failed to submit inquiry');
       }
 
-      setShowSuccess(true);
-      setFormData({
-        name: '',
-        partnerName: '',
-        email: '',
-        phone: '',
-        weddingDate: '',
-        pickupOrDelivery: 'pickup',
-        pickupSlot: null,
-        deliveryTime: '',
-        setupRequirements: '',
-        venueName: '',
-        venueAddress: '',
-        startTime: '',
-        onsiteContact: '',
-        servicesNeeded: '',
-        cakeShape: '',
-        cakeSize: '',
-        cakeFlavor: '',
-        cakeFilling: '',
-        baseColor: '',
-        pipingColors: '',
-        customMessaging: '',
-        messageStyle: '',
-        cakeToppings: [],
-        inspirationFiles: [],
-        cakeDesignNotes: '',
-        cookieQuantity: '',
-        cookieFlavors: {
-          chocolateChip: 0,
-          vanillaBeanSugar: 0,
-          cherryAlmond: 0,
-          espressoButterscotch: 0,
-          lemonSugar: 0,
-        },
-        cookiePackaging: '',
-        cookieCupsQuantity: '',
-        cookieCupsChocolateMolds: false,
-        cookieCupsEdibleGlitter: false,
-        cookieCupsInspirationFiles: [],
-        cookieCupsNotes: '',
-        dietaryRestrictions: '',
-        howDidYouHear: '',
-        acknowledgeLeadTime: false,
-        acknowledgeDeposit: false,
-        acknowledgeAllergy: false,
-      });
-      setAppliedCoupon(null);
+      window.location.href = '/';
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
@@ -1136,12 +1088,6 @@ export default function WeddingInquiryPage() {
         </div>
       </section>
 
-      <SuccessModal
-        isOpen={showSuccess}
-        onClose={() => setShowSuccess(false)}
-        title="Inquiry Submitted!"
-        message="Thank you! I'll review your inquiry and reach out within 48 hours to discuss details."
-      />
     </>
   );
 }

@@ -403,11 +403,12 @@ export default function BookingPage({ params }: { params: Promise<{ type: string
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">
-                      Phone
+                      Phone *
                     </label>
                     <input
                       type="tel"
                       id="phone"
+                      required
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00a1f1] focus:border-[#00a1f1] transition-colors"
@@ -416,11 +417,12 @@ export default function BookingPage({ params }: { params: Promise<{ type: string
 
                   <div>
                     <label htmlFor="company" className="block text-sm font-medium text-gray-300 mb-1">
-                      Company
+                      Company *
                     </label>
                     <input
                       type="text"
                       id="company"
+                      required
                       value={formData.company}
                       onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00a1f1] focus:border-[#00a1f1] transition-colors"
@@ -430,11 +432,12 @@ export default function BookingPage({ params }: { params: Promise<{ type: string
 
                 <div>
                   <label htmlFor="notes" className="block text-sm font-medium text-gray-300 mb-1">
-                    What would you like to discuss?
+                    What would you like to discuss? *
                   </label>
                   <textarea
                     id="notes"
                     rows={4}
+                    required
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-[#00a1f1] focus:border-[#00a1f1] transition-colors"

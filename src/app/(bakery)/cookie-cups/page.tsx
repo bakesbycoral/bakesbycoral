@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { TimeSlotPicker } from '@/components/forms';
-import { SuccessModal } from '@/components/ui';
 
 export default function CookieCupsPage() {
   const [formData, setFormData] = useState({
@@ -28,7 +27,7 @@ export default function CookieCupsPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
+
 
   const dozensCount = formData.quantity ? parseInt(formData.quantity) / 12 : 0;
   const basePrice = dozensCount * 3000;
@@ -84,26 +83,7 @@ export default function CookieCupsPage() {
         throw new Error(data.error || 'Failed to submit order');
       }
 
-      setShowSuccess(true);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        quantity: '',
-        chocolateMolds: false,
-        edibleGlitter: false,
-        pickupSlot: null,
-        designDetails: '',
-        colors: '',
-        occasion: '',
-        inspirationFiles: [],
-        allergies: '',
-        howDidYouHear: '',
-        message: '',
-        acknowledgePayment: false,
-        acknowledgeAllergens: false,
-        acknowledgeLeadTime: false,
-      });
+      window.location.href = '/';
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
@@ -582,12 +562,6 @@ export default function CookieCupsPage() {
         </div>
       </section>
 
-      <SuccessModal
-        isOpen={showSuccess}
-        onClose={() => setShowSuccess(false)}
-        title="Order Submitted!"
-        message="Thank you! I'll respond within 24-48 hours to confirm your order and arrange payment."
-      />
     </>
   );
 }

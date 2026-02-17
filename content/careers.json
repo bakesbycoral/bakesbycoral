@@ -2,7 +2,7 @@
   "hero": {
     "label": "Careers",
     "title": "Build Something That Matters",
-    "description": "Join a team that's transforming how organizations operate. We're looking for people who want to make a real impact—not just collect a paycheck.",
+    "description": "Join a team that's transforming how organizations operate. We're looking for people who want to make a real impact -not just collect a paycheck.",
     "primaryCta": {
       "label": "View Open Positions",
       "href": "#positions"
@@ -10,12 +10,12 @@
   },
   "intro": {
     "title": "We're Not Your Typical Consulting Firm",
-    "description": "At LeanGo, we believe the best consultants don't just advise—they roll up their sleeves and work alongside clients. We're a small, focused team that values depth over breadth, quality over quantity, and lasting results over quick wins.",
+    "description": "At LeanGo, we believe the best consultants don't just advise -they roll up their sleeves and work alongside clients. We're a small, focused team that values depth over breadth, quality over quantity, and lasting results over quick wins.",
     "highlights": [
       "No bureaucracy or endless meetings",
       "Direct client impact on every project",
       "Work with people who genuinely want to improve",
-      "Your ideas matter—regardless of your title"
+      "Your ideas matter -regardless of your title"
     ]
   },
   "whyWork": {
@@ -159,7 +159,7 @@
       {
         "step": "1",
         "title": "Apply",
-        "description": "Send us your resume and a brief note about why you're interested. No cover letter required—just tell us what excites you."
+        "description": "Send us your resume and a brief note about why you're interested. No cover letter required -just tell us what excites you."
       },
       {
         "step": "2",
@@ -230,6 +230,6 @@
   },
   "cta": {
     "title": "Don't See the Right Role?",
-    "description": "We're always interested in talented people who share our values. Send us your resume and tell us what you'd bring to the team—we'll keep you in mind for future opportunities."
+    "description": "We're always interested in talented people who share our values. Send us your resume and tell us what you'd bring to the team -we'll keep you in mind for future opportunities."
   }
 }
