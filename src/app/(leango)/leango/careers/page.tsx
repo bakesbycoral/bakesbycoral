@@ -8,7 +8,7 @@ import {
   SectionHeader,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/careers.json';
+import content from '@/../content/leango/careers.json';
 
 // Icons for the "Why Work With Us" section
 const icons: Record<string, React.ReactNode> = {

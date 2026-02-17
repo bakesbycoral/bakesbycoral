@@ -6,7 +6,7 @@ import {
   SectionHeader,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/our-approach.json';
+import content from '@/../content/leango/our-approach.json';
 
 export const metadata = {
   title: 'Our Approach',

@@ -4,7 +4,7 @@ import {
   SectionHeader,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/lean-certifications.json';
+import content from '@/../content/leango/lean-certifications.json';
 
 export const metadata = {
   title: 'Lean Certifications',

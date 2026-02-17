@@ -7,7 +7,7 @@ import {
   ProcessSteps,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/apps.json';
+import content from '@/../content/leango/apps.json';
 
 export const metadata = {
   title: 'Apps',

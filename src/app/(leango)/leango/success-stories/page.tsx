@@ -5,7 +5,7 @@ import {
   SectionHeader,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/success-stories.json';
+import content from '@/../content/leango/success-stories.json';
 
 export const metadata = {
   title: 'Success Stories',

@@ -41,6 +41,9 @@ const LEANGO_PATHS = [
   '/book',
 ];
 
+// Production domains that should be indexed
+const PRODUCTION_DOMAINS = ['bakesbycoral.com', 'www.bakesbycoral.com', 'leango.com', 'www.leango.com'];
+
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || 'localhost:3000';
   const { pathname } = request.nextUrl;
@@ -51,6 +54,13 @@ export function middleware(request: NextRequest) {
     pathname.includes('.') // Static files
   ) {
     return addSecurityHeaders(NextResponse.next());
+  }
+
+  // Block indexing on non-production domains (e.g. workers.dev)
+  if (!PRODUCTION_DOMAINS.includes(host) && !host.startsWith('localhost')) {
+    const response = addSecurityHeaders(NextResponse.next());
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return response;
   }
 
   // Add security headers to API and admin routes

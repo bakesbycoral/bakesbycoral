@@ -9,7 +9,7 @@ import {
   ProcessSteps,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/how-we-work.json';
+import content from '@/../content/leango/how-we-work.json';
 
 export const metadata = {
   title: 'How We Work',

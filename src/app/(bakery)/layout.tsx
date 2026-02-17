@@ -44,6 +44,9 @@ export const metadata = {
   },
   description:
     'Handcrafted gluten-free cookies and custom cakes made with love in Cincinnati, OH. Order cookies, custom cakes, wedding desserts, and more. 100% gluten-free dedicated kitchen.',
+  alternates: {
+    canonical: './',
+  },
 };
 
 export default function BakeryLayout({

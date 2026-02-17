@@ -10,7 +10,7 @@ import {
   CTASection,
   NewsletterSignup
 } from '@/components/leango';
-import homeContent from '@/../content/home.json';
+import homeContent from '@/../content/leango/home.json';
 
 export default function LeanGoHomePage() {
   return (

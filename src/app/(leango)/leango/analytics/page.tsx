@@ -6,7 +6,7 @@ import {
   UseCaseGrid,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/analytics.json';
+import content from '@/../content/leango/analytics.json';
 
 export const metadata = {
   title: 'Analytics',

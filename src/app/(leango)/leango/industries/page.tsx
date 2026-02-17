@@ -4,7 +4,7 @@ import {
   SectionHeader,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/industries.json';
+import content from '@/../content/leango/industries.json';
 
 export const metadata = {
   title: 'Industries',

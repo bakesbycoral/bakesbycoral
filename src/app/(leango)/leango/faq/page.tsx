@@ -6,7 +6,7 @@ import {
   Section,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/faq.json';
+import content from '@/../content/leango/faq.json';
 
 export default function FAQPage() {
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});

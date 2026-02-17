@@ -6,7 +6,7 @@ import {
   SectionHeader,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/lean-lego-simulation.json';
+import content from '@/../content/leango/lean-lego-simulation.json';
 
 export const metadata = {
   title: 'Lean Lego Simulation Training',

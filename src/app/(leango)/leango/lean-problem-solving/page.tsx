@@ -5,7 +5,7 @@ import {
   FeatureCards,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/lean-problem-solving.json';
+import content from '@/../content/leango/lean-problem-solving.json';
 
 export const metadata = {
   title: 'Lean Problem Solving',

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ContentHero, Section, SectionHeader } from '@/components/leango';
-import content from '@/../content/contact.json';
+import content from '@/../content/leango/contact.json';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({

@@ -7,7 +7,7 @@ import {
   FeatureCards,
   CTASection
 } from '@/components/leango';
-import content from '@/../content/training.json';
+import content from '@/../content/leango/training.json';
 
 export const metadata = {
   title: 'Training',
