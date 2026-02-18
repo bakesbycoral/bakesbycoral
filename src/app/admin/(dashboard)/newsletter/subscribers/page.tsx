@@ -16,10 +16,10 @@ async function getTenantId(): Promise<string> {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('session')?.value;
 
-  if (!sessionToken) return 'leango';
+  if (!sessionToken) return 'bakesbycoral';
 
   const session = await verifySession(sessionToken, getEnvVar('bakesbycoral_session_secret'));
-  return session?.tenantId || 'leango';
+  return session?.tenantId || 'bakesbycoral';
 }
 
 async function getSubscribers(tenantId: string): Promise<Subscriber[]> {

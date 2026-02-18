@@ -43,11 +43,6 @@ body {
   font-family: var(--font-pt-serif), Georgia, serif;
 }
 
-/* LeanGo font - Poppins everywhere */
-.leango-fonts, .leango-fonts * {
-  font-family: var(--font-poppins), sans-serif;
-}
-
 /* Placeholder and option styling - 50% maroon */
 ::placeholder {
   color: rgba(84, 20, 9, 0.5);
@@ -73,57 +68,3 @@ select option[value=""] {
   color: rgba(84, 20, 9, 0.5);
 }
 
-/* LeanGo dark theme placeholder override */
-.leango-input::placeholder {
-  color: rgba(255, 255, 255, 0.7) !important;
-  opacity: 1 !important;
-}
-
-/* Admin dark theme input styling */
-/* White background inputs in dark theme get dark blue text */
-[data-theme="dark"] input,
-[data-theme="dark"] textarea,
-[data-theme="dark"] select {
-  color: #1e3a5f !important; /* Dark blue text for white inputs */
-  background-color: white;
-}
-
-[data-theme="dark"] input::placeholder,
-[data-theme="dark"] textarea::placeholder {
-  color: rgba(30, 58, 95, 0.5) !important; /* Dark blue placeholder */
-}
-
-/* Select option text */
-[data-theme="dark"] select option {
-  color: #1e3a5f;
-  background-color: white;
-}
-
-/* Dark inputs (explicitly dark background) get white text */
-[data-theme="dark"] input.dark-input,
-[data-theme="dark"] textarea.dark-input,
-[data-theme="dark"] select.dark-input,
-[data-theme="dark"] .bg-gray-800 input,
-[data-theme="dark"] .bg-gray-900 input,
-[data-theme="dark"] .bg-gray-950 input,
-[data-theme="dark"] .bg-gray-800 textarea,
-[data-theme="dark"] .bg-gray-900 textarea,
-[data-theme="dark"] .bg-gray-950 textarea,
-[data-theme="dark"] .bg-gray-800 select,
-[data-theme="dark"] .bg-gray-900 select,
-[data-theme="dark"] .bg-gray-950 select {
-  color: white !important;
-  background-color: #374151 !important; /* gray-700 */
-  border-color: #4b5563 !important; /* gray-600 */
-}
-
-[data-theme="dark"] input.dark-input::placeholder,
-[data-theme="dark"] textarea.dark-input::placeholder,
-[data-theme="dark"] .bg-gray-800 input::placeholder,
-[data-theme="dark"] .bg-gray-900 input::placeholder,
-[data-theme="dark"] .bg-gray-950 input::placeholder,
-[data-theme="dark"] .bg-gray-800 textarea::placeholder,
-[data-theme="dark"] .bg-gray-900 textarea::placeholder,
-[data-theme="dark"] .bg-gray-950 textarea::placeholder {
-  color: rgba(255, 255, 255, 0.5) !important;
-}

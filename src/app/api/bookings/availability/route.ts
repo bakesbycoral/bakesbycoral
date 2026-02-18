@@ -27,7 +27,7 @@ interface Override {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const tenant = searchParams.get('tenant') || 'leango';
+    const tenant = searchParams.get('tenant') || 'bakesbycoral';
     const typeId = searchParams.get('typeId');
     const year = parseInt(searchParams.get('year') || new Date().getFullYear().toString());
     const month = parseInt(searchParams.get('month') || (new Date().getMonth() + 1).toString());
@@ -45,14 +45,6 @@ export async function GET(request: NextRequest) {
       WHERE id = ? AND tenant_id = ? AND is_active = 1
     `).bind(typeId, tenant).first<BookingType>();
 
-    // Force 60-minute hourly slots for LeanGo
-    if (tenant === 'leango') {
-      bookingType = {
-        duration_minutes: 60,
-        buffer_after_minutes: 0,
-      };
-    }
-
     if (!bookingType) {
       return NextResponse.json({ error: 'Booking type not found' }, { status: 404 });
     }
@@ -64,17 +56,6 @@ export async function GET(request: NextRequest) {
       WHERE tenant_id = ? AND is_active = 1
     `).bind(tenant).all<AvailabilityWindow>();
     let windows = windowsResult.results;
-
-    // Default availability for LeanGo: Mon-Fri 8am-4pm Eastern (hourly slots)
-    if (windows.length === 0 && tenant === 'leango') {
-      windows = [
-        { day_of_week: 1, start_time: '08:00', end_time: '16:00' }, // Monday
-        { day_of_week: 2, start_time: '08:00', end_time: '16:00' }, // Tuesday
-        { day_of_week: 3, start_time: '08:00', end_time: '16:00' }, // Wednesday
-        { day_of_week: 4, start_time: '08:00', end_time: '16:00' }, // Thursday
-        { day_of_week: 5, start_time: '08:00', end_time: '16:00' }, // Friday
-      ];
-    }
 
     // Get date overrides for the month
     const startDate = `${year}-${month.toString().padStart(2, '0')}-01`;

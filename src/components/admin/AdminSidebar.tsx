@@ -49,7 +49,6 @@ const navigation = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
       </svg>
     ),
-    tenantOnly: ['bakes-by-coral'],
   },
   {
     name: 'Calendar',
@@ -59,37 +58,6 @@ const navigation = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
     ),
-    tenantOnly: ['bakes-by-coral'],
-  },
-  {
-    name: 'Bookings',
-    href: '/admin/bookings',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
-    tenantOnly: ['leango'],
-  },
-  {
-    name: 'Clients',
-    href: '/admin/clients',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-    ),
-    tenantOnly: ['leango'],
-  },
-  {
-    name: 'Analytics',
-    href: '/admin/analytics',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
-    tenantOnly: ['leango'],
   },
   {
     name: 'Blog',
@@ -99,7 +67,6 @@ const navigation = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
       </svg>
     ),
-    tenantOnly: ['leango'],
   },
   {
     name: 'Newsletter',
@@ -109,7 +76,6 @@ const navigation = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
-    tenantOnly: ['leango'],
   },
   {
     name: 'Coupons',
@@ -119,7 +85,6 @@ const navigation = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
       </svg>
     ),
-    tenantOnly: ['bakes-by-coral'],
   },
   {
     name: 'Customers',
@@ -129,7 +94,6 @@ const navigation = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     ),
-    tenantOnly: ['bakes-by-coral'],
   },
   {
     name: 'Emails',
@@ -139,7 +103,6 @@ const navigation = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
-    tenantOnly: ['bakes-by-coral'],
   },
   {
     name: 'Settings',
@@ -192,34 +155,6 @@ export function AdminSidebar({ userEmail, currentTenant, tenants }: AdminSidebar
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { isOpen: mobileMenuOpen, setIsOpen: setMobileMenuOpen } = useMobileMenu();
 
-  // Determine if using dark theme (LeanGo)
-  const isDarkTheme = currentTenant.id === 'leango';
-
-  // Theme colors
-  const theme = isDarkTheme
-    ? {
-        bg: 'bg-gray-950',
-        text: 'text-white',
-        textMuted: 'text-gray-400',
-        border: 'border-gray-800',
-        hoverBg: 'hover:bg-gray-800',
-        activeBg: 'bg-[#00a1f1]',
-        activeText: 'text-white',
-        accent: '#00a1f1',
-        accentBg: 'bg-[#00a1f1]',
-      }
-    : {
-        bg: '',
-        text: '',
-        textMuted: '',
-        border: '',
-        hoverBg: '',
-        activeBg: '',
-        activeText: '',
-        accent: currentTenant.primary_color || '#541409',
-        accentBg: '',
-      };
-
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -268,170 +203,11 @@ export function AdminSidebar({ userEmail, currentTenant, tenants }: AdminSidebar
     }
   };
 
-  // Filter navigation items based on current tenant
-  const filteredNavigation = navigation.filter(item => {
-    if (!item.tenantOnly) return true;
-    return item.tenantOnly.includes(currentTenant.id);
-  });
+  const filteredNavigation = navigation;
 
   const primaryColor = currentTenant.primary_color || '#541409';
   const secondaryColor = currentTenant.secondary_color || '#EAD6D6';
 
-  // Dark theme sidebar (LeanGo)
-  if (isDarkTheme) {
-    return (
-      <>
-        {/* Mobile backdrop */}
-        {mobileMenuOpen && (
-          <div
-            className="md:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-        )}
-        <aside className={`fixed left-0 top-0 bottom-0 w-64 flex flex-col bg-gray-950 text-white border-r border-gray-800 z-40 transition-transform duration-300 ease-in-out ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
-        {/* Tenant Switcher */}
-        <div className="p-6 border-b border-gray-800" ref={dropdownRef}>
-          {tenants.length > 1 && (
-            <div className="text-xs font-medium uppercase tracking-wider mb-2 text-gray-500">
-              Switch Business
-            </div>
-          )}
-          <button
-            onClick={() => tenants.length > 1 && setTenantDropdownOpen(!tenantDropdownOpen)}
-            className={`w-full flex items-center gap-3 p-2 rounded-lg transition-colors ${tenants.length > 1 ? 'cursor-pointer hover:bg-gray-800 border border-gray-700' : 'cursor-default'}`}
-            disabled={switching}
-          >
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-[#00a1f1]">
-              <span className="text-xl font-bold text-white">
-                {currentTenant.name.charAt(0)}
-              </span>
-            </div>
-            <div className="flex-1 text-left">
-              <div className="font-semibold text-white">
-                {currentTenant.name}
-              </div>
-              <div className="text-xs text-gray-400">
-                {tenants.length > 1 ? 'Click to switch' : 'Admin Dashboard'}
-              </div>
-            </div>
-            {tenants.length > 1 && (
-              <svg
-                className={`w-5 h-5 transition-transform text-gray-400 ${tenantDropdownOpen ? 'rotate-180' : ''}`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            )}
-          </button>
-
-          {/* Tenant Dropdown */}
-          {tenantDropdownOpen && tenants.length > 1 && (
-            <div className="absolute left-4 right-4 mt-2 rounded-lg shadow-lg z-50 overflow-hidden bg-gray-800 border border-gray-700">
-              {tenants.map((tenant) => (
-                <button
-                  key={tenant.id}
-                  onClick={() => handleTenantSwitch(tenant.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${
-                    tenant.id === currentTenant.id ? 'bg-gray-700' : 'hover:bg-gray-700'
-                  }`}
-                  disabled={switching}
-                >
-                  <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: tenant.id === 'leango' ? '#00a1f1' : tenant.primary_color }}
-                  >
-                    <span className="text-sm font-bold text-white">
-                      {tenant.name.charAt(0)}
-                    </span>
-                  </div>
-                  <span className="font-medium text-white">{tenant.name}</span>
-                  {tenant.id === currentTenant.id && (
-                    <svg className="w-5 h-5 ml-auto text-[#66d200]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 p-4 overflow-y-auto">
-          <ul className="space-y-1">
-            {filteredNavigation.map((item) => {
-              const isActive = pathname === item.href ||
-                (item.href !== '/admin' && pathname.startsWith(item.href));
-
-              return (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                      isActive
-                        ? 'bg-[#00a1f1] text-white'
-                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                    }`}
-                  >
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        {/* User section */}
-        <div className="p-4 border-t border-gray-800">
-          <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-800">
-              <span className="text-sm font-medium text-white">
-                {userEmail.charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium truncate text-white">
-                {userEmail}
-              </div>
-              <div className="text-xs text-gray-500">
-                Administrator
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="w-full mt-2 flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span>Sign Out</span>
-          </button>
-        </div>
-
-        {/* Back to site */}
-        <div className="p-4 border-t border-gray-800">
-          <a
-            href="/leango"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 px-4 py-2 transition-colors text-gray-400 hover:text-[#00a1f1]"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-            <span>View Website</span>
-          </a>
-        </div>
-      </aside>
-      </>
-    );
-  }
-
-  // Light theme sidebar (Bakes by Coral)
   return (
     <>
       {/* Mobile backdrop */}

@@ -310,7 +310,7 @@ export default function NewCampaignPage() {
                     value={formData.from_name}
                     onChange={(e) => setFormData({ ...formData, from_name: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., John from LeanGo"
+                    placeholder="e.g., Coral from Bakes by Coral"
                   />
                 </div>
 
@@ -324,7 +324,7 @@ export default function NewCampaignPage() {
                     value={formData.from_email}
                     onChange={(e) => setFormData({ ...formData, from_email: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., newsletter@leango.com"
+                    placeholder="e.g., newsletter@bakesbycoral.com"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Must be a verified email address in your sending domain
@@ -341,7 +341,7 @@ export default function NewCampaignPage() {
                     value={formData.reply_to}
                     onChange={(e) => setFormData({ ...formData, reply_to: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., support@leango.com"
+                    placeholder="e.g., support@bakesbycoral.com"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Where replies will be sent (leave blank to use From Email)

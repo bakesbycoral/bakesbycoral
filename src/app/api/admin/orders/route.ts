@@ -15,14 +15,13 @@ interface CreateOrderRequest {
   delivery_address?: string;
 }
 
-function generateOrderNumber(tenantId: string): string {
+function generateOrderNumber(): string {
   const now = new Date();
   const year = now.getFullYear().toString().slice(-2);
   const month = (now.getMonth() + 1).toString().padStart(2, '0');
   const day = now.getDate().toString().padStart(2, '0');
   const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  const prefix = tenantId === 'leango' ? 'LG' : 'BC';
-  return `${prefix}${year}${month}${day}-${random}`;
+  return `BC${year}${month}${day}-${random}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -59,7 +58,7 @@ export async function POST(request: NextRequest) {
 
     const db = getDB();
     const id = crypto.randomUUID();
-    const orderNumber = generateOrderNumber(session.tenantId);
+    const orderNumber = generateOrderNumber();
 
     // Calculate deposit amount (50% for large orders/cake/wedding, 100% for regular cookies)
     let depositAmount = null;

@@ -98,14 +98,9 @@ export default async function DashboardLayout({
     redirect('/admin/login');
   }
 
-  // Determine if this is a dark theme tenant
-  const isDarkTheme = user.currentTenant.id === 'leango';
-  const bgColor = isDarkTheme ? 'bg-gray-900' : 'bg-[#F7F3ED]';
-  const textColor = isDarkTheme ? 'text-white' : 'text-gray-900';
-
   return (
     <MobileMenuProvider>
-      <div className={`flex min-h-screen ${bgColor} ${textColor}`} data-theme={isDarkTheme ? 'dark' : 'light'}>
+      <div className="flex min-h-screen bg-[#F7F3ED] text-gray-900">
         <MobileMenuButton
           primaryColor={user.currentTenant.primary_color}
           secondaryColor={user.currentTenant.secondary_color}

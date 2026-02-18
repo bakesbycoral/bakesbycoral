@@ -8,7 +8,7 @@ export async function GET(
   try {
     const { slug } = await params;
     const { searchParams } = new URL(request.url);
-    const tenant = searchParams.get('tenant') || 'leango';
+    const tenant = searchParams.get('tenant') || 'bakesbycoral';
 
     const db = getDB();
     const bookingType = await db.prepare(`
@@ -18,17 +18,6 @@ export async function GET(
     `).bind(tenant, slug).first();
 
     if (!bookingType) {
-      // Default booking types for LeanGo
-      if (tenant === 'leango' && slug === 'consultation') {
-        return NextResponse.json({
-          id: 'default-consultation',
-          name: 'Free Consultation',
-          slug: 'consultation',
-          description: 'A 60-minute conversation to discuss your challenges and explore how we can help.',
-          duration_minutes: 60,
-          buffer_after_minutes: 0,
-        });
-      }
       return NextResponse.json({ error: 'Booking type not found' }, { status: 404 });
     }
 
