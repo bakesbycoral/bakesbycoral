@@ -19,7 +19,9 @@ export default function WeddingInquiryPage() {
     venueAddress: '',
     startTime: '',
     onsiteContact: '',
-    servicesNeeded: '',
+    serviceCuttingCake: false,
+    serviceCookies: false,
+    serviceCookieCups: false,
     cakeShape: '',
     cakeSize: '',
     cakeFlavor: '',
@@ -45,6 +47,19 @@ export default function WeddingInquiryPage() {
     cookieCupsEdibleGlitter: false,
     cookieCupsInspirationFiles: [] as File[],
     cookieCupsNotes: '',
+    serviceTieredCake: false,
+    tieredCakeTiers: '',
+    tieredCakeSize: '',
+    tieredCakeShape: '',
+    tieredCakeFlavors: { tier1: '', tier2: '', tier3: '' },
+    tieredCakeFillings: { tier1: '', tier2: '', tier3: '' },
+    tieredCakeBaseColor: '',
+    tieredCakePipingColors: '',
+    tieredCakeMessaging: '',
+    tieredCakeMessageStyle: '',
+    tieredCakeToppings: [] as string[],
+    tieredCakeInspirationFiles: [] as File[],
+    tieredCakeDesignNotes: '',
     dietaryRestrictions: '',
     howDidYouHear: '',
     acknowledgeLeadTime: false,
@@ -63,9 +78,11 @@ export default function WeddingInquiryPage() {
     minOrderAmount: number;
   } | null>(null);
 
-  const showCakeFields = ['cutting_cake', 'cake_and_cookies', 'cake_and_cookie_cups', 'all_three'].includes(formData.servicesNeeded);
-  const showCookieFields = ['cookies', 'cake_and_cookies', 'cookies_and_cookie_cups', 'all_three'].includes(formData.servicesNeeded);
-  const showCookieCupsFields = ['cookie_cups', 'cake_and_cookie_cups', 'cookies_and_cookie_cups', 'all_three'].includes(formData.servicesNeeded);
+  const showCakeFields = formData.serviceCuttingCake;
+  const showCookieFields = formData.serviceCookies;
+  const showCookieCupsFields = formData.serviceCookieCups;
+  const showTieredCakeFields = formData.serviceTieredCake;
+  const anyServiceSelected = formData.serviceCuttingCake || formData.serviceCookies || formData.serviceCookieCups || formData.serviceTieredCake;
 
   // Cookie calculations (values in dozens)
   const totalDozens = Object.values(formData.cookieFlavors).reduce((a, b) => a + b, 0);
@@ -74,14 +91,56 @@ export default function WeddingInquiryPage() {
   const hasCookieDiscount = formData.cookieQuantity && parseInt(formData.cookieQuantity) >= 10;
   const hasCookieCupsDiscount = formData.cookieCupsQuantity && parseInt(formData.cookieCupsQuantity) >= 10;
 
+  // Tiered cake tier labels (bottom to top)
+  const tieredCakeSizeParts = formData.tieredCakeSize ? formData.tieredCakeSize.split('+') : [];
+  const tieredCakeTierLabels = [...tieredCakeSizeParts].reverse().map((size, i, arr) => {
+    if (arr.length === 2) return i === 0 ? `Bottom Tier (${size}")` : `Top Tier (${size}")`;
+    if (i === 0) return `Bottom Tier (${size}")`;
+    if (i === arr.length - 1) return `Top Tier (${size}")`;
+    return `Middle Tier (${size}")`;
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
+
+    // Validate at least one service selected
+    if (!anyServiceSelected) {
+      setSubmitError('Please select at least one service.');
+      return;
+    }
 
     // Validate inspiration images if cake is selected
     if (showCakeFields && formData.inspirationFiles.length === 0) {
       setSubmitError('Please upload at least one inspiration image for your cake.');
       return;
+    }
+
+    // Validate tiered cake fields
+    if (showTieredCakeFields) {
+      if (!formData.tieredCakeTiers) {
+        setSubmitError('Please select the number of tiers for your tiered cake.');
+        return;
+      }
+      if (!formData.tieredCakeSize) {
+        setSubmitError('Please select a size combination for your tiered cake.');
+        return;
+      }
+      if (!formData.tieredCakeShape) {
+        setSubmitError('Please select a shape for your tiered cake.');
+        return;
+      }
+      const numTiers = parseInt(formData.tieredCakeTiers);
+      for (let i = 1; i <= numTiers; i++) {
+        if (!formData.tieredCakeFlavors[`tier${i}` as keyof typeof formData.tieredCakeFlavors]) {
+          setSubmitError(`Please select a flavor for tier ${i} of your tiered cake.`);
+          return;
+        }
+      }
+      if (formData.tieredCakeInspirationFiles.length === 0) {
+        setSubmitError('Please upload at least one inspiration image for your tiered cake.');
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -101,7 +160,12 @@ export default function WeddingInquiryPage() {
       submitData.append('venue_address', formData.venueAddress);
       submitData.append('start_time', formData.startTime);
       submitData.append('onsite_contact', formData.onsiteContact);
-      submitData.append('services_needed', formData.servicesNeeded);
+      const services = [];
+      if (formData.serviceCuttingCake) services.push('cutting_cake');
+      if (formData.serviceCookies) services.push('cookies');
+      if (formData.serviceCookieCups) services.push('cookie_cups');
+      if (formData.serviceTieredCake) services.push('tiered_cake');
+      submitData.append('services_needed', services.join(','));
       submitData.append('cake_shape', formData.cakeShape);
       submitData.append('cake_size', formData.cakeSize);
       submitData.append('cake_flavor', formData.cakeFlavor);
@@ -121,6 +185,24 @@ export default function WeddingInquiryPage() {
       submitData.append('cookie_cups_notes', formData.cookieCupsNotes);
       formData.cookieCupsInspirationFiles.forEach((file) => {
         submitData.append('cookie_cups_inspiration_images', file);
+      });
+      submitData.append('tiered_cake_tiers', formData.tieredCakeTiers);
+      submitData.append('tiered_cake_size', formData.tieredCakeSize);
+      submitData.append('tiered_cake_shape', formData.tieredCakeShape);
+      submitData.append('tiered_cake_flavor_tier1', formData.tieredCakeFlavors.tier1);
+      submitData.append('tiered_cake_flavor_tier2', formData.tieredCakeFlavors.tier2);
+      submitData.append('tiered_cake_flavor_tier3', formData.tieredCakeFlavors.tier3);
+      submitData.append('tiered_cake_filling_tier1', formData.tieredCakeFillings.tier1);
+      submitData.append('tiered_cake_filling_tier2', formData.tieredCakeFillings.tier2);
+      submitData.append('tiered_cake_filling_tier3', formData.tieredCakeFillings.tier3);
+      submitData.append('tiered_cake_base_color', formData.tieredCakeBaseColor);
+      submitData.append('tiered_cake_piping_colors', formData.tieredCakePipingColors);
+      submitData.append('tiered_cake_messaging', formData.tieredCakeMessaging);
+      submitData.append('tiered_cake_message_style', formData.tieredCakeMessageStyle);
+      submitData.append('tiered_cake_toppings', JSON.stringify(formData.tieredCakeToppings));
+      submitData.append('tiered_cake_design_notes', formData.tieredCakeDesignNotes);
+      formData.tieredCakeInspirationFiles.forEach((file) => {
+        submitData.append('tiered_cake_inspiration_images', file);
       });
       submitData.append('dietary_restrictions', formData.dietaryRestrictions);
       submitData.append('how_found_us', formData.howDidYouHear);
@@ -404,25 +486,48 @@ export default function WeddingInquiryPage() {
               <div>
                 <h2 className="text-xl font-serif text-[#541409] mb-4">Services Needed</h2>
                 <div>
-                  <label htmlFor="servicesNeeded" className="block text-sm font-medium text-[#541409] mb-2">
+                  <label className="block text-sm font-medium text-[#541409] mb-2">
                     What services are you interested in? <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    id="servicesNeeded"
-                    required
-                    className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.servicesNeeded ? 'text-[#541409]' : 'text-[#541409]/50'}`}
-                    value={formData.servicesNeeded}
-                    onChange={(e) => setFormData({ ...formData, servicesNeeded: e.target.value })}
-                  >
-                    <option value="">Select an option</option>
-                    <option value="cutting_cake">Cutting Cake</option>
-                    <option value="cookies">Cookies</option>
-                    <option value="cookie_cups">Cookie Cups</option>
-                    <option value="cake_and_cookies">Cake + Cookies</option>
-                    <option value="cake_and_cookie_cups">Cake + Cookie Cups</option>
-                    <option value="cookies_and_cookie_cups">Cookies + Cookie Cups</option>
-                    <option value="all_three">Cake + Cookies + Cookie Cups</option>
-                  </select>
+                  <p className="text-xs text-stone-500 mb-3">Select all that apply</p>
+                  <div className="space-y-2">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.serviceCuttingCake}
+                        onChange={(e) => setFormData({ ...formData, serviceCuttingCake: e.target.checked })}
+                        className="w-5 h-5 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                      />
+                      <span className="ml-3 text-sm text-stone-700">Cutting Cake</span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.serviceCookies}
+                        onChange={(e) => setFormData({ ...formData, serviceCookies: e.target.checked })}
+                        className="w-5 h-5 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                      />
+                      <span className="ml-3 text-sm text-stone-700">Cookies</span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.serviceCookieCups}
+                        onChange={(e) => setFormData({ ...formData, serviceCookieCups: e.target.checked })}
+                        className="w-5 h-5 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                      />
+                      <span className="ml-3 text-sm text-stone-700">Cookie Cups</span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.serviceTieredCake}
+                        onChange={(e) => setFormData({ ...formData, serviceTieredCake: e.target.checked })}
+                        className="w-5 h-5 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                      />
+                      <span className="ml-3 text-sm text-stone-700">Tiered Wedding Cake</span>
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -966,6 +1071,326 @@ export default function WeddingInquiryPage() {
                         onChange={(e) => setFormData({ ...formData, cookieCupsNotes: e.target.value })}
                       />
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tiered Wedding Cake Details - Conditional */}
+              {showTieredCakeFields && (
+                <div>
+                  <h2 className="text-xl font-serif text-[#541409] mb-4">Tiered Wedding Cake Details</h2>
+
+                  {/* Pricing blurb */}
+                  <div className="bg-[#EAD6D6] rounded-lg p-4 mb-4">
+                    <p className="text-sm text-stone-700">
+                      Tiered wedding cakes are priced based on the combined size of each tier. Pricing includes structural support, doweling, and assembly.
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Number of tiers */}
+                    <div>
+                      <label className="block text-sm font-medium text-[#541409] mb-2">
+                        Number of Tiers <span className="text-red-500">*</span>
+                      </label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center cursor-pointer">
+                          <input
+                            type="radio"
+                            name="tieredCakeTiers"
+                            value="2"
+                            checked={formData.tieredCakeTiers === '2'}
+                            onChange={() => setFormData({ ...formData, tieredCakeTiers: '2', tieredCakeSize: '', tieredCakeShape: '', tieredCakeFlavors: { tier1: '', tier2: '', tier3: '' }, tieredCakeFillings: { tier1: '', tier2: '', tier3: '' } })}
+                            className="w-5 h-5 accent-[#541409] focus:ring-[#541409]"
+                          />
+                          <span className="ml-2 text-sm text-stone-700">2-Tier</span>
+                        </label>
+                        <label className="flex items-center cursor-pointer">
+                          <input
+                            type="radio"
+                            name="tieredCakeTiers"
+                            value="3"
+                            checked={formData.tieredCakeTiers === '3'}
+                            onChange={() => setFormData({ ...formData, tieredCakeTiers: '3', tieredCakeSize: '', tieredCakeShape: '', tieredCakeFlavors: { tier1: '', tier2: '', tier3: '' }, tieredCakeFillings: { tier1: '', tier2: '', tier3: '' } })}
+                            className="w-5 h-5 accent-[#541409] focus:ring-[#541409]"
+                          />
+                          <span className="ml-2 text-sm text-stone-700">3-Tier</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Size combo */}
+                    {formData.tieredCakeTiers && (
+                      <div>
+                        <label htmlFor="tieredCakeSize" className="block text-sm font-medium text-[#541409] mb-2">
+                          Size Combination <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          id="tieredCakeSize"
+                          required
+                          className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.tieredCakeSize ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                          value={formData.tieredCakeSize}
+                          onChange={(e) => {
+                            const newSize = e.target.value;
+                            if (newSize.includes('10') && formData.tieredCakeShape === 'heart') {
+                              setFormData({ ...formData, tieredCakeSize: newSize, tieredCakeShape: '', tieredCakeFlavors: { tier1: '', tier2: '', tier3: '' }, tieredCakeFillings: { tier1: '', tier2: '', tier3: '' } });
+                            } else {
+                              setFormData({ ...formData, tieredCakeSize: newSize, tieredCakeFlavors: { tier1: '', tier2: '', tier3: '' }, tieredCakeFillings: { tier1: '', tier2: '', tier3: '' } });
+                            }
+                          }}
+                        >
+                          <option value="">Select a size</option>
+                          {formData.tieredCakeTiers === '2' && (
+                            <>
+                              <option value="4+6">4&quot; + 6&quot; - Starting at $205</option>
+                              <option value="6+8">6&quot; + 8&quot; - Starting at $285</option>
+                              <option value="8+10">8&quot; + 10&quot; - Starting at $365</option>
+                            </>
+                          )}
+                          {formData.tieredCakeTiers === '3' && (
+                            <>
+                              <option value="4+6+8">4&quot; + 6&quot; + 8&quot; - Starting at $375</option>
+                              <option value="6+8+10">6&quot; + 8&quot; + 10&quot; - Starting at $495</option>
+                            </>
+                          )}
+                        </select>
+                      </div>
+                    )}
+
+                    {/* Shape */}
+                    {formData.tieredCakeSize && (
+                      <div>
+                        <label htmlFor="tieredCakeShape" className="block text-sm font-medium text-[#541409] mb-2">
+                          Cake Shape <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          id="tieredCakeShape"
+                          required
+                          className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.tieredCakeShape ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                          value={formData.tieredCakeShape}
+                          onChange={(e) => setFormData({ ...formData, tieredCakeShape: e.target.value })}
+                        >
+                          <option value="">Select an option</option>
+                          <option value="round">Round</option>
+                          {!formData.tieredCakeSize.includes('10') && <option value="heart">Heart</option>}
+                        </select>
+                      </div>
+                    )}
+
+                    {/* Per-tier flavor & filling */}
+                    {formData.tieredCakeSize && tieredCakeTierLabels.map((label, index) => (
+                      <div key={index} className="border border-stone-200 rounded-sm p-4">
+                        <h3 className="text-sm font-medium text-[#541409] mb-3">{label}</h3>
+                        <div className="space-y-3">
+                          <div>
+                            <label className="block text-xs font-medium text-[#541409] mb-1">
+                              Flavor <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                              required
+                              className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.tieredCakeFlavors[`tier${index + 1}` as keyof typeof formData.tieredCakeFlavors] ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                              value={formData.tieredCakeFlavors[`tier${index + 1}` as keyof typeof formData.tieredCakeFlavors]}
+                              onChange={(e) => setFormData({ ...formData, tieredCakeFlavors: { ...formData.tieredCakeFlavors, [`tier${index + 1}`]: e.target.value } })}
+                            >
+                              <option value="">Select a flavor</option>
+                              <option value="vanilla-bean">Vanilla Bean</option>
+                              <option value="chocolate">Chocolate</option>
+                              <option value="confetti">Confetti</option>
+                              <option value="red-velvet">Red Velvet</option>
+                              <option value="lemon">Lemon</option>
+                              <option value="vanilla-latte">Vanilla Latte (+$5)</option>
+                              <option value="marble">Marble (vanilla & chocolate)</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-[#541409] mb-1">
+                              Filling
+                            </label>
+                            <select
+                              className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.tieredCakeFillings[`tier${index + 1}` as keyof typeof formData.tieredCakeFillings] ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                              value={formData.tieredCakeFillings[`tier${index + 1}` as keyof typeof formData.tieredCakeFillings]}
+                              onChange={(e) => setFormData({ ...formData, tieredCakeFillings: { ...formData.tieredCakeFillings, [`tier${index + 1}`]: e.target.value } })}
+                            >
+                              <option value="">Select an option (or leave blank)</option>
+                              <option value="chocolate-ganache">Chocolate Ganache (+$10)</option>
+                              <option value="cookies-and-cream">Cookies & Cream (+$5)</option>
+                              <option value="vanilla-bean-ganache">Vanilla Bean Ganache (+$10)</option>
+                              <option value="fresh-strawberries">Fresh Strawberries (+$8)</option>
+                              <option value="lemon-ganache">Lemon Ganache (+$10)</option>
+                              <option value="raspberry">Raspberry (+$8)</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Shared design options */}
+                    {formData.tieredCakeSize && (
+                      <>
+                        <div>
+                          <label htmlFor="tieredCakeBaseColor" className="block text-sm font-medium text-[#541409] mb-2">
+                            Base Color <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="tieredCakeBaseColor"
+                            required
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.tieredCakeBaseColor}
+                            onChange={(e) => setFormData({ ...formData, tieredCakeBaseColor: e.target.value })}
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="tieredCakePipingColors" className="block text-sm font-medium text-[#541409] mb-2">
+                            Piping Color(s) <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="tieredCakePipingColors"
+                            required
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.tieredCakePipingColors}
+                            onChange={(e) => setFormData({ ...formData, tieredCakePipingColors: e.target.value })}
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="tieredCakeMessaging" className="block text-sm font-medium text-[#541409] mb-2">
+                            What would you like your custom messaging to say? <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="tieredCakeMessaging"
+                            required
+                            placeholder="If no messaging, type N/A"
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.tieredCakeMessaging}
+                            onChange={(e) => setFormData({ ...formData, tieredCakeMessaging: e.target.value })}
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="tieredCakeMessageStyle" className="block text-sm font-medium text-[#541409] mb-2">
+                            How would you like your message to be written? <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            id="tieredCakeMessageStyle"
+                            required
+                            className={`w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white ${formData.tieredCakeMessageStyle ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                            value={formData.tieredCakeMessageStyle}
+                            onChange={(e) => setFormData({ ...formData, tieredCakeMessageStyle: e.target.value })}
+                          >
+                            <option value="">Select an option</option>
+                            <option value="piped">Piped</option>
+                            <option value="piped-cursive">Piped Cursive</option>
+                            <option value="block">Block</option>
+                          </select>
+                        </div>
+
+                        {/* Toppings */}
+                        <div>
+                          <label className="block text-sm font-medium text-[#541409] mb-2">
+                            Toppings
+                          </label>
+                          <div className="space-y-2">
+                            {[
+                              { value: 'light-beading', label: 'Light Beading (+$8)' },
+                              { value: 'moderate-beading', label: 'Moderate Beading (+$15)' },
+                              { value: 'heavy-beading', label: 'Heavy Beading (+$20)' },
+                              { value: 'ribbon-bows', label: 'Ribbon Bows (+$8)' },
+                              { value: 'fruit', label: 'Fruit (starting at +$8)' },
+                              { value: 'fresh-florals', label: 'Fresh Florals (starting at +$15)' },
+                              { value: 'faux-florals', label: 'Faux Florals (starting at +$15)' },
+                              { value: 'edible-image', label: 'Edible Image (starting at +$10)' },
+                              { value: 'other', label: 'Other (starting at +$8)' },
+                            ].map((topping) => (
+                              <label key={topping.value} className="flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={formData.tieredCakeToppings.includes(topping.value)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFormData({ ...formData, tieredCakeToppings: [...formData.tieredCakeToppings, topping.value] });
+                                    } else {
+                                      setFormData({ ...formData, tieredCakeToppings: formData.tieredCakeToppings.filter(t => t !== topping.value) });
+                                    }
+                                  }}
+                                  className="w-5 h-5 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                                />
+                                <span className="ml-3 text-sm text-stone-700">{topping.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Inspiration Images */}
+                        <div>
+                          <label className="block text-sm font-medium text-[#541409] mb-2">
+                            Inspiration Images <span className="text-red-500">*</span>
+                          </label>
+                          <p className="text-xs text-stone-500 mb-2">Upload up to 10 images for inspiration</p>
+                          <input
+                            type="file"
+                            id="tieredCakeInspirationFiles"
+                            accept="image/*"
+                            multiple
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              const totalFiles = formData.tieredCakeInspirationFiles.length + files.length;
+                              if (totalFiles > 10) {
+                                alert('You can upload a maximum of 10 images');
+                                return;
+                              }
+                              setFormData({ ...formData, tieredCakeInspirationFiles: [...formData.tieredCakeInspirationFiles, ...files] });
+                              e.target.value = '';
+                            }}
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:bg-[#541409] file:text-[#EAD6D6] file:cursor-pointer"
+                            disabled={formData.tieredCakeInspirationFiles.length >= 10}
+                          />
+                          {formData.tieredCakeInspirationFiles.length > 0 && (
+                            <div className="mt-4 grid grid-cols-3 sm:grid-cols-5 gap-2">
+                              {formData.tieredCakeInspirationFiles.map((file, index) => (
+                                <div key={index} className="relative group">
+                                  <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={`Inspiration ${index + 1}`}
+                                    className="w-full h-20 object-cover rounded-sm"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setFormData({
+                                        ...formData,
+                                        tieredCakeInspirationFiles: formData.tieredCakeInspirationFiles.filter((_, i) => i !== index)
+                                      });
+                                    }}
+                                    className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Special Requests */}
+                        <div>
+                          <label htmlFor="tieredCakeDesignNotes" className="block text-sm font-medium text-[#541409] mb-2">
+                            Special Requests & Anything Else I Need to Know
+                          </label>
+                          <textarea
+                            id="tieredCakeDesignNotes"
+                            rows={3}
+                            placeholder="Be specific! Color scheme, theme, inspo, certain details, etc."
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent resize-none text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.tieredCakeDesignNotes}
+                            onChange={(e) => setFormData({ ...formData, tieredCakeDesignNotes: e.target.value })}
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               )}

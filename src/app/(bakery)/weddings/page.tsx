@@ -42,7 +42,7 @@ export default function WeddingsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-lg text-stone-600 leading-relaxed">
             Your wedding day should be unforgettable—and that includes dessert! I create beautiful,
-            delicious gluten-free cutting cakes, cookies, and cookie cups so everyone at your celebration
+            delicious gluten-free cutting cakes, tiered wedding cakes, cookies, and cookie cups so everyone at your celebration
             can enjoy a treat. Let's make your dessert table something special.
           </p>
         </div>
@@ -55,7 +55,7 @@ export default function WeddingsPage() {
             Wedding Services
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Wedding Cakes */}
             <Link href="/order/wedding" className="bg-white rounded-lg p-8 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all block">
               <h3 className="text-2xl font-serif text-[#541409] mb-4">Cutting Cakes</h3>
@@ -75,6 +75,32 @@ export default function WeddingsPage() {
                 <li className="flex items-start">
                   <span className="text-[#541409] mr-2">•</span>
                   Perfect for your cake cutting moment
+                </li>
+              </ul>
+            </Link>
+
+            {/* Tiered Wedding Cakes */}
+            <Link href="/order/wedding" className="bg-white rounded-lg p-8 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all block">
+              <h3 className="text-2xl font-serif text-[#541409] mb-4">Tiered Wedding Cakes</h3>
+              <p className="text-stone-600 mb-6">
+                Stunning multi-tier wedding cakes with per-tier flavor customization. Available in 2-tier and 3-tier options.
+              </p>
+              <ul className="space-y-2 text-stone-600 text-sm">
+                <li className="flex items-start">
+                  <span className="text-[#541409] mr-2">•</span>
+                  2-tier and 3-tier options
+                </li>
+                <li className="flex items-start">
+                  <span className="text-[#541409] mr-2">•</span>
+                  Different flavors & fillings per tier
+                </li>
+                <li className="flex items-start">
+                  <span className="text-[#541409] mr-2">•</span>
+                  Includes structural support & assembly
+                </li>
+                <li className="flex items-start">
+                  <span className="text-[#541409] mr-2">•</span>
+                  Starting at $205
                 </li>
               </ul>
             </Link>

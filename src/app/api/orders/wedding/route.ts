@@ -41,6 +41,21 @@ export async function POST(request: NextRequest) {
     const cookieQuantity = formData.get('cookie_quantity') as string || '';
     const cookieFlavors = formData.get('cookie_flavors') as string || '{}';
     const cookiePackaging = formData.get('cookie_packaging') as string || '';
+    const tieredCakeTiers = formData.get('tiered_cake_tiers') as string || '';
+    const tieredCakeSize = formData.get('tiered_cake_size') as string || '';
+    const tieredCakeShape = formData.get('tiered_cake_shape') as string || '';
+    const tieredCakeFlavorTier1 = formData.get('tiered_cake_flavor_tier1') as string || '';
+    const tieredCakeFlavorTier2 = formData.get('tiered_cake_flavor_tier2') as string || '';
+    const tieredCakeFlavorTier3 = formData.get('tiered_cake_flavor_tier3') as string || '';
+    const tieredCakeFillingTier1 = formData.get('tiered_cake_filling_tier1') as string || '';
+    const tieredCakeFillingTier2 = formData.get('tiered_cake_filling_tier2') as string || '';
+    const tieredCakeFillingTier3 = formData.get('tiered_cake_filling_tier3') as string || '';
+    const tieredCakeBaseColor = formData.get('tiered_cake_base_color') as string || '';
+    const tieredCakePipingColors = formData.get('tiered_cake_piping_colors') as string || '';
+    const tieredCakeMessaging = formData.get('tiered_cake_messaging') as string || '';
+    const tieredCakeMessageStyle = formData.get('tiered_cake_message_style') as string || '';
+    const tieredCakeToppings = formData.get('tiered_cake_toppings') as string || '[]';
+    const tieredCakeDesignNotes = formData.get('tiered_cake_design_notes') as string || '';
     const dietaryRestrictions = formData.get('dietary_restrictions') as string || '';
     const howFoundUs = formData.get('how_found_us') as string || '';
 
@@ -65,6 +80,12 @@ export async function POST(request: NextRequest) {
     const validImages = inspirationImages.filter(f => f && f.size > 0);
     const imageUrls = await uploadInspirationImages(validImages, 'wedding');
     const imageCount = validImages.length;
+
+    // Upload tiered cake inspiration images to R2
+    const tieredCakeImages = formData.getAll('tiered_cake_inspiration_images') as File[];
+    const validTieredCakeImages = tieredCakeImages.filter(f => f && f.size > 0);
+    const tieredCakeImageUrls = await uploadInspirationImages(validTieredCakeImages, 'wedding');
+    const tieredCakeImageCount = validTieredCakeImages.length;
 
     // Create inquiry in database
     const orderId = crypto.randomUUID();
@@ -114,6 +135,29 @@ export async function POST(request: NextRequest) {
           flavors: JSON.parse(cookieFlavors || '{}'),
           packaging: cookiePackaging,
         },
+        tiered_cake: {
+          tiers: tieredCakeTiers,
+          size: tieredCakeSize,
+          shape: tieredCakeShape,
+          flavors: {
+            tier1: tieredCakeFlavorTier1,
+            tier2: tieredCakeFlavorTier2,
+            tier3: tieredCakeFlavorTier3,
+          },
+          fillings: {
+            tier1: tieredCakeFillingTier1,
+            tier2: tieredCakeFillingTier2,
+            tier3: tieredCakeFillingTier3,
+          },
+          base_color: tieredCakeBaseColor,
+          piping_colors: tieredCakePipingColors,
+          messaging: tieredCakeMessaging,
+          message_style: tieredCakeMessageStyle,
+          toppings: JSON.parse(tieredCakeToppings || '[]'),
+          design_notes: sanitizeInput(tieredCakeDesignNotes),
+          inspiration_image_urls: tieredCakeImageUrls,
+          inspiration_image_count: tieredCakeImageCount,
+        },
         dietary_restrictions: sanitizeInput(dietaryRestrictions),
         how_found_us: sanitizeInput(howFoundUs),
         inspiration_image_count: imageCount,
@@ -128,9 +172,13 @@ export async function POST(request: NextRequest) {
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
     if (resendApiKey) {
       try {
-        const servicesLabel = servicesNeeded === 'cutting_cake' ? 'Cutting Cake' :
-                             servicesNeeded === 'cookies' ? 'Cookies' :
-                             servicesNeeded === 'cake_and_cookies' ? 'Cake + Cookies' : servicesNeeded;
+        const serviceLabels: Record<string, string> = {
+          cutting_cake: 'Cutting Cake',
+          cookies: 'Cookies',
+          cookie_cups: 'Cookie Cups',
+          tiered_cake: 'Tiered Wedding Cake',
+        };
+        const servicesLabel = servicesNeeded.split(',').map(s => serviceLabels[s.trim()] || s.trim()).filter(Boolean).join(', ');
 
         // Get email template from settings
         const weddingTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
