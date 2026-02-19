@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   },
 };
 
-// Seasonal flavors go live on March 2nd, 2026
-const SEASONAL_LIVE_DATE = new Date('2026-03-02T00:00:00');
+// Seasonal flavors go live on March 16th, 2026
+const SEASONAL_LIVE_DATE = new Date('2026-03-16T00:00:00');
 
 export default function CookiesPage() {
   const isSeasonalLive = new Date() >= SEASONAL_LIVE_DATE;
