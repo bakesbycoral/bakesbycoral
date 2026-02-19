@@ -19,9 +19,9 @@ export const FLAVORS = [
 ] as const;
 
 export const SEASONAL_FLAVORS = [
-  { key: 'key_lime_cheesecake', label: 'Key Lime Cheesecake' },
+  { key: 'key_lime_pie', label: 'Key Lime Pie' },
   { key: 'blueberry_muffin', label: 'Blueberry Muffin' },
-  { key: 'lemon_shortbread_sandwiches', label: 'Lemon Shortbread Sandwiches' },
+  { key: 'lemon_sugar_sandwiches', label: 'Lemon Sugar Sandwiches' },
   { key: 'white_chocolate_raspberry', label: 'White Chocolate Raspberry' },
 ] as const;
 
@@ -31,5 +31,5 @@ export const MAX_DOZENS = 3;
 export const COOKIES_PER_DOZEN = 12;
 export const HALF_DOZEN = 6;
 
-// Lemon shortbread sandwiches count as 2x since each sandwich uses 2 cookies
-export const DOUBLE_COUNT_FLAVOR = 'lemon_shortbread_sandwiches';
+// Lemon sugar sandwiches count as 2x since each sandwich uses 2 cookies
+export const DOUBLE_COUNT_FLAVOR = 'lemon_sugar_sandwiches';

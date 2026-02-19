@@ -110,6 +110,7 @@ export function getOrderTypeDisplayName(orderType: OrderType): string {
     wedding: 'Wedding & Event',
     tasting: 'Tasting Box',
     cookie_cups: 'Cookie Cups',
+    easter_collection: 'Easter Collection',
   };
   return names[orderType] || orderType;
 }

@@ -131,6 +131,28 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Easter Collection Featured */}
+      <section className="py-16 sm:py-24 bg-[#541409]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <span className="inline-block px-4 py-1.5 bg-[#EAD6D6]/20 text-[#EAD6D6] text-sm font-medium rounded-full mb-6">
+            Limited Time
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-serif text-[#EAD6D6] mb-4">
+            Easter Collection
+          </h2>
+          <p className="text-lg text-[#EAD6D6]/80 max-w-2xl mx-auto mb-8">
+            Celebrate Easter with festive bento cakes and thumbprint confetti cookies.
+            Order individually or save with our bundle deal!
+          </p>
+          <Link
+            href="/collection/easter"
+            className="inline-flex px-8 py-4 bg-[#EAD6D6] text-[#541409] font-medium rounded-sm hover:opacity-80 transition-opacity"
+          >
+            View Collection & Order
+          </Link>
+        </div>
+      </section>
+
       {/* Product Categories */}
       <section className="py-16 sm:py-24 bg-[#EAD6D6]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">

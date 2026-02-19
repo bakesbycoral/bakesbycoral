@@ -227,6 +227,7 @@ export function TimeSlotPicker({
                 const isToday = isCurrentMonth && day === today.getDate();
                 const isSelected = dateStr === selectedDate;
                 const isClickable = isValid && hasSlots;
+                const isEasterDate = orderType === 'easter_collection' && dateStr === '2026-04-05';
 
                 return (
                   <button
@@ -235,7 +236,7 @@ export function TimeSlotPicker({
                     onClick={() => handleDateClick(day)}
                     disabled={!isClickable}
                     className={`
-                      aspect-square flex items-center justify-center text-sm rounded-lg transition-colors
+                      aspect-square flex flex-col items-center justify-center text-sm rounded-lg transition-colors relative
                       ${isSelected
                         ? 'bg-[#541409] text-white font-semibold'
                         : isClickable
@@ -244,10 +245,16 @@ export function TimeSlotPicker({
                       }
                       ${isToday && !isSelected ? 'ring-2 ring-[#541409]/30' : ''}
                       ${isValid && hasSlots && !isSelected ? 'font-medium' : ''}
+                      ${isEasterDate && !isSelected ? 'ring-2 ring-[#541409]' : ''}
                     `}
-                    aria-label={`${day} ${MONTH_NAMES[currentMonth.month]} ${currentMonth.year}${!isClickable ? ' (unavailable)' : ''}`}
+                    aria-label={`${day} ${MONTH_NAMES[currentMonth.month]} ${currentMonth.year}${!isClickable ? ' (unavailable)' : ''}${isEasterDate ? ' (Easter Sunday)' : ''}`}
                   >
                     {day}
+                    {isEasterDate && (
+                      <span className={`text-[8px] leading-none ${isSelected ? 'text-white/80' : 'text-[#541409]/60'}`}>
+                        Easter
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -338,6 +345,7 @@ export function TimeSlotPicker({
         {orderType === 'cookies_large' && 'Large cookie orders require at least 14 days notice.'}
         {orderType === 'cake' && 'Cake orders require at least 14 days notice.'}
         {orderType === 'wedding' && 'Wedding orders require at least 30 days notice.'}
+        {orderType === 'easter_collection' && 'Easter collection orders require at least 7 days notice. Rush orders may be available for a $10 fee — just ask!'}
       </p>
     </div>
   );

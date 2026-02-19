@@ -31,6 +31,17 @@ export function Header() {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex lg:items-center lg:gap-8">
+              <Link
+                href="/collection/easter"
+                className={`text-sm font-medium text-[var(--foreground)] hover:text-[var(--primary)] transition-colors flex items-center gap-1.5 ${
+                  pathname === '/collection/easter' ? 'underline underline-offset-4' : ''
+                }`}
+              >
+                Easter Collection
+                <span className="px-1.5 py-0.5 bg-[var(--primary)] text-[var(--background)] text-[10px] font-bold rounded-full leading-none">
+                  NEW
+                </span>
+              </Link>
               {navigation.map((item) => (
                 <Link
                   key={item.name}
@@ -78,6 +89,18 @@ export function Header() {
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-[var(--foreground)]/20 bg-[var(--background)]">
             <div className="px-4 py-4 space-y-3">
+              <Link
+                href="/collection/easter"
+                className={`flex items-center gap-2 py-2 text-base font-medium text-[var(--foreground)] hover:text-[var(--primary)] ${
+                  pathname === '/collection/easter' ? 'underline underline-offset-4' : ''
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Easter Collection
+                <span className="px-1.5 py-0.5 bg-[var(--primary)] text-[var(--background)] text-[10px] font-bold rounded-full leading-none">
+                  NEW
+                </span>
+              </Link>
               {navigation.map((item) => (
                 <Link
                   key={item.name}

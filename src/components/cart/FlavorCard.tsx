@@ -15,7 +15,7 @@ export function FlavorCard({ flavorKey, label }: FlavorCardProps) {
   const flavorData = flavors.find((f) => f.flavor === flavorKey);
   const quantity = flavorData?.quantity || 0;
 
-  // For lemon shortbread: adding 3 sandwiches costs 6 cookies worth
+  // For lemon sugar sandwiches: adding 3 sandwiches costs 6 cookies worth
   // For others: adding 6 cookies costs 6 cookies worth
   const costToAdd = HALF_DOZEN; // Always costs half dozen worth
   const canAdd = dozens !== null && remainingCookies >= costToAdd;

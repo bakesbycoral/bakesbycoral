@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { FlavorSelection, CartState, COOKIES_PER_DOZEN, HALF_DOZEN, DOUBLE_COUNT_FLAVOR } from '@/types/cart';
 
-// Helper to calculate the "cookie cost" of a flavor (lemon shortbread counts as 2x)
+// Helper to calculate the "cookie cost" of a flavor (lemon sugar sandwiches count as 2x)
 function getCookieCost(flavor: string, quantity: number): number {
   return flavor === DOUBLE_COUNT_FLAVOR ? quantity * 2 : quantity;
 }
@@ -130,7 +130,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const targetCookies = prev.dozens * COOKIES_PER_DOZEN;
       const currentTotal = prev.flavors.reduce((sum, f) => sum + getCookieCost(f.flavor, f.quantity), 0);
 
-      // For lemon shortbread: add 3 sandwiches (costs 6 cookies worth)
+      // For lemon sugar sandwiches: add 3 sandwiches (costs 6 cookies worth)
       // For others: add 6 cookies
       const isDouble = flavor === DOUBLE_COUNT_FLAVOR;
       const addAmount = isDouble ? 3 : HALF_DOZEN;
@@ -162,7 +162,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existing = prev.flavors.find((f) => f.flavor === flavor);
       if (!existing) return prev;
 
-      // For lemon shortbread: remove 3 sandwiches at a time
+      // For lemon sugar sandwiches: remove 3 sandwiches at a time
       // For others: remove 6 cookies at a time
       const isDouble = flavor === DOUBLE_COUNT_FLAVOR;
       const removeAmount = isDouble ? 3 : HALF_DOZEN;

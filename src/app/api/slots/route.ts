@@ -61,7 +61,9 @@ export async function GET(request: NextRequest) {
           ? 'lead_time_small_cookie'
           : orderType === 'cookies_large'
             ? 'lead_time_large_cookie'
-            : `lead_time_${orderType}`;
+            : orderType === 'easter_collection'
+              ? 'lead_time_small_cookie'
+              : `lead_time_${orderType}`;
 
       const leadTimeSetting = await db.prepare('SELECT value FROM settings WHERE key = ?')
         .bind(leadTimeKey)

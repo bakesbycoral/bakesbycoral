@@ -146,6 +146,19 @@ export default function LargeCookieOrderPage() {
             </p>
           </div>
 
+          <div className="bg-white border border-[#541409]/20 rounded-lg p-5 mb-8 flex items-start gap-3">
+            <svg className="w-5 h-5 text-[#541409] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-stone-700">
+              <strong className="text-[#541409]">Planning a wedding?</strong> Head over to my{' '}
+              <Link href="/weddings" className="text-[#541409] underline underline-offset-2 hover:opacity-70">
+                Weddings page
+              </Link>{' '}
+              instead — it's set up specifically for cookie favors, dessert tables, and tastings!
+            </p>
+          </div>
+
           <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Contact Info */}
@@ -396,9 +409,9 @@ export default function LargeCookieOrderPage() {
                         </p>
                       </div>
                       {[
-                        { key: 'keyLimeCheesecake', label: 'Key Lime Cheesecake', note: '' },
+                        { key: 'keyLimePie', label: 'Key Lime Pie', note: '' },
                         { key: 'blueberryMuffin', label: 'Blueberry Muffin', note: '' },
-                        { key: 'lemonShortbreadSandwiches', label: 'Lemon Shortbread Sandwiches', note: '6 sandwiches per dozen' },
+                        { key: 'lemonSugarSandwiches', label: 'Lemon Sugar Sandwiches', note: '6 sandwiches per dozen' },
                         { key: 'whiteChocolateRaspberry', label: 'White Chocolate Raspberry', note: '' },
                       ].map((flavor) => {
                         const currentValue = formData.flavors[flavor.key as keyof typeof formData.flavors];

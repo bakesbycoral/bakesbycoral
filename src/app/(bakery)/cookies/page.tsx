@@ -15,12 +15,13 @@ export const metadata: Metadata = {
 const SEASONAL_LIVE_DATE = new Date('2026-03-02T00:00:00');
 
 export default function CookiesPage() {
-  const isSeasonalLive = new Date() >= SEASONAL_LIVE_DATE;
+  // TODO: revert preview override before deploying
+  const isSeasonalLive = true; // new Date() >= SEASONAL_LIVE_DATE;
 
   const seasonalFlavors = [
-    { name: 'Key Lime Cheesecake', description: 'Tangy key lime brown sugar cookie topped with key lime cheesecake frosting' },
+    { name: 'Key Lime Pie', description: 'Tangy key lime brown sugar cookie topped with key lime pie frosting' },
     { name: 'Blueberry Muffin', description: 'Soft cookie bursting with blueberries and a buttery streusel topping' },
-    { name: 'Lemon Shortbread Sandwiches', description: 'Delicate lemon shortbread filled with sweet lemon cream cheese' },
+    { name: 'Lemon Sugar Sandwiches', description: 'Soft lemon sugar cookies filled with sweet lemon cream cheese' },
     { name: 'White Chocolate Raspberry', description: 'White chocolate chips and tart raspberry in every bite' },
   ];
 
@@ -255,7 +256,7 @@ export default function CookiesPage() {
             Ready to Order?
           </h2>
           <p className="text-lg text-[#4A2C21]/80 mb-8">
-            Fill out the cookie order form and I'll confirm your order within 24-48 hours.
+            Pick your flavors, choose a pickup time, and checkout. It's that easy!
           </p>
           <Link
             href="/order/cookies"
