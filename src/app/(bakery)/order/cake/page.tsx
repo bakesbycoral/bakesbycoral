@@ -241,6 +241,11 @@ function CakeOrderContent() {
               {/* Cake Details */}
               <div>
                 <h2 className="text-xl font-serif text-[#541409] mb-4">Cake Details</h2>
+                <div className="bg-[#EAD6D6] rounded-lg p-4 mb-4">
+                  <p className="text-sm text-stone-700">
+                    <strong>How pricing works:</strong> Base prices reflect simple, minimal designs with basic piping. Moderate detail designs are approximately 1.25x the base price, and intricate designs are approximately 1.5x. Fillings, toppings, and specialty flavors are additional. Final pricing is confirmed when I reach out!
+                  </p>
+                </div>
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="cakeSize" className="block text-sm font-medium text-[#541409] mb-2">
