@@ -409,11 +409,10 @@ function CakeOrderContent() {
                         { value: 'cherries', label: 'Cherries (+$8)' },
                         { value: 'glitter-cherries', label: 'Glitter Cherries (+$15)' },
                         { value: 'disco-balls', label: 'Disco Balls (+$10)' },
-                        { value: 'balloons', label: 'Balloons (+$10)' },
                         { value: 'fresh-florals', label: 'Fresh Florals (starting at +$15)' },
                         { value: 'faux-florals', label: 'Faux Florals (starting at +$15)' },
                         { value: 'edible-image', label: 'Edible Image (starting at +$10)' },
-                        { value: 'edible-glitter', label: 'Edible Glitter (+$8)' },
+                        { value: 'edible-glitter', label: 'Edible Glitter (+$4)' },
                         { value: 'other', label: 'Other (starting at +$8)' },
                       ].map((topping) => (
                         <label key={topping.value} className="flex items-center cursor-pointer">

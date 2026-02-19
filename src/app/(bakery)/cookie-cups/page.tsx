@@ -32,7 +32,7 @@ export default function CookieCupsPage() {
   const dozensCount = formData.quantity ? parseInt(formData.quantity) / 12 : 0;
   const basePrice = dozensCount * 3000;
   const moldPrice = formData.chocolateMolds ? (dozensCount * 400) : 0;
-  const glitterPrice = formData.edibleGlitter ? (dozensCount * 400) : 0;
+  const glitterPrice = formData.edibleGlitter ? (dozensCount * 200) : 0;
   const total = basePrice + moldPrice + glitterPrice;
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(0)}`;
 
@@ -160,7 +160,7 @@ export default function CookieCupsPage() {
           {/* Add-ons */}
           <div className="mt-6 text-center space-y-2">
             <p className="text-stone-600">
-              <strong className="text-[#541409]">Add-ons:</strong> Chocolate Molds +$4/dozen | Edible Glitter +$4/dozen
+              <strong className="text-[#541409]">Add-ons:</strong> Chocolate Molds +$4/dozen | Edible Glitter +$2/dozen
             </p>
             <p className="text-sm text-stone-500">
               Need more than 4 dozen? Just ask!
@@ -256,7 +256,7 @@ export default function CookieCupsPage() {
                       onChange={(e) => setFormData({ ...formData, edibleGlitter: e.target.checked })}
                       className="w-5 h-5 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
                     />
-                    <span className="ml-3 text-[#541409]">Edible Glitter (+$4/dozen)</span>
+                    <span className="ml-3 text-[#541409]">Edible Glitter (+$2/dozen)</span>
                   </label>
                 </div>
               </div>

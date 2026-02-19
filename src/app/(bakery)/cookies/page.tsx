@@ -15,8 +15,7 @@ export const metadata: Metadata = {
 const SEASONAL_LIVE_DATE = new Date('2026-03-02T00:00:00');
 
 export default function CookiesPage() {
-  // TODO: revert preview override before deploying
-  const isSeasonalLive = true; // new Date() >= SEASONAL_LIVE_DATE;
+  const isSeasonalLive = new Date() >= SEASONAL_LIVE_DATE;
 
   const seasonalFlavors = [
     { name: 'Key Lime Pie', description: 'Tangy key lime brown sugar cookie topped with key lime pie frosting' },

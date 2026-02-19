@@ -5,9 +5,10 @@ import { sendEmail, orderConfirmationEmail, adminNewOrderEmail } from '@/lib/ema
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import Stripe from 'stripe';
 
-const VALID_SELECTIONS = ['bento_a', 'bento_b', 'cookies_dozen', 'bundle_a', 'bundle_b'];
+const VALID_SELECTIONS = ['bento', 'cookie_cake', 'cookies_dozen', 'bundle_bento', 'bundle_cookie_cake'];
 const VALID_FLAVORS = ['vanilla-bean', 'chocolate', 'confetti', 'red-velvet', 'lemon', 'vanilla-latte', 'marble'];
 const VALID_FILLINGS = ['', 'chocolate-ganache', 'cookies-and-cream', 'vanilla-bean-ganache', 'fresh-strawberries', 'lemon-ganache', 'raspberry'];
+const VALID_COLORS = ['pastel-yellow', 'baby-pink', 'light-blue', 'lavender', 'pastel-orange', 'white'];
 
 const FLAVOR_OPTIONS: Record<string, { label: string; price: number }> = {
   'vanilla-bean': { label: 'Vanilla Bean', price: 0 },
@@ -30,13 +31,13 @@ const FILLING_OPTIONS: Record<string, { label: string; price: number }> = {
 
 function getPrice(selection: string): number {
   switch (selection) {
-    case 'bento_a':
-    case 'bento_b':
+    case 'bento':
+    case 'cookie_cake':
       return 4000;
     case 'cookies_dozen':
       return 2600;
-    case 'bundle_a':
-    case 'bundle_b':
+    case 'bundle_bento':
+    case 'bundle_cookie_cake':
       return 4800;
     default:
       return 0;
@@ -45,30 +46,45 @@ function getPrice(selection: string): number {
 
 function getItemLabel(selection: string): string {
   switch (selection) {
-    case 'bento_a': return 'Bento Cake — Design A';
-    case 'bento_b': return 'Bento Cake — Design B';
-    case 'cookies_dozen': return 'Thumbprint Confetti Cookies — 1 Dozen';
-    case 'bundle_a': return 'Bundle: Bento A + 1/2 Dozen Cookies';
-    case 'bundle_b': return 'Bundle: Bento B + 1/2 Dozen Cookies';
+    case 'bento': return 'Bento Cake';
+    case 'cookie_cake': return 'Cookie Cake';
+    case 'cookies_dozen': return 'Thumbprint Confetti Cookies - 1 Dozen';
+    case 'bundle_bento': return 'Bundle: Bento Cake + 1/2 Dozen Cookies';
+    case 'bundle_cookie_cake': return 'Bundle: Cookie Cake + 1/2 Dozen Cookies';
     default: return '';
   }
 }
 
-function getItemDescription(selection: string, cakeFlavor: string, filling: string): string {
+function formatColor(color: string): string {
+  return color.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+function getItemDescription(selection: string, cakeFlavor: string, filling: string, baseColor?: string, borderColor?: string, messagingColor?: string, cakeMessage?: string): string {
   if (selection === 'cookies_dozen') {
     return 'Easter thumbprint confetti cookies';
   }
+  if (selection === 'cookie_cake' || selection === 'bundle_cookie_cake') {
+    const parts: string[] = ['6" 2-layer Easter egg cookie cake - chocolate chip & Cadbury eggs'];
+    if (selection === 'bundle_cookie_cake') {
+      parts.push('+ 1/2 dozen thumbprint confetti cookies');
+    }
+    return parts.join(' ');
+  }
   const parts: string[] = ['4" 2-layer Easter bento cake'];
-  if (cakeFlavor) parts.push(`— ${FLAVOR_OPTIONS[cakeFlavor]?.label || cakeFlavor}`);
+  if (cakeFlavor) parts.push(`- ${FLAVOR_OPTIONS[cakeFlavor]?.label || cakeFlavor}`);
   if (filling) parts.push(`with ${FILLING_OPTIONS[filling]?.label || filling}`);
-  if (selection === 'bundle_a' || selection === 'bundle_b') {
+  if (baseColor && borderColor && messagingColor) {
+    parts.push(`| Colors: ${formatColor(baseColor)} base, ${formatColor(borderColor)} border, ${formatColor(messagingColor)} messaging`);
+  }
+  if (cakeMessage) parts.push(`| Message: "${cakeMessage}"`);
+  if (selection === 'bundle_bento') {
     parts.push('+ 1/2 dozen thumbprint confetti cookies');
   }
   return parts.join(' ');
 }
 
-function needsCakeOptions(selection: string): boolean {
-  return ['bento_a', 'bento_b', 'bundle_a', 'bundle_b'].includes(selection);
+function needsBentoOptions(selection: string): boolean {
+  return ['bento', 'bundle_bento'].includes(selection);
 }
 
 export async function POST(request: NextRequest) {
@@ -81,6 +97,10 @@ export async function POST(request: NextRequest) {
     const selection = body.selection || '';
     const cakeFlavor = body.cake_flavor || '';
     const filling = body.filling || '';
+    const baseColor = body.base_color || '';
+    const borderColor = body.border_color || '';
+    const messagingColor = body.messaging_color || '';
+    const cakeMessage = body.cake_message || '';
     const name = body.name || '';
     const email = body.email || '';
     const phone = body.phone || '';
@@ -103,19 +123,22 @@ export async function POST(request: NextRequest) {
     if (!selection || !VALID_SELECTIONS.includes(selection)) {
       return NextResponse.json({ error: 'Please select a valid item' }, { status: 400 });
     }
-    if (needsCakeOptions(selection)) {
+    if (needsBentoOptions(selection)) {
       if (!cakeFlavor || !VALID_FLAVORS.includes(cakeFlavor)) {
         return NextResponse.json({ error: 'Please select a cake flavor' }, { status: 400 });
       }
       if (filling && !VALID_FILLINGS.includes(filling)) {
         return NextResponse.json({ error: 'Invalid filling selection' }, { status: 400 });
       }
+      if (!baseColor || !VALID_COLORS.includes(baseColor) || !borderColor || !VALID_COLORS.includes(borderColor) || !messagingColor || !VALID_COLORS.includes(messagingColor)) {
+        return NextResponse.json({ error: 'Please select all three cake colors' }, { status: 400 });
+      }
     }
 
     const db = getDB();
     const basePrice = getPrice(selection);
-    const flavorAddon = needsCakeOptions(selection) && cakeFlavor ? (FLAVOR_OPTIONS[cakeFlavor]?.price || 0) : 0;
-    const fillingAddon = needsCakeOptions(selection) && filling ? (FILLING_OPTIONS[filling]?.price || 0) : 0;
+    const flavorAddon = needsBentoOptions(selection) && cakeFlavor ? (FLAVOR_OPTIONS[cakeFlavor]?.price || 0) : 0;
+    const fillingAddon = needsBentoOptions(selection) && filling ? (FILLING_OPTIONS[filling]?.price || 0) : 0;
     const totalAmount = basePrice + flavorAddon + fillingAddon;
 
     const orderId = crypto.randomUUID();
@@ -124,11 +147,15 @@ export async function POST(request: NextRequest) {
     const formData = {
       selection,
       item_label: getItemLabel(selection),
-      is_bundle: selection === 'bundle_a' || selection === 'bundle_b',
-      cake_flavor: needsCakeOptions(selection) ? sanitizeInput(cakeFlavor) : null,
-      cake_flavor_label: needsCakeOptions(selection) && cakeFlavor ? FLAVOR_OPTIONS[cakeFlavor]?.label : null,
-      filling: needsCakeOptions(selection) ? sanitizeInput(filling) : null,
-      filling_label: needsCakeOptions(selection) && filling ? FILLING_OPTIONS[filling]?.label : null,
+      is_bundle: selection === 'bundle_bento' || selection === 'bundle_cookie_cake',
+      cake_flavor: needsBentoOptions(selection) ? sanitizeInput(cakeFlavor) : null,
+      cake_flavor_label: needsBentoOptions(selection) && cakeFlavor ? FLAVOR_OPTIONS[cakeFlavor]?.label : null,
+      filling: needsBentoOptions(selection) ? sanitizeInput(filling) : null,
+      filling_label: needsBentoOptions(selection) && filling ? FILLING_OPTIONS[filling]?.label : null,
+      base_color: needsBentoOptions(selection) ? baseColor : null,
+      border_color: needsBentoOptions(selection) ? borderColor : null,
+      messaging_color: needsBentoOptions(selection) ? messagingColor : null,
+      cake_message: needsBentoOptions(selection) ? sanitizeInput(cakeMessage) : null,
       flavor_addon_cents: flavorAddon,
       filling_addon_cents: fillingAddon,
       allergies: sanitizeInput(allergies),
@@ -204,7 +231,7 @@ export async function POST(request: NextRequest) {
           currency: 'usd',
           product_data: {
             name: getItemLabel(selection),
-            description: getItemDescription(selection, cakeFlavor, filling),
+            description: getItemDescription(selection, cakeFlavor, filling, baseColor, borderColor, messagingColor, cakeMessage),
           },
           unit_amount: basePrice,
         },

@@ -132,21 +132,62 @@ export default function HomePage() {
       </section>
 
       {/* Easter Collection Featured */}
-      <section className="py-16 sm:py-24 bg-[#541409]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <span className="inline-block px-4 py-1.5 bg-[#EAD6D6]/20 text-[#EAD6D6] text-sm font-medium rounded-full mb-6">
+      <section className="py-16 sm:py-24 bg-[#D4E8F0] overflow-hidden relative">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
+          {/* Easter Eggs Graphic */}
+          <div className="flex justify-center gap-3 sm:gap-5 mb-8">
+            {/* Egg 1 - Pink with zigzag */}
+            <svg width="48" height="62" viewBox="0 0 48 62" fill="none" className="w-10 h-13 sm:w-12 sm:h-[62px] -rotate-12">
+              <ellipse cx="24" cy="34" rx="20" ry="26" fill="#F9C4D2" />
+              <path d="M6 30 L12 26 L18 30 L24 26 L30 30 L36 26 L42 30" stroke="#E8A0B4" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+              <ellipse cx="24" cy="34" rx="20" ry="26" stroke="#E8A0B4" strokeWidth="1.5" fill="none" />
+            </svg>
+            {/* Egg 2 - Yellow with dots */}
+            <svg width="48" height="62" viewBox="0 0 48 62" fill="none" className="w-10 h-13 sm:w-12 sm:h-[62px] rotate-6 -translate-y-2">
+              <ellipse cx="24" cy="34" rx="20" ry="26" fill="#FDE68A" />
+              <circle cx="16" cy="28" r="3" fill="#F6C645" />
+              <circle cx="28" cy="24" r="3" fill="#F6C645" />
+              <circle cx="20" cy="40" r="3" fill="#F6C645" />
+              <circle cx="32" cy="36" r="3" fill="#F6C645" />
+              <ellipse cx="24" cy="34" rx="20" ry="26" stroke="#F6C645" strokeWidth="1.5" fill="none" />
+            </svg>
+            {/* Egg 3 - Lavender with stripes */}
+            <svg width="48" height="62" viewBox="0 0 48 62" fill="none" className="w-10 h-13 sm:w-12 sm:h-[62px] rotate-3">
+              <ellipse cx="24" cy="34" rx="20" ry="26" fill="#D8C8E8" />
+              <path d="M8 24 Q24 20 40 24" stroke="#B8A0D0" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+              <path d="M6 34 Q24 30 42 34" stroke="#B8A0D0" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+              <path d="M8 44 Q24 40 40 44" stroke="#B8A0D0" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+              <ellipse cx="24" cy="34" rx="20" ry="26" stroke="#B8A0D0" strokeWidth="1.5" fill="none" />
+            </svg>
+            {/* Egg 4 - Blue with hearts */}
+            <svg width="48" height="62" viewBox="0 0 48 62" fill="none" className="w-10 h-13 sm:w-12 sm:h-[62px] -rotate-6 -translate-y-1">
+              <ellipse cx="24" cy="34" rx="20" ry="26" fill="#B8D8E8" />
+              <path d="M18 30 C18 27, 22 27, 22 30 C22 27, 26 27, 26 30 C26 33, 22 36, 22 36 C22 36, 18 33, 18 30Z" fill="#8BBDD0" />
+              <path d="M26 40 C26 38, 29 38, 29 40 C29 38, 32 38, 32 40 C32 42, 29 44, 29 44 C29 44, 26 42, 26 40Z" fill="#8BBDD0" />
+              <ellipse cx="24" cy="34" rx="20" ry="26" stroke="#8BBDD0" strokeWidth="1.5" fill="none" />
+            </svg>
+            {/* Egg 5 - Orange with stars */}
+            <svg width="48" height="62" viewBox="0 0 48 62" fill="none" className="w-10 h-13 sm:w-12 sm:h-[62px] rotate-12 hidden sm:block">
+              <ellipse cx="24" cy="34" rx="20" ry="26" fill="#FDCFB0" />
+              <path d="M18 28 L19.5 32 L16 34 L19.5 35.5 L18 40 L21 37 L24 40 L23 36 L27 34 L23 32Z" fill="#F0A870" />
+              <path d="M30 24 L31 27 L28.5 28.5 L31 29.5 L30 33 L32 31 L34 33 L33.5 29.5 L36 28.5 L33.5 27Z" fill="#F0A870" />
+              <ellipse cx="24" cy="34" rx="20" ry="26" stroke="#F0A870" strokeWidth="1.5" fill="none" />
+            </svg>
+          </div>
+
+          <span className="inline-block px-4 py-1.5 bg-[#541409] text-[#EAD6D6] text-sm font-medium rounded-full mb-6">
             Limited Time
           </span>
-          <h2 className="text-3xl sm:text-4xl font-serif text-[#EAD6D6] mb-4">
+          <h2 className="text-3xl sm:text-4xl font-serif text-[#541409] mb-4">
             Easter Collection
           </h2>
-          <p className="text-lg text-[#EAD6D6]/80 max-w-2xl mx-auto mb-8">
-            Celebrate Easter with festive bento cakes and thumbprint confetti cookies.
-            Order individually or save with our bundle deal!
+          <p className="text-lg text-[#541409]/70 max-w-2xl mx-auto mb-8">
+            Celebrate Easter with bento cakes, cookie cakes, and thumbprint confetti cookies.
+            Order individually or save with a bundle deal!
           </p>
           <Link
             href="/collection/easter"
-            className="inline-flex px-8 py-4 bg-[#EAD6D6] text-[#541409] font-medium rounded-sm hover:opacity-80 transition-opacity"
+            className="inline-flex px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity"
           >
             View Collection & Order
           </Link>

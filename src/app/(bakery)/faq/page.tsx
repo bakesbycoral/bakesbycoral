@@ -35,7 +35,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: 'How should I store my order?',
-    answer: 'Cookies are best stored at room temperature in an airtight container and enjoyed within 5 days. Cakes should be refrigerated if they have perishable fillings, but brought to room temperature before serving for the best taste.',
+    answer: 'Cookies are best stored at room temperature in an airtight container and enjoyed within 5 days. Cakes should be refrigerated, but brought to room temperature before serving for the best taste. I\'ll provide in-depth care cards with your order!',
   },
   {
     question: 'What is your cancellation policy?',

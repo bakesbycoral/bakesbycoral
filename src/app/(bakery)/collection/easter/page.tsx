@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { TimeSlotPicker } from '@/components/forms';
 
-type SelectionType = '' | 'bento_a' | 'bento_b' | 'cookies_dozen' | 'bundle_a' | 'bundle_b';
+type SelectionType = '' | 'bento' | 'cookie_cake' | 'cookies_dozen' | 'bundle_bento' | 'bundle_cookie_cake';
 
 const CAKE_FLAVORS = [
   { value: 'vanilla-bean', label: 'Vanilla Bean', price: 0 },
@@ -35,13 +35,13 @@ function getFillingPrice(filling: string): number {
 
 function getPrice(selection: SelectionType): number {
   switch (selection) {
-    case 'bento_a':
-    case 'bento_b':
+    case 'bento':
+    case 'cookie_cake':
       return 4000;
     case 'cookies_dozen':
       return 2600;
-    case 'bundle_a':
-    case 'bundle_b':
+    case 'bundle_bento':
+    case 'bundle_cookie_cake':
       return 4800;
     default:
       return 0;
@@ -50,23 +50,23 @@ function getPrice(selection: SelectionType): number {
 
 function getItemLabel(selection: SelectionType): string {
   switch (selection) {
-    case 'bento_a':
-      return 'Bento Cake — Design A';
-    case 'bento_b':
-      return 'Bento Cake — Design B';
+    case 'bento':
+      return 'Bento Cake';
+    case 'cookie_cake':
+      return 'Cookie Cake';
     case 'cookies_dozen':
-      return 'Thumbprint Confetti Cookies — 1 Dozen';
-    case 'bundle_a':
-      return 'Bundle: Bento A + 1/2 Dozen Cookies';
-    case 'bundle_b':
-      return 'Bundle: Bento B + 1/2 Dozen Cookies';
+      return 'Thumbprint Confetti Cookies - 1 Dozen';
+    case 'bundle_bento':
+      return 'Bundle: Bento Cake + 1/2 Dozen Cookies';
+    case 'bundle_cookie_cake':
+      return 'Bundle: Cookie Cake + 1/2 Dozen Cookies';
     default:
       return '';
   }
 }
 
-function needsCakeOptions(selection: SelectionType): boolean {
-  return ['bento_a', 'bento_b', 'bundle_a', 'bundle_b'].includes(selection);
+function needsBentoOptions(selection: SelectionType): boolean {
+  return ['bento', 'bundle_bento'].includes(selection);
 }
 
 export default function EasterCollectionPage() {
@@ -74,6 +74,11 @@ export default function EasterCollectionPage() {
     selection: '' as SelectionType,
     cakeFlavor: '',
     filling: '',
+    baseColor: '',
+    borderColor: '',
+    messagingColor: '',
+    cakeMessage: 'happy-easter' as string,
+    customMessage: '',
     name: '',
     email: '',
     phone: '',
@@ -96,8 +101,8 @@ export default function EasterCollectionPage() {
   }, []);
 
   const basePrice = getPrice(formData.selection);
-  const flavorAddon = needsCakeOptions(formData.selection) ? getFlavorPrice(formData.cakeFlavor) : 0;
-  const fillingAddon = needsCakeOptions(formData.selection) ? getFillingPrice(formData.filling) : 0;
+  const flavorAddon = needsBentoOptions(formData.selection) ? getFlavorPrice(formData.cakeFlavor) : 0;
+  const fillingAddon = needsBentoOptions(formData.selection) ? getFillingPrice(formData.filling) : 0;
   const total = basePrice + flavorAddon + fillingAddon;
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(0)}`;
 
@@ -110,8 +115,18 @@ export default function EasterCollectionPage() {
       return;
     }
 
-    if (needsCakeOptions(formData.selection) && !formData.cakeFlavor) {
+    if (needsBentoOptions(formData.selection) && !formData.cakeFlavor) {
       setSubmitError('Please select a cake flavor.');
+      return;
+    }
+
+    if (needsBentoOptions(formData.selection) && (!formData.baseColor || !formData.borderColor || !formData.messagingColor)) {
+      setSubmitError('Please select all three cake colors.');
+      return;
+    }
+
+    if (needsBentoOptions(formData.selection) && formData.cakeMessage === 'custom' && !formData.customMessage.trim()) {
+      setSubmitError('Please enter your custom cake message.');
       return;
     }
 
@@ -129,6 +144,10 @@ export default function EasterCollectionPage() {
           selection: formData.selection,
           cake_flavor: formData.cakeFlavor,
           filling: formData.filling,
+          base_color: formData.baseColor,
+          border_color: formData.borderColor,
+          messaging_color: formData.messagingColor,
+          cake_message: formData.cakeMessage === 'custom' ? formData.customMessage.trim() : 'Happy Easter',
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
@@ -158,16 +177,16 @@ export default function EasterCollectionPage() {
 
   const selectionOptions: { value: SelectionType; label: string; price: string; description: string; badge?: string }[] = [
     {
-      value: 'bento_a',
-      label: 'Bento Cake — Design A',
+      value: 'bento',
+      label: 'Bento Cake',
       price: '$40',
-      description: '4" 2-layer bento cake',
+      description: '4" 2-layer cake - choose your flavor, filling & colors',
     },
     {
-      value: 'bento_b',
-      label: 'Bento Cake — Design B',
+      value: 'cookie_cake',
+      label: 'Cookie Cake',
       price: '$40',
-      description: '4" 2-layer bento cake',
+      description: '6" 2-layer chocolate chip & Cadbury egg cookie cake',
     },
     {
       value: 'cookies_dozen',
@@ -176,17 +195,17 @@ export default function EasterCollectionPage() {
       description: '1 dozen cookies',
     },
     {
-      value: 'bundle_a',
-      label: 'Bundle: Design A + Cookies',
+      value: 'bundle_bento',
+      label: 'Bundle: Bento Cake + Cookies',
       price: '$48',
-      description: 'Bento cake (Design A) + 1/2 dozen cookies',
+      description: 'Bento cake + 1/2 dozen cookies',
       badge: 'Save $5',
     },
     {
-      value: 'bundle_b',
-      label: 'Bundle: Design B + Cookies',
+      value: 'bundle_cookie_cake',
+      label: 'Bundle: Cookie Cake + Cookies',
       price: '$48',
-      description: 'Bento cake (Design B) + 1/2 dozen cookies',
+      description: 'Cookie cake + 1/2 dozen cookies',
       badge: 'Save $5',
     },
   ];
@@ -214,7 +233,7 @@ export default function EasterCollectionPage() {
             Easter Collection
           </h1>
           <p className="mt-4 text-lg text-[#4A2C21]/80">
-            Festive bento cakes & thumbprint confetti cookies — perfect for Easter celebrations
+            Bento cakes, cookie cakes & thumbprint confetti cookies, perfect for Easter celebrations
           </p>
         </div>
       </section>
@@ -227,41 +246,41 @@ export default function EasterCollectionPage() {
               The Collection
             </h2>
             <p className="mt-4 text-lg text-stone-600">
-              Two exclusive bento cake designs paired with thumbprint confetti cookies
+              A custom bento cake, a cookie cake, and thumbprint confetti cookies
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Bento Cake Design A */}
+            {/* Bento Cake */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="aspect-square bg-[#EAD6D6] flex items-center justify-center">
                 <div className="text-center p-6">
                   <svg className="w-16 h-16 mx-auto text-[#541409]/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <p className="text-sm text-[#541409]/50">Design photo coming soon</p>
+                  <p className="text-sm text-[#541409]/50">Photo coming soon</p>
                 </div>
               </div>
               <div className="p-5">
-                <h3 className="text-xl font-serif text-[#541409] mb-1">Bento Cake — Design A</h3>
-                <p className="text-stone-600 text-sm mb-3">4&quot; 2-layer cake with Easter-themed decoration. Choose your flavor &amp; filling.</p>
+                <h3 className="text-xl font-serif text-[#541409] mb-1">Bento Cake</h3>
+                <p className="text-stone-600 text-sm mb-3">4&quot; 2-layer cake with Easter-themed decoration. Choose your flavor, filling &amp; colors.</p>
                 <span className="inline-block px-3 py-1 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full">$40</span>
               </div>
             </div>
 
-            {/* Bento Cake Design B */}
+            {/* Cookie Cake */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="aspect-square bg-[#EAD6D6] flex items-center justify-center">
                 <div className="text-center p-6">
                   <svg className="w-16 h-16 mx-auto text-[#541409]/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <p className="text-sm text-[#541409]/50">Design photo coming soon</p>
+                  <p className="text-sm text-[#541409]/50">Photo coming soon</p>
                 </div>
               </div>
               <div className="p-5">
-                <h3 className="text-xl font-serif text-[#541409] mb-1">Bento Cake — Design B</h3>
-                <p className="text-stone-600 text-sm mb-3">4&quot; 2-layer cake with Easter-themed decoration. Choose your flavor &amp; filling.</p>
+                <h3 className="text-xl font-serif text-[#541409] mb-1">Cookie Cake</h3>
+                <p className="text-stone-600 text-sm mb-3">6&quot; 2-layer chocolate chip &amp; Cadbury egg cookie cake. Design &amp; colors exactly as shown.</p>
                 <span className="inline-block px-3 py-1 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full">$40</span>
               </div>
             </div>
@@ -295,16 +314,21 @@ export default function EasterCollectionPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             <div className="bg-white rounded-lg p-5 shadow-sm text-center">
               <h3 className="text-lg font-serif text-[#541409] mb-1">Bento Cake</h3>
               <p className="text-2xl font-bold text-[#541409]">$40</p>
               <p className="text-sm text-stone-500 mt-1">4&quot; 2-layer cake</p>
             </div>
             <div className="bg-white rounded-lg p-5 shadow-sm text-center">
-              <h3 className="text-lg font-serif text-[#541409] mb-1">Cookies (1 dozen)</h3>
+              <h3 className="text-lg font-serif text-[#541409] mb-1">Cookie Cake</h3>
+              <p className="text-2xl font-bold text-[#541409]">$40</p>
+              <p className="text-sm text-stone-500 mt-1">6&quot; 2-layer</p>
+            </div>
+            <div className="bg-white rounded-lg p-5 shadow-sm text-center">
+              <h3 className="text-lg font-serif text-[#541409] mb-1">Cookies</h3>
               <p className="text-2xl font-bold text-[#541409]">$26</p>
-              <p className="text-sm text-stone-500 mt-1">Thumbprint confetti</p>
+              <p className="text-sm text-stone-500 mt-1">1 dozen</p>
             </div>
             <div className="bg-[#541409] rounded-lg p-5 shadow-sm text-center relative">
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#F7F3ED] text-[#541409] text-xs font-bold rounded-full">
@@ -312,7 +336,7 @@ export default function EasterCollectionPage() {
               </span>
               <h3 className="text-lg font-serif text-[#EAD6D6] mb-1">Bundle</h3>
               <p className="text-2xl font-bold text-[#EAD6D6]">$48</p>
-              <p className="text-sm text-[#EAD6D6]/70 mt-1">Bento + 1/2 dozen cookies</p>
+              <p className="text-sm text-[#EAD6D6]/70 mt-1">Any cake + 1/2 dz cookies</p>
               <p className="text-xs text-[#EAD6D6]/60 mt-1">Save $5!</p>
             </div>
           </div>
@@ -369,9 +393,9 @@ export default function EasterCollectionPage() {
               </div>
 
               {/* Step 2: Cake Options (conditional) */}
-              {needsCakeOptions(formData.selection) && (
+              {needsBentoOptions(formData.selection) && (
                 <div>
-                  <h3 className="text-lg font-serif text-[#541409] mb-3">Cake Details</h3>
+                  <h3 className="text-lg font-serif text-[#541409] mb-3">Bento Cake Details</h3>
                   <div className="space-y-4">
                     <div>
                       <label htmlFor="cakeFlavor" className="block text-sm font-medium text-[#541409] mb-2">
@@ -409,6 +433,116 @@ export default function EasterCollectionPage() {
                           </option>
                         ))}
                       </select>
+                    </div>
+
+                    {/* Color Options */}
+                    <div>
+                      <label className="block text-sm font-medium text-[#541409] mb-2">
+                        Color Combo <span className="text-red-500">*</span>
+                      </label>
+                      <p className="text-xs text-stone-500 mb-3">Choose your cake colors from the Easter palette</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label htmlFor="baseColor" className="block text-xs text-stone-500 mb-1">Base Color</label>
+                          <select
+                            id="baseColor"
+                            required
+                            className={`w-full px-3 py-2.5 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white text-sm ${formData.baseColor ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                            value={formData.baseColor}
+                            onChange={(e) => setFormData({ ...formData, baseColor: e.target.value })}
+                          >
+                            <option value="">Select</option>
+                            <option value="pastel-yellow">Pastel Yellow</option>
+                            <option value="baby-pink">Baby Pink</option>
+                            <option value="light-blue">Light Blue</option>
+                            <option value="lavender">Lavender</option>
+                            <option value="pastel-orange">Pastel Orange</option>
+                            <option value="white">White</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label htmlFor="borderColor" className="block text-xs text-stone-500 mb-1">Border Color</label>
+                          <select
+                            id="borderColor"
+                            required
+                            className={`w-full px-3 py-2.5 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white text-sm ${formData.borderColor ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                            value={formData.borderColor}
+                            onChange={(e) => setFormData({ ...formData, borderColor: e.target.value })}
+                          >
+                            <option value="">Select</option>
+                            <option value="pastel-yellow">Pastel Yellow</option>
+                            <option value="baby-pink">Baby Pink</option>
+                            <option value="light-blue">Light Blue</option>
+                            <option value="lavender">Lavender</option>
+                            <option value="pastel-orange">Pastel Orange</option>
+                            <option value="white">White</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label htmlFor="messagingColor" className="block text-xs text-stone-500 mb-1">Messaging Color</label>
+                          <select
+                            id="messagingColor"
+                            required
+                            className={`w-full px-3 py-2.5 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent bg-white text-sm ${formData.messagingColor ? 'text-[#541409]' : 'text-[#541409]/50'}`}
+                            value={formData.messagingColor}
+                            onChange={(e) => setFormData({ ...formData, messagingColor: e.target.value })}
+                          >
+                            <option value="">Select</option>
+                            <option value="pastel-yellow">Pastel Yellow</option>
+                            <option value="baby-pink">Baby Pink</option>
+                            <option value="light-blue">Light Blue</option>
+                            <option value="lavender">Lavender</option>
+                            <option value="pastel-orange">Pastel Orange</option>
+                            <option value="white">White</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Custom Messaging */}
+                    <div>
+                      <label className="block text-sm font-medium text-[#541409] mb-2">
+                        Cake Message <span className="text-red-500">*</span>
+                      </label>
+                      <div className="space-y-2">
+                        <label className={`flex items-center cursor-pointer p-3 border rounded-md transition-colors ${
+                          formData.cakeMessage === 'happy-easter' ? 'border-[#541409] bg-[#541409]/5' : 'border-[#EAD6D6] hover:bg-[#EAD6D6]/10'
+                        }`}>
+                          <input
+                            type="radio"
+                            name="cakeMessage"
+                            value="happy-easter"
+                            checked={formData.cakeMessage === 'happy-easter'}
+                            onChange={() => setFormData({ ...formData, cakeMessage: 'happy-easter', customMessage: '' })}
+                            className="w-4 h-4 accent-[#541409] focus:ring-[#541409]"
+                          />
+                          <span className="ml-3 text-sm text-[#541409]">Happy Easter</span>
+                        </label>
+                        <label className={`flex items-center cursor-pointer p-3 border rounded-md transition-colors ${
+                          formData.cakeMessage === 'custom' ? 'border-[#541409] bg-[#541409]/5' : 'border-[#EAD6D6] hover:bg-[#EAD6D6]/10'
+                        }`}>
+                          <input
+                            type="radio"
+                            name="cakeMessage"
+                            value="custom"
+                            checked={formData.cakeMessage === 'custom'}
+                            onChange={() => setFormData({ ...formData, cakeMessage: 'custom' })}
+                            className="w-4 h-4 accent-[#541409] focus:ring-[#541409]"
+                          />
+                          <span className="ml-3 text-sm text-[#541409]">Custom (1-3 words)</span>
+                        </label>
+                        {formData.cakeMessage === 'custom' && (
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. He Is Risen"
+                            maxLength={30}
+                            className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#541409] focus:border-transparent text-[#541409] placeholder:text-[#541409]/50"
+                            value={formData.customMessage}
+                            onChange={(e) => setFormData({ ...formData, customMessage: e.target.value })}
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -524,7 +658,7 @@ export default function EasterCollectionPage() {
                       <span>{getItemLabel(formData.selection)}</span>
                       <span>{formatPrice(basePrice)}</span>
                     </div>
-                    {(formData.selection === 'bundle_a' || formData.selection === 'bundle_b') && (
+                    {(formData.selection === 'bundle_bento' || formData.selection === 'bundle_cookie_cake') && (
                       <div className="flex justify-between text-xs text-green-700">
                         <span>Bundle discount</span>
                         <span>-$5</span>
@@ -606,7 +740,7 @@ export default function EasterCollectionPage() {
                 disabled={submitting || !formData.selection}
                 className="w-full px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Processing...' : `Pay ${formData.selection ? formatPrice(total) : ''} — Checkout`}
+                {submitting ? 'Processing...' : `Pay ${formData.selection ? formatPrice(total) : ''} - Checkout`}
               </button>
 
               <p className="text-sm text-stone-500 text-center">

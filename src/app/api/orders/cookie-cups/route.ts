@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
     const phone = formData.get('phone') as string || '';
     const quantity = formData.get('quantity') as string || '';
     const chocolateMolds = formData.get('chocolate_molds') === 'true';
+    const edibleGlitter = formData.get('edible_glitter') === 'true';
     const pickupDate = formData.get('pickup_date') as string || '';
     const pickupTime = formData.get('pickup_time') as string || '';
     const designDetails = formData.get('design_details') as string || '';
@@ -35,8 +36,8 @@ export async function POST(request: NextRequest) {
     if (!phone.trim()) {
       return NextResponse.json({ error: 'Phone is required' }, { status: 400 });
     }
-    if (!quantity || (quantity !== '12' && quantity !== '24')) {
-      return NextResponse.json({ error: 'Please select 12 or 24 cookie cups' }, { status: 400 });
+    if (!quantity || !['12', '24', '36', '48'].includes(quantity)) {
+      return NextResponse.json({ error: 'Please select a valid quantity' }, { status: 400 });
     }
 
     const db = getDB();
@@ -46,9 +47,11 @@ export async function POST(request: NextRequest) {
     const imageCount = inspirationImages.filter(f => f && f.size > 0).length;
 
     // Calculate pricing
-    const basePrice = quantity === '12' ? 3000 : 5000;
-    const moldPrice = chocolateMolds ? 400 : 0;
-    const total = basePrice + moldPrice;
+    const dozensCount = parseInt(quantity) / 12;
+    const basePrice = dozensCount * 3000;
+    const moldPrice = chocolateMolds ? (dozensCount * 400) : 0;
+    const glitterPrice = edibleGlitter ? (dozensCount * 200) : 0;
+    const total = basePrice + moldPrice + glitterPrice;
 
     // Create inquiry in database
     const orderId = crypto.randomUUID();
@@ -74,6 +77,7 @@ export async function POST(request: NextRequest) {
       JSON.stringify({
         quantity: parseInt(quantity),
         chocolate_molds: chocolateMolds,
+        edible_glitter: edibleGlitter,
         design_details: sanitizeInput(designDetails),
         colors: sanitizeInput(colors),
         occasion: sanitizeInput(occasion),
@@ -123,7 +127,8 @@ export async function POST(request: NextRequest) {
             <h3>Order Details</h3>
             <p>
               <strong>Quantity:</strong> ${quantity} cookie cups<br>
-              <strong>Chocolate Molds:</strong> ${chocolateMolds ? 'Yes (+$4)' : 'No'}<br>
+              <strong>Chocolate Molds:</strong> ${chocolateMolds ? 'Yes (+$4/dz)' : 'No'}<br>
+              <strong>Edible Glitter:</strong> ${edibleGlitter ? 'Yes (+$2/dz)' : 'No'}<br>
               <strong>Total:</strong> ${formatPrice(total)}
             </p>
 
