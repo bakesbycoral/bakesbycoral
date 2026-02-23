@@ -56,6 +56,8 @@ export async function PATCH(
     if (body.pickup_date !== undefined) {
       updates.push('pickup_date = ?');
       values.push(body.pickup_date || null);
+      // Reset reminder so the cron re-sends for the new date
+      updates.push('reminder_sent_at = NULL');
     }
     if (body.pickup_time !== undefined) {
       updates.push('pickup_time = ?');

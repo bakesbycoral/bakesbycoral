@@ -18,6 +18,7 @@ const menuLinks = [
 ];
 
 const moreLinks = [
+  { href: '/gallery', label: 'Gallery' },
   { href: '/order/cookies-large', label: 'Large Cookie Orders' },
   { href: '/contact', label: 'Contact' },
   { href: '/policies', label: 'Policies' },
