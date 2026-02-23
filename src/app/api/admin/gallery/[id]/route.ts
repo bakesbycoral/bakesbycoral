@@ -2,6 +2,34 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { getAdminSession } from '@/lib/auth/admin-session';
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const db = getDB();
+
+    const image = await db.prepare(`
+      SELECT * FROM gallery_images WHERE id = ? AND tenant_id = ?
+    `).bind(id, session.tenantId).first();
+
+    if (!image) {
+      return NextResponse.json({ error: 'Image not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(image);
+  } catch (error) {
+    console.error('Error fetching gallery image:', error);
+    return NextResponse.json({ error: 'Failed to fetch gallery image' }, { status: 500 });
+  }
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

@@ -116,7 +116,13 @@ export default function AdminGalleryPage() {
                   alt={image.caption || 'Gallery image'}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  <Link
+                    href={`/admin/gallery/${image.id}`}
+                    className="px-3 py-2 bg-white text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-100"
+                  >
+                    Edit
+                  </Link>
                   <button
                     onClick={() => handleDelete(image.id)}
                     disabled={deleting === image.id}
