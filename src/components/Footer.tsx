@@ -52,6 +52,7 @@ export default function Footer() {
             <Link href="/weddings" className="hover:text-white transition-colors">Weddings</Link>
             <span className="text-[#EAD6D6]/40">|</span>
             <Link href="/about" className="hover:text-white transition-colors">About</Link>
+            <Link href="/gallery" className="hover:text-white transition-colors">Gallery</Link>
             <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
             <Link href="/policies" className="hover:text-white transition-colors">Policies</Link>
           </div>
