@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDB, upsertClientFromOrder } from '@/lib/db';
+import { getDB, getEnvVar, upsertClientFromOrder } from '@/lib/db';
 import { getAdminSession } from '@/lib/auth/admin-session';
+import { sendEmail, orderConfirmationEmail } from '@/lib/email';
 
 interface CreateOrderRequest {
   order_type?: string;
@@ -98,6 +99,26 @@ export async function POST(request: NextRequest) {
 
     // Upsert customer record (non-fatal if it fails)
     await upsertClientFromOrder(customer_name, customer_email, customer_phone || '', session.tenantId);
+
+    // Send confirmation email to customer (non-blocking)
+    const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
+    if (resendApiKey) {
+      const adminEmailSetting = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('admin_email').first<{ value: string }>();
+      const adminEmail = adminEmailSetting?.value || 'hello@bakesbycoral.com';
+
+      sendEmail(resendApiKey, {
+        to: customer_email,
+        subject: `Order Received - ${orderNumber}`,
+        html: orderConfirmationEmail({
+          customerName: customer_name,
+          orderNumber,
+          orderType: order_type,
+          pickupDate: pickup_date,
+          pickupTime: pickup_time,
+        }),
+        replyTo: adminEmail,
+      }).catch(err => console.error('Failed to send customer confirmation email:', err));
+    }
 
     return NextResponse.json({ id, order_number: orderNumber });
   } catch (error) {
