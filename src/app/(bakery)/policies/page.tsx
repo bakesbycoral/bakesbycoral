@@ -242,10 +242,6 @@ export default function PoliciesPage() {
                       <span className="text-[#541409] mr-3">•</span>
                       <span>To send invoices and payment links</span>
                     </li>
-                    <li className="flex items-start">
-                      <span className="text-[#541409] mr-3">•</span>
-                      <span>To send newsletter updates if you subscribe (you can unsubscribe at any time)</span>
-                    </li>
                   </ul>
                 </div>
                 <div>
