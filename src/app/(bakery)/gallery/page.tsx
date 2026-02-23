@@ -28,7 +28,7 @@ const categoryTabs = [
 
 async function getGalleryImages(category?: string): Promise<GalleryImage[]> {
   const db = getDB();
-  const tenantId = 'bakesbycoral';
+  const tenantId = 'bakes-by-coral';
 
   let result;
   if (category && category !== 'all') {
