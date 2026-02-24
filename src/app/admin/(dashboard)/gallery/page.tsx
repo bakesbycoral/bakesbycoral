@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface GalleryImage {
   id: string;
@@ -30,6 +30,10 @@ export default function AdminGalleryPage() {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [orderChanged, setOrderChanged] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
 
   useEffect(() => {
     fetchImages();
@@ -65,6 +69,61 @@ export default function AdminGalleryPage() {
     }
   }
 
+  function handleDragStart(index: number) {
+    dragItem.current = index;
+  }
+
+  function handleDragEnter(index: number) {
+    dragOverItem.current = index;
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+  }
+
+  function handleDrop() {
+    if (dragItem.current === null || dragOverItem.current === null) return;
+    if (dragItem.current === dragOverItem.current) return;
+
+    const reordered = [...images];
+    const [dragged] = reordered.splice(dragItem.current, 1);
+    reordered.splice(dragOverItem.current, 0, dragged);
+
+    setImages(reordered);
+    setOrderChanged(true);
+    dragItem.current = null;
+    dragOverItem.current = null;
+  }
+
+  function handleDragEnd() {
+    dragItem.current = null;
+    dragOverItem.current = null;
+  }
+
+  async function handleSaveOrder() {
+    setSaving(true);
+    try {
+      const order = images.map((img, index) => ({
+        id: img.id,
+        sort_order: index,
+      }));
+
+      const res = await fetch('/api/admin/gallery/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order }),
+      });
+
+      if (res.ok) {
+        setOrderChanged(false);
+      }
+    } catch (error) {
+      console.error('Failed to save order:', error);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -80,15 +139,41 @@ export default function AdminGalleryPage() {
           <h1 className="text-2xl font-bold text-gray-900">Gallery</h1>
           <p className="text-gray-600 mt-1">Manage your gallery images</p>
         </div>
-        <Link
-          href="/admin/gallery/new"
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Add Image
-        </Link>
+        <div className="flex items-center gap-3">
+          {orderChanged && (
+            <button
+              onClick={handleSaveOrder}
+              disabled={saving}
+              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+            >
+              {saving ? (
+                <>
+                  <svg className="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Save Order
+                </>
+              )}
+            </button>
+          )}
+          <Link
+            href="/admin/gallery/new"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Image
+          </Link>
+        </div>
       </div>
 
       {images.length === 0 ? (
@@ -106,43 +191,64 @@ export default function AdminGalleryPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {images.map((image) => (
-            <div key={image.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden group">
-              <div className="aspect-square bg-gray-100 relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={image.image_url}
-                  alt={image.caption || 'Gallery image'}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <Link
-                    href={`/admin/gallery/${image.id}`}
-                    className="px-3 py-2 bg-white text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-100"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(image.id)}
-                    disabled={deleting === image.id}
-                    className="px-3 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
-                  >
-                    {deleting === image.id ? 'Deleting...' : 'Delete'}
-                  </button>
+        <>
+          {orderChanged && (
+            <p className="text-sm text-amber-600 mb-4">You have unsaved changes to the image order.</p>
+          )}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {images.map((image, index) => (
+              <div
+                key={image.id}
+                draggable
+                onDragStart={() => handleDragStart(index)}
+                onDragEnter={() => handleDragEnter(index)}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onDragEnd={handleDragEnd}
+                className="bg-white rounded-xl border border-gray-200 overflow-hidden group cursor-grab active:cursor-grabbing"
+              >
+                <div className="aspect-square bg-gray-100 relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={image.image_url}
+                    alt={image.caption || 'Gallery image'}
+                    className="w-full h-full object-cover pointer-events-none"
+                  />
+                  <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-white/90 rounded-lg p-1.5 shadow-sm">
+                      <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <Link
+                      href={`/admin/gallery/${image.id}`}
+                      className="px-3 py-2 bg-white text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-100"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(image.id)}
+                      disabled={deleting === image.id}
+                      className="px-3 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
+                    >
+                      {deleting === image.id ? 'Deleting...' : 'Delete'}
+                    </button>
+                  </div>
+                </div>
+                <div className="p-3">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${categoryColors[image.category] || 'bg-gray-100 text-gray-800'}`}>
+                    {categoryLabels[image.category] || image.category}
+                  </span>
+                  {image.caption && (
+                    <p className="text-sm text-gray-600 mt-1 truncate">{image.caption}</p>
+                  )}
                 </div>
               </div>
-              <div className="p-3">
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${categoryColors[image.category] || 'bg-gray-100 text-gray-800'}`}>
-                  {categoryLabels[image.category] || image.category}
-                </span>
-                {image.caption && (
-                  <p className="text-sm text-gray-600 mt-1 truncate">{image.caption}</p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

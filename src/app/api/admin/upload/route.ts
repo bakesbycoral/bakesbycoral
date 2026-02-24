@@ -5,7 +5,7 @@ import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_SIZE = 20 * 1024 * 1024; // 20MB
 
 // Magic byte signatures for allowed image types
 const MAGIC_BYTES: Record<string, number[][]> = {
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (file.size > MAX_SIZE) {
-      return NextResponse.json({ error: 'File too large. Maximum size: 5MB' }, { status: 400 });
+      return NextResponse.json({ error: 'File too large. Maximum size: 20MB' }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
