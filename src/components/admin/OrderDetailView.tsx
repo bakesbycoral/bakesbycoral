@@ -8,6 +8,7 @@ import { OrderNotes } from './OrderNotes';
 import { BalancePayment } from './BalancePayment';
 import { OrderEditForm } from './OrderEditForm';
 import { QuotesList } from './quotes';
+import { ContractsList } from './contracts';
 
 interface Order {
   id: string;
@@ -576,6 +577,11 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
           {/* Quotes & Invoices - Show for large cookie orders, cakes, weddings */}
           {['cookies_large', 'cake', 'wedding'].includes(order.order_type) && (
             <QuotesList orderId={order.id} orderStatus={order.status} />
+          )}
+
+          {/* Wedding Contracts - Show for wedding orders only */}
+          {order.order_type === 'wedding' && (
+            <ContractsList orderId={order.id} orderStatus={order.status} />
           )}
         </div>
 

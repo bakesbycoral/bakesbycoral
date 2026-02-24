@@ -47,6 +47,37 @@ export interface QuoteWithLineItems extends Quote {
   line_items: QuoteLineItem[];
 }
 
+// Contract types
+export type ContractStatus = 'draft' | 'sent' | 'signed' | 'expired';
+
+export interface Contract {
+  id: string;
+  order_id: string;
+  contract_number: string;
+  tenant_id: string;
+  status: ContractStatus;
+  event_date: string | null;
+  venue_name: string | null;
+  venue_address: string | null;
+  guest_count: string | null;
+  ceremony_time: string | null;
+  reception_time: string | null;
+  services_description: string | null;
+  total_amount: number;
+  deposit_percentage: number;
+  deposit_amount: number | null;
+  payment_schedule: string | null;
+  contract_body: string | null;
+  notes: string | null;
+  signing_token: string | null;
+  valid_until: string | null;
+  signed_at: string | null;
+  signer_name: string | null;
+  signer_ip: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // Tasting order data
 export interface TastingOrderData {
   name: string;

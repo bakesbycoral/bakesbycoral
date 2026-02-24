@@ -37,6 +37,7 @@ export const RATE_LIMITS = {
   quoteToken: { maxRequests: 20, windowMs: 15 * 60 * 1000 },  // 20 per 15 min
   cron: { maxRequests: 5, windowMs: 60 * 60 * 1000 },         // 5 per hour
   emailSend: { maxRequests: 10, windowMs: 60 * 60 * 1000 },   // 10 per hour
+  contractToken: { maxRequests: 20, windowMs: 15 * 60 * 1000 }, // 20 per 15 min
 } as const;
 
 export function getClientIp(request: Request): string {

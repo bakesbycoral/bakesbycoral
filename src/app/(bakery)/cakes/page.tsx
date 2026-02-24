@@ -181,9 +181,9 @@ export default function CakesPage() {
             </div>
             <div>
               <Link href="/order/cake" className="aspect-square rounded-lg overflow-hidden block">
-                <img src="/shannon-cake-top.jpg" alt="8 inch round cake" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" style={{ objectPosition: '20% center' }} />
+                <img src="/galentines.jpg" alt="Galentines heart cake" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
               </Link>
-              <p className="text-center text-stone-600 text-sm mt-2">8" Round</p>
+              <p className="text-center text-stone-600 text-sm mt-2">6" Heart</p>
             </div>
             <div>
               <Link href="/order/cake" className="aspect-square rounded-lg overflow-hidden block">
@@ -191,6 +191,11 @@ export default function CakesPage() {
               </Link>
               <p className="text-center text-stone-600 text-sm mt-2">6" Heart</p>
             </div>
+          </div>
+          <div className="text-center mt-8">
+            <Link href="/gallery" className="inline-flex px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity">
+              See More in the Gallery
+            </Link>
           </div>
         </div>
       </section>

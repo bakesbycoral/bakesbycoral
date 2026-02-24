@@ -49,6 +49,22 @@ export function QuotesList({ orderId, orderStatus }: QuotesListProps) {
     }
   };
 
+  const handleDelete = async (quoteId: string, quoteNumber: string) => {
+    if (!confirm(`Delete quote ${quoteNumber}? This cannot be undone.`)) return;
+
+    try {
+      const response = await fetch(`/api/admin/quotes/${quoteId}`, { method: 'DELETE' });
+      const data = await response.json() as { error?: string };
+      if (!response.ok) {
+        alert(data.error || 'Failed to delete quote');
+        return;
+      }
+      fetchQuotes();
+    } catch {
+      alert('Failed to delete quote');
+    }
+  };
+
   const handleClose = () => {
     setSelectedQuote(null);
     setIsCreating(false);
@@ -165,6 +181,15 @@ export function QuotesList({ orderId, orderStatus }: QuotesListProps) {
                   >
                     View Invoice
                   </a>
+                )}
+
+                {quote.status !== 'approved' && quote.status !== 'converted' && (
+                  <button
+                    onClick={() => handleDelete(quote.id, quote.quote_number)}
+                    className="px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                  >
+                    Delete
+                  </button>
                 )}
               </div>
             </div>

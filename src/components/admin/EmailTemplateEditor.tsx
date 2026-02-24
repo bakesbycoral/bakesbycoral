@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { sanitizeHtml } from '@/lib/sanitize';
 
-type CustomerTemplateKey = 'form_submission' | 'confirmation' | 'confirmation_delivery' | 'reminder' | 'reminder_delivery' | 'quote' | 'quote_approved' | 'balance_invoice' | 'balance_invoice_delivery';
+type CustomerTemplateKey = 'form_submission' | 'confirmation' | 'confirmation_delivery' | 'reminder' | 'reminder_delivery' | 'quote' | 'quote_approved' | 'balance_invoice' | 'balance_invoice_delivery' | 'contract_sent' | 'contract_signed';
 type AdminTemplateKey = 'contact_form' | 'cake_inquiry' | 'large_cookie_order' | 'wedding_inquiry' | 'tasting_order';
 type TemplateKey = CustomerTemplateKey | AdminTemplateKey;
 
@@ -49,6 +49,14 @@ const CUSTOMER_TEMPLATE_INFO: Record<CustomerTemplateKey, { label: string; descr
   balance_invoice_delivery: {
     label: 'Balance (Delivery)',
     description: 'Sent to customers when you request the remaining balance for delivery orders',
+  },
+  contract_sent: {
+    label: 'Contract Sent',
+    description: 'Sent to customers when you send them a wedding contract to sign',
+  },
+  contract_signed: {
+    label: 'Contract Signed',
+    description: 'Sent to customers when they sign their wedding contract',
   },
 };
 
@@ -119,6 +127,11 @@ const BALANCE_VARIABLES = [
   { key: '{{total_amount}}', description: 'Total amount' },
   { key: '{{deposit_amount}}', description: 'Deposit paid' },
   { key: '{{balance_due}}', description: 'Balance remaining' },
+];
+
+const CONTRACT_VARIABLES = [
+  { key: '{{contract_number}}', description: 'Contract number' },
+  { key: '{{valid_until}}', description: 'Contract expiration date' },
 ];
 
 const CONTACT_VARIABLES = [
@@ -205,6 +218,9 @@ const getVariablesForTemplate = (template: TemplateKey) => {
     case 'quote':
     case 'quote_approved':
       return [...COMMON_VARIABLES, ...QUOTE_VARIABLES];
+    case 'contract_sent':
+    case 'contract_signed':
+      return [...COMMON_VARIABLES, ...CONTRACT_VARIABLES];
     case 'balance_invoice':
       return [...COMMON_VARIABLES, ...BALANCE_VARIABLES];
     case 'balance_invoice_delivery':
@@ -228,7 +244,7 @@ const getVariablesForTemplate = (template: TemplateKey) => {
 };
 
 const ALL_TEMPLATE_KEYS: TemplateKey[] = [
-  'form_submission', 'confirmation', 'confirmation_delivery', 'reminder', 'reminder_delivery', 'quote', 'quote_approved', 'balance_invoice', 'balance_invoice_delivery',
+  'form_submission', 'confirmation', 'confirmation_delivery', 'reminder', 'reminder_delivery', 'quote', 'quote_approved', 'balance_invoice', 'balance_invoice_delivery', 'contract_sent', 'contract_signed',
   'contact_form', 'cake_inquiry', 'large_cookie_order', 'wedding_inquiry', 'tasting_order',
 ];
 
@@ -338,6 +354,7 @@ export function EmailTemplateEditor({ templates, subjects, onSave }: EmailTempla
       .replace(/\{\{delivery_date\}\}/g, maroon('Saturday, February 15, 2026'))
       .replace(/\{\{delivery_time\}\}/g, maroon('2:00 PM'))
       .replace(/\{\{delivery_address\}\}/g, maroon('123 Wedding Venue Lane, City, ST 12345'))
+      .replace(/\{\{contract_number\}\}/g, maroon('WC-ABC123'))
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\n\n/g, '</p><p>')

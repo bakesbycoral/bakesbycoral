@@ -979,6 +979,30 @@ Thank you for choosing Bakes by Coral! We can't wait for you to enjoy your order
 
 Sweet regards,
 Coral`,
+
+  contract_sent: `Hi {{customer_name}},
+
+Thank you for choosing Bakes by Coral for your wedding! I'm thrilled to be part of your special day.
+
+Please review your wedding contract (**{{contract_number}}**) and sign it to confirm your booking. This contract is valid until {{valid_until}}.
+
+Please review all details carefully and sign by clicking the button below. If you have any questions, please don't hesitate to reply to this email.
+
+Sweet regards,
+Coral`,
+
+  contract_signed: `Hi {{customer_name}},
+
+Thank you for signing your wedding contract (**{{contract_number}}**)! Your booking is now confirmed.
+
+Next steps:
+- I'll be in touch to schedule a tasting session
+- Any changes must be communicated at least 4 weeks before the event
+
+I'm so excited to create something beautiful for your wedding!
+
+Sweet regards,
+Coral`,
 };
 
 export const DEFAULT_SUBJECTS: Record<string, string> = {
@@ -992,6 +1016,9 @@ export const DEFAULT_SUBJECTS: Record<string, string> = {
   reminder_delivery: 'Delivery Reminder - {{order_number}}',
   confirmation_delivery: 'Order Confirmed - {{order_number}}',
   balance_invoice_delivery: 'Balance Due - {{order_number}}',
+  // Contract emails
+  contract_sent: 'Your Wedding Contract from Bakes by Coral - {{contract_number}}',
+  contract_signed: 'Contract Signed! - {{contract_number}}',
 };
 
 // Wrap template text in styled HTML email
@@ -1346,6 +1373,71 @@ export function buildBalanceInvoiceFromTemplate(
   `;
 
   const html = wrapInEmailTemplate(processedBody, processedSubject, 'Balance Due');
+
+  return { subject: processedSubject, html };
+}
+
+// Build contract sent email from template
+export function buildContractSentFromTemplate(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    customerName: string;
+    contractNumber: string;
+    validUntil: string;
+    contractUrl: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_TEMPLATES.contract_sent;
+  const subjectText = subject || DEFAULT_SUBJECTS.contract_sent;
+
+  const variables: Record<string, string> = {
+    customer_name: data.customerName,
+    contract_number: data.contractNumber,
+    valid_until: data.validUntil ? formatDate(data.validUntil) : 'TBD',
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  let processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  processedBody += `
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="${data.contractUrl}" class="btn">View & Sign Contract</a>
+    </div>
+  `;
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'Wedding Contract');
+
+  return { subject: processedSubject, html };
+}
+
+// Build contract signed confirmation email from template
+export function buildContractSignedFromTemplate(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    customerName: string;
+    contractNumber: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_TEMPLATES.contract_signed;
+  const subjectText = subject || DEFAULT_SUBJECTS.contract_signed;
+
+  const variables: Record<string, string> = {
+    customer_name: data.customerName,
+    contract_number: data.contractNumber,
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  const processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'Contract Signed!');
 
   return { subject: processedSubject, html };
 }

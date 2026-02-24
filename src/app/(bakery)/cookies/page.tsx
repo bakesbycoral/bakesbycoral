@@ -149,8 +149,8 @@ export default function CookiesPage() {
 
       {/* Cookie Images */}
       <section className="py-16 sm:py-24 bg-[#F7F3ED]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-4 gap-4">
+        <div className="max-w-5xl mx-auto px-2 sm:px-4">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
             <Link href="/order/cookies" className="aspect-square rounded-lg overflow-hidden shadow-lg block hover:scale-105 transition-transform">
               <img
                 src="/choco-chip-tray.jpg"
@@ -162,6 +162,13 @@ export default function CookiesPage() {
               <img
                 src="/cherry.jpg"
                 alt="Cherry Almond Cookies"
+                className="w-full h-full object-cover"
+              />
+            </Link>
+            <Link href="/order/cookies" className="aspect-square rounded-lg overflow-hidden shadow-lg block hover:scale-105 transition-transform">
+              <img
+                src="/lemon-sugar.jpg"
+                alt="Lemon Sugar Cookies"
                 className="w-full h-full object-cover"
               />
             </Link>
