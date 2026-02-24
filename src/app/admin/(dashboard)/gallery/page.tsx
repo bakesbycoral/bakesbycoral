@@ -32,8 +32,10 @@ export default function AdminGalleryPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [orderChanged, setOrderChanged] = useState(false);
   const [saving, setSaving] = useState(false);
-  const dragItem = useRef<number | null>(null);
-  const dragOverItem = useRef<number | null>(null);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const dragIndexRef = useRef<number | null>(null);
+  const dragOverIndexRef = useRef<number | null>(null);
 
   useEffect(() => {
     fetchImages();
@@ -69,35 +71,45 @@ export default function AdminGalleryPage() {
     }
   }
 
-  function handleDragStart(index: number) {
-    dragItem.current = index;
+  function handleDragStart(e: React.DragEvent, index: number) {
+    dragIndexRef.current = index;
+    setDragIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
   }
 
   function handleDragEnter(index: number) {
-    dragOverItem.current = index;
+    dragOverIndexRef.current = index;
+    setDragOverIndex(index);
   }
 
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
   }
 
-  function handleDrop() {
-    if (dragItem.current === null || dragOverItem.current === null) return;
-    if (dragItem.current === dragOverItem.current) return;
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    const from = dragIndexRef.current;
+    const to = dragOverIndexRef.current;
+    if (from === null || to === null || from === to) return;
 
     const reordered = [...images];
-    const [dragged] = reordered.splice(dragItem.current, 1);
-    reordered.splice(dragOverItem.current, 0, dragged);
+    const [dragged] = reordered.splice(from, 1);
+    reordered.splice(to, 0, dragged);
 
     setImages(reordered);
     setOrderChanged(true);
-    dragItem.current = null;
-    dragOverItem.current = null;
+    dragIndexRef.current = null;
+    dragOverIndexRef.current = null;
+    setDragIndex(null);
+    setDragOverIndex(null);
   }
 
   function handleDragEnd() {
-    dragItem.current = null;
-    dragOverItem.current = null;
+    dragIndexRef.current = null;
+    dragOverIndexRef.current = null;
+    setDragIndex(null);
+    setDragOverIndex(null);
   }
 
   async function handleSaveOrder() {
@@ -200,12 +212,18 @@ export default function AdminGalleryPage() {
               <div
                 key={image.id}
                 draggable
-                onDragStart={() => handleDragStart(index)}
+                onDragStart={(e) => handleDragStart(e, index)}
                 onDragEnter={() => handleDragEnter(index)}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onDragEnd={handleDragEnd}
-                className="bg-white rounded-xl border border-gray-200 overflow-hidden group cursor-grab active:cursor-grabbing"
+                className={`bg-white rounded-xl border-2 overflow-hidden group cursor-grab active:cursor-grabbing transition-all ${
+                  dragOverIndex === index && dragIndex !== index
+                    ? 'border-blue-500 scale-[1.02] shadow-lg'
+                    : dragIndex === index
+                      ? 'opacity-50 border-gray-200'
+                      : 'border-gray-200'
+                }`}
               >
                 <div className="aspect-square bg-gray-100 relative">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
