@@ -689,7 +689,7 @@ export default function EasterCollectionPage() {
                       className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
                     />
                     <span className="ml-3 text-sm text-stone-600">
-                      I understand that <strong>payment is non-refundable</strong> once my order is confirmed. <span className="text-red-500">*</span>
+                      I understand that <strong>50% of the payment is non-refundable</strong> once my order is confirmed. <span className="text-red-500">*</span>
                     </span>
                   </label>
 
