@@ -1478,6 +1478,7 @@ export const DEFAULT_ADMIN_TEMPLATES = {
 **Custom Message:** {{custom_messaging}}
 **Toppings:** {{toppings}}
 **Allergies:** {{allergies}}
+{{cookie_addon}}
 {{notes}}
 
 {{admin_link}}`,
@@ -1610,6 +1611,8 @@ export function buildCakeInquiryNotification(
     allergies: string;
     notes: string;
     adminUrl: string;
+    addHalfDozenCookies: boolean;
+    cookieFlavor: string;
   }
 ): { subject: string; html: string } {
   const templateText = template || DEFAULT_ADMIN_TEMPLATES.cake_inquiry;
@@ -1636,6 +1639,7 @@ export function buildCakeInquiryNotification(
     toppings: data.toppings || 'None',
     allergies: data.allergies || 'None',
     notes: data.notes ? `**Additional Notes:** ${data.notes}` : '',
+    cookie_addon: data.addHalfDozenCookies ? `\n**Add-On:** Half Dozen Cookies ($14) — ${data.cookieFlavor}` : '',
     admin_link: `[View in Admin Dashboard](${safeAdminUrl})`,
   };
 

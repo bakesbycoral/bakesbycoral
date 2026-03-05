@@ -498,6 +498,12 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                     </dd>
                   </div>
                 )}
+                {formData.add_half_dozen_cookies && (
+                  <div className="pt-2 border-t border-[#EAD6D6]">
+                    <dt className="text-sm text-[#541409]/60">Add-On</dt>
+                    <dd className="font-medium text-[#541409]">Half Dozen Cookies ($14) — {formData.cookie_flavor}</dd>
+                  </div>
+                )}
               </dl>
             )}
 

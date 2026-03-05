@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import EasterPopup from '@/components/EasterPopup';
 
 // JSON-LD Structured Data for LocalBusiness
 const jsonLd = {
@@ -63,6 +64,7 @@ export default function BakeryLayout({
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
+      <EasterPopup />
     </div>
   );
 }

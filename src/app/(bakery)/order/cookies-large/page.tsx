@@ -25,9 +25,9 @@ export default function LargeCookieOrderPage() {
       cherryAlmond: 0,
       espressoButterscotch: 0,
       lemonSugar: 0,
-      keyLimeCheesecake: 0,
+      keyLimePie: 0,
       blueberryMuffin: 0,
-      lemonShortbreadSandwiches: 0,
+      lemonSugarSandwiches: 0,
       whiteChocolateRaspberry: 0,
     },
     packaging: '',
@@ -320,9 +320,9 @@ export default function LargeCookieOrderPage() {
                           cherryAlmond: 0,
                           espressoButterscotch: 0,
                           lemonSugar: 0,
-                          keyLimeCheesecake: 0,
+                          keyLimePie: 0,
                           blueberryMuffin: 0,
-                          lemonShortbreadSandwiches: 0,
+                          lemonSugarSandwiches: 0,
                           whiteChocolateRaspberry: 0,
                         }
                       });
@@ -486,7 +486,7 @@ export default function LargeCookieOrderPage() {
                 >
                   <option value="">Select an option</option>
                   <option value="standard">Standard</option>
-                  <option value="heat-sealed">Individually Heat Sealed (+$5/dozen)</option>
+                  <option value="heat-sealed">Individually Heat Sealed (+$5/dozen) — keeps cookies fresh longer</option>
                 </select>
               </div>
 

@@ -27,6 +27,8 @@ function CakeOrderContent() {
     allergies: '',
     message: '',
     howDidYouHear: '',
+    addHalfDozenCookies: false,
+    cookieFlavor: '',
     acknowledgeDeposit: false,
     acknowledgeAllergens: false,
     acknowledgeLeadTime: false,
@@ -66,6 +68,11 @@ function CakeOrderContent() {
       return;
     }
 
+    if (formData.addHalfDozenCookies && !formData.cookieFlavor) {
+      setSubmitError('Please choose a cookie flavor for your add-on.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const submitData = new FormData();
@@ -87,6 +94,10 @@ function CakeOrderContent() {
       submitData.append('allergies', formData.allergies);
       submitData.append('notes', formData.message);
       submitData.append('how_did_you_hear', formData.howDidYouHear);
+      submitData.append('add_half_dozen_cookies', String(formData.addHalfDozenCookies));
+      if (formData.addHalfDozenCookies && formData.cookieFlavor) {
+        submitData.append('cookie_flavor', formData.cookieFlavor);
+      }
       submitData.append('acknowledge_deposit', String(formData.acknowledgeDeposit));
       submitData.append('acknowledge_allergens', String(formData.acknowledgeAllergens));
       submitData.append('acknowledge_lead_time', String(formData.acknowledgeLeadTime));
@@ -540,6 +551,51 @@ function CakeOrderContent() {
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Add-On: Half Dozen Cookies */}
+              <div className="p-5 border-2 border-dashed border-[#EAD6D6] rounded-lg bg-[#FFF8F0]">
+                <label className="flex items-start cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.addHalfDozenCookies}
+                    onChange={(e) => setFormData({ ...formData, addHalfDozenCookies: e.target.checked, cookieFlavor: e.target.checked ? formData.cookieFlavor : '' })}
+                    className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
+                  />
+                  <div className="ml-3">
+                    <span className="font-medium text-[#541409]">Add a half dozen cookies — $14</span>
+                    <p className="text-sm text-stone-500 mt-0.5">Add 6 of my handcrafted gluten-free cookies to your cake order!</p>
+                  </div>
+                </label>
+                {formData.addHalfDozenCookies && (
+                  <div className="mt-4 ml-8">
+                    <label className="block text-sm font-medium text-[#541409] mb-2">Choose a flavor <span className="text-red-500">*</span></label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {[
+                        { value: 'chocolate-chip', label: 'Chocolate Chip' },
+                        { value: 'vanilla-bean-sugar', label: 'Vanilla Bean Sugar' },
+                        { value: 'cherry-almond', label: 'Cherry Almond' },
+                        { value: 'espresso-butterscotch', label: 'Espresso Butterscotch' },
+                        { value: 'lemon-sugar', label: 'Lemon Sugar' },
+                      ].map((flavor) => (
+                        <label
+                          key={flavor.value}
+                          className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${formData.cookieFlavor === flavor.value ? 'border-[#541409] bg-[#EAD6D6]/30' : 'border-stone-200 hover:bg-stone-50'}`}
+                        >
+                          <input
+                            type="radio"
+                            name="cookieFlavor"
+                            value={flavor.value}
+                            checked={formData.cookieFlavor === flavor.value}
+                            onChange={(e) => setFormData({ ...formData, cookieFlavor: e.target.value })}
+                            className="w-4 h-4 accent-[#541409]"
+                          />
+                          <span className="ml-2 text-sm text-[#541409]">{flavor.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Coupon Code */}

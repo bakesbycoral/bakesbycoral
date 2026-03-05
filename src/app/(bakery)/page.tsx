@@ -3,20 +3,6 @@ import Link from 'next/link';
 export default function HomePage() {
   return (
     <>
-      {/* Decorative Stripe Banner */}
-      <div
-        className="w-full h-12 sm:h-16"
-        style={{
-          background: `repeating-linear-gradient(
-            90deg,
-            #541409 0px,
-            #541409 40px,
-            #EAD6D6 40px,
-            #EAD6D6 80px
-          )`
-        }}
-      />
-
       {/* Hero Section */}
       <section className="relative min-h-[55vh] sm:min-h-[65vh] flex items-center bg-[#3D2318]">
         {/* Background image - positioned to show lighter marble/bowl area on mobile */}

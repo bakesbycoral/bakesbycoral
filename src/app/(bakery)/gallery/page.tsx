@@ -119,11 +119,12 @@ export default async function GalleryPage({
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.map((image) => (
                 <div key={image.id} className="group">
-                  <div className="aspect-square rounded-lg overflow-hidden bg-white shadow-sm">
+                  <div className="aspect-[3/4] sm:aspect-square rounded-lg overflow-hidden bg-white shadow-sm">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={image.image_url}
                       alt={image.caption || 'Gallery image'}
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>

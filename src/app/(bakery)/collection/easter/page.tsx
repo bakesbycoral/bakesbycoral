@@ -39,10 +39,10 @@ function getPrice(selection: SelectionType): number {
     case 'cookie_cake':
       return 4000;
     case 'cookies_dozen':
-      return 2600;
+      return 3000;
     case 'bundle_bento':
     case 'bundle_cookie_cake':
-      return 4800;
+      return 5000;
     default:
       return 0;
   }
@@ -175,6 +175,13 @@ export default function EasterCollectionPage() {
     }
   };
 
+  const scrollToOrder = (selection?: SelectionType) => {
+    if (selection) {
+      setFormData(prev => ({ ...prev, selection }));
+    }
+    document.getElementById('order')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const selectionOptions: { value: SelectionType; label: string; price: string; description: string; badge?: string }[] = [
     {
       value: 'bento',
@@ -191,20 +198,20 @@ export default function EasterCollectionPage() {
     {
       value: 'cookies_dozen',
       label: 'Thumbprint Confetti Cookies',
-      price: '$26',
+      price: '$30',
       description: '1 dozen cookies',
     },
     {
       value: 'bundle_bento',
       label: 'Bundle: Bento Cake + Cookies',
-      price: '$48',
+      price: '$50',
       description: 'Bento cake + 1/2 dozen cookies',
       badge: 'Save $5',
     },
     {
       value: 'bundle_cookie_cake',
       label: 'Bundle: Cookie Cake + Cookies',
-      price: '$48',
+      price: '$50',
       description: 'Cookie cake + 1/2 dozen cookies',
       badge: 'Save $5',
     },
@@ -252,55 +259,40 @@ export default function EasterCollectionPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Bento Cake */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="aspect-square bg-[#EAD6D6] flex items-center justify-center">
-                <div className="text-center p-6">
-                  <svg className="w-16 h-16 mx-auto text-[#541409]/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <p className="text-sm text-[#541409]/50">Photo coming soon</p>
-                </div>
+            <button onClick={() => scrollToOrder('bento')} className="flex flex-col bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer text-left">
+              <div className="aspect-square overflow-hidden">
+                <img src="/easter-bento.png" alt="Easter Bento Cake" className="w-full h-full object-cover" />
               </div>
-              <div className="p-5">
+              <div className="p-5 flex-1">
                 <h3 className="text-xl font-serif text-[#541409] mb-1">Bento Cake</h3>
                 <p className="text-stone-600 text-sm mb-3">4&quot; 2-layer cake with Easter-themed decoration. Choose your flavor, filling &amp; colors.</p>
                 <span className="inline-block px-3 py-1 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full">$40</span>
               </div>
-            </div>
+            </button>
 
             {/* Cookie Cake */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="aspect-square bg-[#EAD6D6] flex items-center justify-center">
-                <div className="text-center p-6">
-                  <svg className="w-16 h-16 mx-auto text-[#541409]/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <p className="text-sm text-[#541409]/50">Photo coming soon</p>
-                </div>
+            <button onClick={() => scrollToOrder('cookie_cake')} className="flex flex-col bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer text-left">
+              <div className="aspect-square overflow-hidden">
+                <img src="/easter-cookie-cake.jpg" alt="Easter Cookie Cake" className="w-full h-full object-cover" style={{ objectPosition: 'center 80%' }} />
               </div>
-              <div className="p-5">
+              <div className="p-5 flex-1">
                 <h3 className="text-xl font-serif text-[#541409] mb-1">Cookie Cake</h3>
                 <p className="text-stone-600 text-sm mb-3">6&quot; 2-layer chocolate chip &amp; Cadbury egg cookie cake. Design &amp; colors exactly as shown.</p>
                 <span className="inline-block px-3 py-1 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full">$40</span>
               </div>
-            </div>
+            </button>
 
             {/* Thumbprint Confetti Cookies */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="aspect-square bg-[#EAD6D6] flex items-center justify-center">
-                <div className="text-center p-6">
-                  <svg className="w-16 h-16 mx-auto text-[#541409]/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <p className="text-sm text-[#541409]/50">Photo coming soon</p>
-                </div>
+            <button onClick={() => scrollToOrder('cookies_dozen')} className="flex flex-col bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer text-left">
+              <div className="aspect-square overflow-hidden">
+                <img src="/easter-cookies.jpg" alt="Easter Thumbprint Confetti Cookies" className="w-full h-full object-cover" style={{ objectPosition: 'center 80%' }} />
               </div>
-              <div className="p-5">
+              <div className="p-5 flex-1">
                 <h3 className="text-xl font-serif text-[#541409] mb-1">Thumbprint Confetti Cookies</h3>
                 <p className="text-stone-600 text-sm mb-3">Festive thumbprint cookies with colorful confetti sprinkles.</p>
-                <span className="inline-block px-3 py-1 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full">$26/dozen</span>
+                <span className="inline-block px-3 py-1 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full">$30/dozen</span>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </section>
@@ -315,36 +307,36 @@ export default function EasterCollectionPage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-lg p-5 shadow-sm text-center">
+            <button onClick={() => scrollToOrder('bento')} className="bg-white rounded-lg p-5 shadow-sm text-center hover:shadow-md transition-shadow cursor-pointer">
               <h3 className="text-lg font-serif text-[#541409] mb-1">Bento Cake</h3>
               <p className="text-2xl font-bold text-[#541409]">$40</p>
               <p className="text-sm text-stone-500 mt-1">4&quot; 2-layer cake</p>
-            </div>
-            <div className="bg-white rounded-lg p-5 shadow-sm text-center">
+            </button>
+            <button onClick={() => scrollToOrder('cookie_cake')} className="bg-white rounded-lg p-5 shadow-sm text-center hover:shadow-md transition-shadow cursor-pointer">
               <h3 className="text-lg font-serif text-[#541409] mb-1">Cookie Cake</h3>
               <p className="text-2xl font-bold text-[#541409]">$40</p>
               <p className="text-sm text-stone-500 mt-1">6&quot; 2-layer</p>
-            </div>
-            <div className="bg-white rounded-lg p-5 shadow-sm text-center">
+            </button>
+            <button onClick={() => scrollToOrder('cookies_dozen')} className="bg-white rounded-lg p-5 shadow-sm text-center hover:shadow-md transition-shadow cursor-pointer">
               <h3 className="text-lg font-serif text-[#541409] mb-1">Cookies</h3>
-              <p className="text-2xl font-bold text-[#541409]">$26</p>
+              <p className="text-2xl font-bold text-[#541409]">$30</p>
               <p className="text-sm text-stone-500 mt-1">1 dozen</p>
-            </div>
-            <div className="bg-[#541409] rounded-lg p-5 shadow-sm text-center relative">
+            </button>
+            <button onClick={() => scrollToOrder()} className="bg-[#541409] rounded-lg p-5 shadow-sm text-center relative hover:opacity-90 transition-opacity cursor-pointer">
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#F7F3ED] text-[#541409] text-xs font-bold rounded-full">
                 BEST VALUE
               </span>
               <h3 className="text-lg font-serif text-[#EAD6D6] mb-1">Bundle</h3>
-              <p className="text-2xl font-bold text-[#EAD6D6]">$48</p>
+              <p className="text-2xl font-bold text-[#EAD6D6]">$50</p>
               <p className="text-sm text-[#EAD6D6]/70 mt-1">Any cake + 1/2 dz cookies</p>
               <p className="text-xs text-[#EAD6D6]/60 mt-1">Save $5!</p>
-            </div>
+            </button>
           </div>
         </div>
       </section>
 
       {/* Order Form */}
-      <section className="py-16 sm:py-24 bg-[#F7F3ED]">
+      <section id="order" className="py-16 sm:py-24 bg-[#F7F3ED]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <h2 className="text-3xl sm:text-4xl font-serif text-[#541409] text-center mb-8">
             Place Your Order

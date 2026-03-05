@@ -35,10 +35,10 @@ function getPrice(selection: string): number {
     case 'cookie_cake':
       return 4000;
     case 'cookies_dozen':
-      return 2600;
+      return 3000;
     case 'bundle_bento':
     case 'bundle_cookie_cake':
-      return 4800;
+      return 5000;
     default:
       return 0;
   }

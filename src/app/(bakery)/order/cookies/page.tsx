@@ -249,7 +249,7 @@ function CookieOrderContent() {
                           className="w-4 h-4 accent-[#541409]"
                         />
                         <span className="ml-3 text-sm text-[#541409]">
-                          Heat-sealed bags (+$5/dozen)
+                          Heat-sealed bags (+$5/dozen) — keeps cookies fresh longer
                         </span>
                       </label>
                     </div>
@@ -437,7 +437,7 @@ function CookieOrderContent() {
                             className="w-5 h-5 mt-0.5 flex-shrink-0 rounded border-stone-300 accent-[#541409] focus:ring-[#541409]"
                           />
                           <span className="ml-3 text-sm text-stone-600">
-                            I understand that cookie orders require at least <strong>1 week notice</strong>. <span className="text-red-500">*</span>
+                            I understand that cookie orders require at least <strong>4 days notice</strong>. <span className="text-red-500">*</span>
                           </span>
                         </label>
                       </div>

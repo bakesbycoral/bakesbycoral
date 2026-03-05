@@ -31,6 +31,8 @@ export async function POST(request: NextRequest) {
     const notes = formData.get('notes') as string || '';
     const howDidYouHear = formData.get('how_did_you_hear') as string || '';
     const couponCode = formData.get('coupon_code') as string || '';
+    const addHalfDozenCookies = formData.get('add_half_dozen_cookies') === 'true';
+    const cookieFlavor = formData.get('cookie_flavor') as string || '';
 
     // Basic validation
     if (!name.trim()) {
@@ -87,6 +89,8 @@ export async function POST(request: NextRequest) {
         inspiration_image_count: imageCount,
         inspiration_image_urls: imageUrls,
         coupon_code: couponCode || null,
+        add_half_dozen_cookies: addHalfDozenCookies,
+        cookie_flavor: addHalfDozenCookies ? cookieFlavor : null,
       })
     ).run();
 
@@ -129,6 +133,8 @@ export async function POST(request: NextRequest) {
             allergies: allergies || '',
             notes: notes ? sanitizeInput(notes) : '',
             adminUrl: 'https://bakesbycoral.com/admin/orders',
+            addHalfDozenCookies,
+            cookieFlavor,
           }
         );
 
