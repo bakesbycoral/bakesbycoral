@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
       const adminEmailSetting = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('admin_email').first<{ value: string }>();
       const adminEmail = adminEmailSetting?.value || 'hello@bakesbycoral.com';
 
-      sendEmail(resendApiKey, {
+      await sendEmail(resendApiKey, {
         to: customer_email,
         subject: `Order Received - ${orderNumber}`,
         html: orderConfirmationEmail({
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
           pickupTime: pickup_time,
         }),
         replyTo: adminEmail,
-      }).catch(err => console.error('Failed to send customer confirmation email:', err));
+      });
     }
 
     return NextResponse.json({ id, order_number: orderNumber });

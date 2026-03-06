@@ -153,22 +153,10 @@ export function getDB(): D1Database | LocalDB {
   return db;
 }
 
-let _emailLoggerInitialized = false;
 function initEmailLogger(db: D1Database | LocalDB) {
-  if (_emailLoggerInitialized) return;
-  _emailLoggerInitialized = true;
-
-  import('@/lib/email').then(({ setEmailLogger }) => {
-    setEmailLogger((recipient, subject, status, error) => {
-      db.prepare(
-        'INSERT INTO email_log (recipient, subject, status, error) VALUES (?, ?, ?, ?)'
-      ).bind(recipient, subject, status, error || null).run().catch((e: unknown) => {
-        console.error('Failed to log email:', e);
-      });
-    });
-  }).catch(() => {
-    // email module not available (shouldn't happen server-side)
-  });
+  // Set DB ref on globalThis so email.ts can access it without importing db module
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).__emailLogDb = db;
 }
 
 // Get environment variables

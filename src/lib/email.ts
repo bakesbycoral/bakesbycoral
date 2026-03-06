@@ -68,25 +68,31 @@ export async function sendEmail(
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Failed to send email:', response.status, errorText);
-      if (_onEmailSent) _onEmailSent(recipient, options.subject, 'failed', errorText);
+      logEmailToDb(recipient, options.subject, 'failed', errorText);
       return false;
     }
 
-    if (_onEmailSent) _onEmailSent(recipient, options.subject, 'sent');
+    await logEmailToDb(recipient, options.subject, 'sent');
     return true;
   } catch (error) {
     console.error('Email sending error:', error);
-    if (_onEmailSent) _onEmailSent(recipient, options.subject, 'failed', error instanceof Error ? error.message : String(error));
+    await logEmailToDb(recipient, options.subject, 'failed', error instanceof Error ? error.message : String(error));
     return false;
   }
 }
 
-// Callback for logging emails — set by server-side code to avoid client-side db imports
-type EmailLogCallback = (recipient: string, subject: string, status: 'sent' | 'failed', error?: string) => void;
-let _onEmailSent: EmailLogCallback | null = null;
-
-export function setEmailLogger(cb: EmailLogCallback) {
-  _onEmailSent = cb;
+async function logEmailToDb(recipient: string, subject: string, status: 'sent' | 'failed', error?: string) {
+  try {
+    // Access the DB ref set by getDB() via globalThis to avoid importing db module
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = (globalThis as any).__emailLogDb;
+    if (!db) return;
+    await db.prepare(
+      'INSERT INTO email_log (recipient, subject, status, error) VALUES (?, ?, ?, ?)'
+    ).bind(recipient, subject, status, error || null).run();
+  } catch (e) {
+    console.error('Failed to log email:', e);
+  }
 }
 
 // Template variable replacement
