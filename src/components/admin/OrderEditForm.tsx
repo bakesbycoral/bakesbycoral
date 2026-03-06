@@ -29,6 +29,43 @@ interface OrderEditFormProps {
   onSave: () => void;
 }
 
+const EASTER_SELECTIONS = [
+  { value: "bento", label: "Bento Cake ($40)" },
+  { value: "cookie_cake", label: "Cookie Cake ($40)" },
+  { value: "cookies_dozen", label: "Thumbprint Confetti Cookies - 1 Dozen ($30)" },
+  { value: "bundle_bento", label: "Bundle: Bento Cake + 1/2 Dozen Cookies ($50)" },
+  { value: "bundle_cookie_cake", label: "Bundle: Cookie Cake + 1/2 Dozen Cookies ($50)" },
+];
+
+const EASTER_CAKE_FLAVORS = [
+  { value: "vanilla-bean", label: "Vanilla Bean" },
+  { value: "chocolate", label: "Chocolate" },
+  { value: "confetti", label: "Confetti" },
+  { value: "red-velvet", label: "Red Velvet" },
+  { value: "lemon", label: "Lemon" },
+  { value: "vanilla-latte", label: "Vanilla Latte (+$5)" },
+  { value: "marble", label: "Marble" },
+];
+
+const EASTER_FILLINGS = [
+  { value: "", label: "No Filling" },
+  { value: "chocolate-ganache", label: "Chocolate Ganache (+$5)" },
+  { value: "cookies-and-cream", label: "Cookies & Cream (+$3)" },
+  { value: "vanilla-bean-ganache", label: "Vanilla Bean Ganache (+$5)" },
+  { value: "fresh-strawberries", label: "Fresh Strawberries (+$4)" },
+  { value: "lemon-ganache", label: "Lemon Ganache (+$5)" },
+  { value: "raspberry", label: "Raspberry (+$4)" },
+];
+
+const EASTER_COLORS = [
+  { value: "pastel-yellow", label: "Pastel Yellow" },
+  { value: "baby-pink", label: "Baby Pink" },
+  { value: "light-blue", label: "Light Blue" },
+  { value: "lavender", label: "Lavender" },
+  { value: "pastel-orange", label: "Pastel Orange" },
+  { value: "white", label: "White" },
+];
+
 const COOKIE_FLAVORS = [
   { key: 'chocolateChip', label: 'Chocolate Chip' },
   { key: 'vanillaBeanSugar', label: 'Vanilla Bean Sugar' },
@@ -1008,6 +1045,207 @@ export function OrderEditForm({ order, onCancel, onSave }: OrderEditFormProps) {
             </div>
           )}
         </>
+      )}
+
+      {/* Order Details - Easter Collection */}
+      {order.order_type === 'easter_collection' && (
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+          <h2 className="font-semibold text-[#541409] mb-4">Easter Collection Details</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm text-[#541409]/70 mb-1">Selection</label>
+              <select
+                value={formData.selection || ''}
+                onChange={(e) => updateFormData('selection', e.target.value)}
+                className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+              >
+                <option value="">Select</option>
+                {EASTER_SELECTIONS.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {['bento', 'bundle_bento'].includes(formData.selection || '') && (
+              <>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Cake Flavor</label>
+                    <select
+                      value={formData.cake_flavor || ''}
+                      onChange={(e) => updateFormData('cake_flavor', e.target.value)}
+                      className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                    >
+                      <option value="">Select</option>
+                      {EASTER_CAKE_FLAVORS.map((f) => (
+                        <option key={f.value} value={f.value}>{f.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Filling</label>
+                    <select
+                      value={formData.filling || ''}
+                      onChange={(e) => updateFormData('filling', e.target.value)}
+                      className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                    >
+                      {EASTER_FILLINGS.map((f) => (
+                        <option key={f.value} value={f.value}>{f.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Base Color</label>
+                    <select
+                      value={formData.base_color || ''}
+                      onChange={(e) => updateFormData('base_color', e.target.value)}
+                      className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                    >
+                      <option value="">Select</option>
+                      {EASTER_COLORS.map((c) => (
+                        <option key={c.value} value={c.value}>{c.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Border Color</label>
+                    <select
+                      value={formData.border_color || ''}
+                      onChange={(e) => updateFormData('border_color', e.target.value)}
+                      className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                    >
+                      <option value="">Select</option>
+                      {EASTER_COLORS.map((c) => (
+                        <option key={c.value} value={c.value}>{c.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Messaging Color</label>
+                    <select
+                      value={formData.messaging_color || ''}
+                      onChange={(e) => updateFormData('messaging_color', e.target.value)}
+                      className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                    >
+                      <option value="">Select</option>
+                      {EASTER_COLORS.map((c) => (
+                        <option key={c.value} value={c.value}>{c.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-[#541409]/70 mb-1">Cake Message</label>
+                  <input
+                    type="text"
+                    value={formData.cake_message || ''}
+                    onChange={(e) => updateFormData('cake_message', e.target.value)}
+                    placeholder="e.g. Happy Easter!"
+                    className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                  />
+                </div>
+              </>
+            )}
+
+            <div>
+              <label className="block text-sm text-[#541409]/70 mb-1">Allergies</label>
+              <input
+                type="text"
+                value={formData.allergies || ''}
+                onChange={(e) => updateFormData('allergies', e.target.value)}
+                placeholder="Any allergies..."
+                className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Order Details - Tasting */}
+      {order.order_type === 'tasting' && (
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+          <h2 className="font-semibold text-[#541409] mb-4">Tasting Details</h2>
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-sm text-[#541409]/70 mb-1">Tasting Type</label>
+                <select
+                  value={formData.tasting_type || ''}
+                  onChange={(e) => updateFormData('tasting_type', e.target.value)}
+                  className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                >
+                  <option value="">Select</option>
+                  <option value="wedding">Wedding Tasting</option>
+                  <option value="general">General Tasting</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-[#541409]/70 mb-1">Wedding Date (if applicable)</label>
+                <input
+                  type="date"
+                  value={formData.wedding_date || ''}
+                  onChange={(e) => updateFormData('wedding_date', e.target.value)}
+                  className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm text-[#541409]/70 mb-1">Allergies</label>
+              <input
+                type="text"
+                value={formData.allergies || ''}
+                onChange={(e) => updateFormData('allergies', e.target.value)}
+                placeholder="Any allergies..."
+                className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Order Details - Cookie Cups */}
+      {order.order_type === 'cookie_cups' && (
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+          <h2 className="font-semibold text-[#541409] mb-4">Cookie Cups Details</h2>
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-sm text-[#541409]/70 mb-1">Quantity</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={formData.quantity || ''}
+                  onChange={(e) => updateFormData('quantity', e.target.value)}
+                  className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-[#541409]/70 mb-1">Design Notes</label>
+                <input
+                  type="text"
+                  value={formData.design_notes || ''}
+                  onChange={(e) => updateFormData('design_notes', e.target.value)}
+                  placeholder="Design preferences..."
+                  className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm text-[#541409]/70 mb-1">Allergies</label>
+              <input
+                type="text"
+                value={formData.allergies || ''}
+                onChange={(e) => updateFormData('allergies', e.target.value)}
+                placeholder="Any allergies..."
+                className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+              />
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Payment */}

@@ -66,6 +66,8 @@ const orderTypeLabels: Record<string, string> = {
   cake: 'Custom Cake',
   wedding: 'Wedding',
   tasting: 'Tasting Order',
+  easter_collection: 'Easter Collection',
+  cookie_cups: 'Cookie Cups',
 };
 
 const orderTypeColors: Record<string, string> = {
@@ -74,6 +76,8 @@ const orderTypeColors: Record<string, string> = {
   cake: 'bg-[#e4f7bf] text-[#3d5c1a]',
   wedding: 'bg-[#d0f0ff] text-[#1a4a5c]',
   tasting: 'bg-[#d6e2ff] text-[#2a3a5c]',
+  easter_collection: 'bg-[#fce4ec] text-[#5c1a2a]',
+  cookie_cups: 'bg-[#fff3e0] text-[#5c3a1a]',
 };
 
 function formatCurrency(cents: number | null): string {
