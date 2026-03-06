@@ -30,13 +30,13 @@ export interface RateLimitConfig {
 export const RATE_LIMITS = {
   login: { maxRequests: 5, windowMs: 15 * 60 * 1000 },       // 5 per 15 min
   setup: { maxRequests: 3, windowMs: 60 * 60 * 1000 },       // 3 per hour
-  publicForm: { maxRequests: 10, windowMs: 60 * 60 * 1000 },  // 10 per hour
+  publicForm: { maxRequests: 30, windowMs: 60 * 60 * 1000 },  // 30 per hour
   contact: { maxRequests: 5, windowMs: 60 * 60 * 1000 },      // 5 per hour
   newsletter: { maxRequests: 5, windowMs: 60 * 60 * 1000 },   // 5 per hour
   couponValidation: { maxRequests: 30, windowMs: 60 * 60 * 1000 }, // 30 per hour
   quoteToken: { maxRequests: 20, windowMs: 15 * 60 * 1000 },  // 20 per 15 min
   cron: { maxRequests: 5, windowMs: 60 * 60 * 1000 },         // 5 per hour
-  emailSend: { maxRequests: 10, windowMs: 60 * 60 * 1000 },   // 10 per hour
+  emailSend: { maxRequests: 10, windowMs: 60 * 60 * 1000 },   // 30 per hour
   contractToken: { maxRequests: 20, windowMs: 15 * 60 * 1000 }, // 20 per 15 min
 } as const;
 
