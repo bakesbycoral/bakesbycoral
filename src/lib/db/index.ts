@@ -131,20 +131,44 @@ function getLocalDatabase(): LocalDB {
 
 // Get database instance
 export function getDB(): D1Database | LocalDB {
+  let db: D1Database | LocalDB;
   try {
     // Try OpenNext's getCloudflareContext first
     const { env } = getCloudflareContext();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const envAny = env as any;
     if (envAny && envAny.DB) {
-      return envAny.DB as D1Database;
+      db = envAny.DB as D1Database;
+    } else {
+      db = getLocalDatabase();
     }
   } catch {
     // Not in Cloudflare context, use local database
+    db = getLocalDatabase();
   }
 
-  // Local development
-  return getLocalDatabase();
+  // Initialize email logger if not already set
+  initEmailLogger(db);
+
+  return db;
+}
+
+let _emailLoggerInitialized = false;
+function initEmailLogger(db: D1Database | LocalDB) {
+  if (_emailLoggerInitialized) return;
+  _emailLoggerInitialized = true;
+
+  import('@/lib/email').then(({ setEmailLogger }) => {
+    setEmailLogger((recipient, subject, status, error) => {
+      db.prepare(
+        'INSERT INTO email_log (recipient, subject, status, error) VALUES (?, ?, ?, ?)'
+      ).bind(recipient, subject, status, error || null).run().catch((e: unknown) => {
+        console.error('Failed to log email:', e);
+      });
+    });
+  }).catch(() => {
+    // email module not available (shouldn't happen server-side)
+  });
 }
 
 // Get environment variables

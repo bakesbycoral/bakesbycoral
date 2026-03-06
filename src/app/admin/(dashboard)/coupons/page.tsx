@@ -24,6 +24,8 @@ const ORDER_TYPE_OPTIONS = [
   { value: 'cake', label: 'Cakes' },
   { value: 'wedding', label: 'Wedding' },
   { value: 'tasting', label: 'Tasting Box' },
+  { value: 'easter_collection', label: 'Limited Collection' },
+  { value: 'cookie_cups', label: 'Cookie Cups' },
 ];
 
 export default function CouponsPage() {

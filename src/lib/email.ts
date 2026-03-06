@@ -41,6 +41,8 @@ export async function sendEmail(
     return false;
   }
 
+  const recipient = Array.isArray(options.to) ? options.to.join(', ') : options.to;
+
   try {
     const emailData: Record<string, unknown> = {
       from: options.from || 'Bakes by Coral <hello@bakesbycoral.com>',
@@ -66,14 +68,25 @@ export async function sendEmail(
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Failed to send email:', response.status, errorText);
+      if (_onEmailSent) _onEmailSent(recipient, options.subject, 'failed', errorText);
       return false;
     }
 
+    if (_onEmailSent) _onEmailSent(recipient, options.subject, 'sent');
     return true;
   } catch (error) {
     console.error('Email sending error:', error);
+    if (_onEmailSent) _onEmailSent(recipient, options.subject, 'failed', error instanceof Error ? error.message : String(error));
     return false;
   }
+}
+
+// Callback for logging emails — set by server-side code to avoid client-side db imports
+type EmailLogCallback = (recipient: string, subject: string, status: 'sent' | 'failed', error?: string) => void;
+let _onEmailSent: EmailLogCallback | null = null;
+
+export function setEmailLogger(cb: EmailLogCallback) {
+  _onEmailSent = cb;
 }
 
 // Template variable replacement
@@ -188,6 +201,8 @@ const ORDER_TYPE_LABELS: Record<string, string> = {
   cake: 'Custom Cake',
   wedding: 'Wedding Inquiry',
   tasting: 'Tasting Order',
+  easter_collection: 'Limited Collection Order',
+  cookie_cups: 'Cookie Cups Order',
 };
 
 // Format order details for email
@@ -248,7 +263,7 @@ function formatTime(timeStr: string): string {
 // Format date for display
 function formatDate(dateStr: string): string {
   if (!dateStr) return '';
-  return new Date(dateStr).toLocaleDateString('en-US', {
+  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -1548,6 +1563,54 @@ export const DEFAULT_ADMIN_TEMPLATES = {
 **Pickup Time:** {{pickup_time}}
 
 {{admin_link}}`,
+
+  cookie_cups_order: `**New Cookie Cups Order**
+
+**Order Number:** {{order_number}}
+**Amount:** {{amount}}
+
+**Customer Information:**
+**Name:** {{customer_name}}
+**Email:** {{customer_email}}
+**Phone:** {{customer_phone}}
+
+**Order Details:**
+**Quantity:** {{quantity}} cookie cups
+**Chocolate Molds:** {{chocolate_molds}}
+**Edible Glitter:** {{edible_glitter}}
+**Occasion:** {{occasion}}
+**Colors:** {{colors}}
+**Design Details:** {{design_details}}
+
+**Pickup:**
+**Date:** {{pickup_date}}
+**Time:** {{pickup_time}}
+
+{{allergies}}
+{{notes}}
+
+{{admin_link}}`,
+
+  limited_collection_order: `**New Limited Collection Order**
+
+**Order Number:** {{order_number}}
+**Amount:** {{amount}}
+
+**Customer Information:**
+**Name:** {{customer_name}}
+**Email:** {{customer_email}}
+**Phone:** {{customer_phone}}
+
+**Order Details:**
+{{order_details}}
+
+**Pickup:**
+**Date:** {{pickup_date}}
+**Time:** {{pickup_time}}
+
+{{notes}}
+
+{{admin_link}}`,
 };
 
 export const DEFAULT_ADMIN_SUBJECTS = {
@@ -1556,6 +1619,8 @@ export const DEFAULT_ADMIN_SUBJECTS = {
   large_cookie_order: 'New Large Cookie Order - {{order_number}}',
   wedding_inquiry: 'New Wedding Inquiry - {{order_number}}',
   tasting_order: 'New Tasting Order - {{order_number}}',
+  cookie_cups_order: 'New Cookie Cups Order - {{order_number}}',
+  limited_collection_order: 'New Limited Collection Order - {{order_number}}',
 };
 
 // Build contact form notification email
@@ -1826,6 +1891,112 @@ export function buildTastingOrderNotification(
     .replace(/\n/g, '<br>');
 
   const html = wrapInEmailTemplate(processedBody, processedSubject, 'New Tasting Order');
+
+  return { subject: processedSubject, html };
+}
+
+// Build cookie cups order notification email
+export function buildCookieCupsOrderNotification(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    orderNumber: string;
+    amount: number;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    quantity: number;
+    chocolateMolds: boolean;
+    edibleGlitter: boolean;
+    occasion: string;
+    colors: string;
+    designDetails: string;
+    pickupDate: string;
+    pickupTime: string;
+    allergies: string;
+    notes: string;
+    adminUrl: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_ADMIN_TEMPLATES.cookie_cups_order;
+  const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.cookie_cups_order;
+
+  const safeAdminUrl = data.adminUrl.startsWith('https://') || data.adminUrl.startsWith('http://') ? data.adminUrl : '#';
+
+  const variables: Record<string, string> = {
+    order_number: data.orderNumber,
+    amount: formatPrice(data.amount),
+    customer_name: data.customerName,
+    customer_email: data.customerEmail,
+    customer_phone: data.customerPhone,
+    quantity: String(data.quantity),
+    chocolate_molds: data.chocolateMolds ? 'Yes (+$4/dz)' : 'No',
+    edible_glitter: data.edibleGlitter ? 'Yes (+$2/dz)' : 'No',
+    occasion: data.occasion || 'Not specified',
+    colors: data.colors || 'Not specified',
+    design_details: data.designDetails || 'Not specified',
+    pickup_date: data.pickupDate || 'TBD',
+    pickup_time: data.pickupTime || 'TBD',
+    allergies: data.allergies ? `**Allergies:** ${data.allergies}` : '',
+    notes: data.notes ? `**Additional Notes:** ${data.notes}` : '',
+    admin_link: `[View in Admin Dashboard](${safeAdminUrl})`,
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  const processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'New Cookie Cups Order');
+
+  return { subject: processedSubject, html };
+}
+
+// Build limited collection order notification email
+export function buildLimitedCollectionOrderNotification(
+  template: string | undefined,
+  subject: string | undefined,
+  data: {
+    orderNumber: string;
+    amount: number;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    pickupDate: string;
+    pickupTime: string;
+    orderDetails: string;
+    notes: string;
+    adminUrl: string;
+  }
+): { subject: string; html: string } {
+  const templateText = template || DEFAULT_ADMIN_TEMPLATES.limited_collection_order;
+  const subjectText = subject || DEFAULT_ADMIN_SUBJECTS.limited_collection_order;
+
+  const safeAdminUrl = data.adminUrl.startsWith('https://') || data.adminUrl.startsWith('http://') ? data.adminUrl : '#';
+
+  const variables: Record<string, string> = {
+    order_number: data.orderNumber,
+    amount: formatPrice(data.amount),
+    customer_name: data.customerName,
+    customer_email: data.customerEmail,
+    customer_phone: data.customerPhone,
+    pickup_date: data.pickupDate || 'TBD',
+    pickup_time: data.pickupTime || 'TBD',
+    order_details: data.orderDetails,
+    notes: data.notes ? `**Additional Notes:** ${data.notes}` : '',
+    admin_link: `[View in Admin Dashboard](${safeAdminUrl})`,
+  };
+
+  const processedSubject = replaceTemplateVariables(subjectText, variables);
+  const processedBody = replaceTemplateVariables(templateText, variables)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, 'New Limited Collection Order');
 
   return { subject: processedSubject, html };
 }

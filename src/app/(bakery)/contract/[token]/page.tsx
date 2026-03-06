@@ -80,7 +80,7 @@ export default function ContractPage({ params }: { params: Promise<{ token: stri
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',

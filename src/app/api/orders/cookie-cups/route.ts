@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar, upsertClientFromOrder } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
-import { sendEmail } from '@/lib/email';
+import { sendEmail, buildCookieCupsOrderNotification } from '@/lib/email';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
@@ -94,8 +94,6 @@ export async function POST(request: NextRequest) {
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
     if (resendApiKey) {
       try {
-        const formatPrice = (cents: number) => `$${(cents / 100).toFixed(0)}`;
-
         // Convert images to base64 attachments
         const attachments = [];
         for (let i = 0; i < inspirationImages.length; i++) {
@@ -110,48 +108,40 @@ export async function POST(request: NextRequest) {
           }
         }
 
+        const adminEmailSetting = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('admin_email').first<{ value: string }>();
+        const adminEmailAddr = adminEmailSetting?.value || 'coral@bakesbycoral.com';
+
+        // Load custom template from settings
+        const adminTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('email_template_cookie_cups_order').first<{ value: string }>();
+        const adminSubject = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('email_subject_cookie_cups_order').first<{ value: string }>();
+
+        const adminNotification = buildCookieCupsOrderNotification(
+          adminTemplate?.value,
+          adminSubject?.value,
+          {
+            orderNumber,
+            amount: total,
+            customerName: sanitizeInput(name),
+            customerEmail: sanitizeInput(email),
+            customerPhone: sanitizeInput(phone),
+            quantity: parseInt(quantity),
+            chocolateMolds,
+            edibleGlitter,
+            occasion: sanitizeInput(occasion),
+            colors: sanitizeInput(colors),
+            designDetails: sanitizeInput(designDetails),
+            pickupDate,
+            pickupTime,
+            allergies: sanitizeInput(allergies),
+            notes: sanitizeInput(notes),
+            adminUrl: 'https://bakesbycoral.com/admin/orders',
+          }
+        );
+
         await sendEmail(resendApiKey, {
-          to: 'coral@bakesbycoral.com',
-          subject: `New Cookie Cups Order: ${orderNumber}`,
-          html: `
-            <h2>New Cookie Cups Order!</h2>
-            <p><strong>Order Number:</strong> ${orderNumber}</p>
-
-            <h3>Customer</h3>
-            <p>
-              <strong>Name:</strong> ${sanitizeInput(name)}<br>
-              <strong>Email:</strong> ${sanitizeInput(email)}<br>
-              <strong>Phone:</strong> ${sanitizeInput(phone)}
-            </p>
-
-            <h3>Order Details</h3>
-            <p>
-              <strong>Quantity:</strong> ${quantity} cookie cups<br>
-              <strong>Chocolate Molds:</strong> ${chocolateMolds ? 'Yes (+$4/dz)' : 'No'}<br>
-              <strong>Edible Glitter:</strong> ${edibleGlitter ? 'Yes (+$2/dz)' : 'No'}<br>
-              <strong>Total:</strong> ${formatPrice(total)}
-            </p>
-
-            <h3>Customization</h3>
-            <p>
-              <strong>Occasion:</strong> ${occasion || 'Not specified'}<br>
-              <strong>Colors:</strong> ${colors || 'Not specified'}<br>
-              <strong>Design Details:</strong> ${designDetails || 'Not specified'}
-            </p>
-
-            <h3>Pickup</h3>
-            <p>
-              <strong>Date:</strong> ${pickupDate || 'Not specified'}<br>
-              <strong>Time:</strong> ${pickupTime || 'Not specified'}
-            </p>
-
-            ${allergies ? `<p><strong>Allergies:</strong> ${sanitizeInput(allergies)}</p>` : ''}
-            ${notes ? `<p><strong>Additional Notes:</strong> ${sanitizeInput(notes)}</p>` : ''}
-
-            <p><strong>Inspiration Images:</strong> ${imageCount > 0 ? `${imageCount} attached` : 'None'}</p>
-
-            <p><a href="https://bakesbycoral.com/admin/orders">View in Admin</a></p>
-          `,
+          to: adminEmailAddr,
+          subject: adminNotification.subject,
+          html: adminNotification.html,
           replyTo: email,
           attachments: attachments.length > 0 ? attachments : undefined,
         });

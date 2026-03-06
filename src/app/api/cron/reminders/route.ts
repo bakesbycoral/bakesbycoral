@@ -63,10 +63,13 @@ export async function GET(request: NextRequest) {
       .bind('email_subject_reminder')
       .first<{ value: string }>();
 
-    // Calculate target pickup date
-    const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() + daysBeforePickup);
-    const targetDateStr = targetDate.toISOString().split('T')[0];
+    // Calculate target pickup date in US Eastern time
+    const now = new Date();
+    const easternNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    easternNow.setDate(easternNow.getDate() + daysBeforePickup);
+    const targetDateStr = easternNow.getFullYear() + '-' +
+      String(easternNow.getMonth() + 1).padStart(2, '0') + '-' +
+      String(easternNow.getDate()).padStart(2, '0');
 
     // Find confirmed orders with pickup on target date that haven't received reminders
     const orders = await db.prepare(`
@@ -150,7 +153,7 @@ export async function GET(request: NextRequest) {
               .bind(smsTemplateKey)
               .first<{ value: string }>();
 
-            const dateFormatted = new Date(order.pickup_date).toLocaleDateString('en-US', {
+            const dateFormatted = new Date(order.pickup_date + 'T12:00:00').toLocaleDateString('en-US', {
               weekday: 'short',
               month: 'short',
               day: 'numeric',

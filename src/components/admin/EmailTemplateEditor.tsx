@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { sanitizeHtml } from '@/lib/sanitize';
 
 type CustomerTemplateKey = 'form_submission' | 'confirmation' | 'confirmation_delivery' | 'reminder' | 'reminder_delivery' | 'quote' | 'quote_approved' | 'balance_invoice' | 'balance_invoice_delivery' | 'contract_sent' | 'contract_signed';
-type AdminTemplateKey = 'contact_form' | 'cake_inquiry' | 'large_cookie_order' | 'wedding_inquiry' | 'tasting_order';
+type AdminTemplateKey = 'contact_form' | 'cake_inquiry' | 'large_cookie_order' | 'wedding_inquiry' | 'tasting_order' | 'cookie_cups_order' | 'limited_collection_order';
 type TemplateKey = CustomerTemplateKey | AdminTemplateKey;
 
 interface EmailTemplateEditorProps {
@@ -80,6 +80,14 @@ const ADMIN_TEMPLATE_INFO: Record<AdminTemplateKey, { label: string; description
   tasting_order: {
     label: 'Tasting Order',
     description: 'Notification when someone submits a tasting order',
+  },
+  cookie_cups_order: {
+    label: 'Cookie Cups Order',
+    description: 'Notification when someone submits a cookie cups order',
+  },
+  limited_collection_order: {
+    label: 'Limited Collection Order',
+    description: 'Notification when someone submits a limited collection order',
   },
 };
 

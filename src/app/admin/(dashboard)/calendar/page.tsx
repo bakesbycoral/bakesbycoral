@@ -42,6 +42,8 @@ const orderTypeColors: Record<string, string> = {
   cake: 'bg-[#e4f7bf] text-[#3d5c1a] border-[#c8e09a]',
   wedding: 'bg-[#d0f0ff] text-[#1a4a5c] border-[#a8d8f0]',
   tasting: 'bg-[#d6e2ff] text-[#2a3a5c] border-[#b8c8f0]',
+  easter_collection: 'bg-[#fce4ec] text-[#5c1a2a] border-[#f0c0d0]',
+  cookie_cups: 'bg-[#fff3e0] text-[#5c3a1a] border-[#f0d8b8]',
 };
 
 const orderTypeLabels: Record<string, string> = {
@@ -50,6 +52,8 @@ const orderTypeLabels: Record<string, string> = {
   cake: 'Cake',
   wedding: 'Wedding',
   tasting: 'Tasting',
+  easter_collection: 'Limited Collection',
+  cookie_cups: 'Cookie Cups',
 };
 
 const statusColors: Record<string, string> = {
@@ -405,7 +409,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
             {selectedDay ? (
               <>
                 <h2 className="font-semibold text-[#541409] mb-1">
-                  {new Date(selectedDateStr!).toLocaleDateString('en-US', {
+                  {new Date(selectedDateStr! + 'T12:00:00').toLocaleDateString('en-US', {
                     weekday: 'long',
                     month: 'long',
                     day: 'numeric'

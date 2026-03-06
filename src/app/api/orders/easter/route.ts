@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar, upsertClientFromOrder } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
-import { sendEmail, orderConfirmationEmail, adminNewOrderEmail } from '@/lib/email';
+import { sendEmail, orderConfirmationEmail, buildLimitedCollectionOrderNotification } from '@/lib/email';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import Stripe from 'stripe';
 
@@ -204,18 +204,42 @@ export async function POST(request: NextRequest) {
         replyTo: adminEmail,
       }).catch(err => console.error('Failed to send customer email:', err));
 
-      sendEmail(resendApiKey, {
-        to: adminEmail,
-        subject: `New Easter Collection Order - ${orderNumber}`,
-        html: adminNewOrderEmail({
+      // Build order details summary
+      const detailParts: string[] = [];
+      detailParts.push(`**Item:** ${formData.item_label}`);
+      if (formData.cake_flavor_label) detailParts.push(`**Cake Flavor:** ${formData.cake_flavor_label}`);
+      if (formData.filling_label) detailParts.push(`**Filling:** ${formData.filling_label}`);
+      if (formData.base_color) detailParts.push(`**Base Color:** ${formData.base_color}`);
+      if (formData.border_color) detailParts.push(`**Border Color:** ${formData.border_color}`);
+      if (formData.messaging_color) detailParts.push(`**Messaging Color:** ${formData.messaging_color}`);
+      if (formData.cake_message) detailParts.push(`**Cake Message:** ${formData.cake_message}`);
+      if (formData.allergies) detailParts.push(`**Allergies:** ${formData.allergies}`);
+
+      // Load custom template from settings
+      const adminTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('email_template_limited_collection_order').first<{ value: string }>();
+      const adminSubject = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('email_subject_limited_collection_order').first<{ value: string }>();
+
+      const adminNotification = buildLimitedCollectionOrderNotification(
+        adminTemplate?.value,
+        adminSubject?.value,
+        {
+          orderNumber,
+          amount: totalAmount,
           customerName: name,
           customerEmail: email,
           customerPhone: phone,
-          orderNumber: orderNumber,
-          orderType: 'easter_collection',
-          pickupDate: pickupDate,
-          formData: formData,
-        }),
+          pickupDate,
+          pickupTime,
+          orderDetails: detailParts.join('\n'),
+          notes: formData.how_did_you_hear ? `How they heard about us: ${formData.how_did_you_hear}` : '',
+          adminUrl: 'https://bakesbycoral.com/admin/orders',
+        }
+      );
+
+      sendEmail(resendApiKey, {
+        to: adminEmail,
+        subject: adminNotification.subject,
+        html: adminNotification.html,
       }).catch(err => console.error('Failed to send admin email:', err));
     }
 

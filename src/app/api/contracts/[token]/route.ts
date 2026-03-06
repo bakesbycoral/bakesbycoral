@@ -46,7 +46,7 @@ export async function GET(
     // Replace {{variables}} in contract_body with actual values
     let renderedBody = contract.contract_body || '';
     const replacements: Record<string, string> = {
-      '{{event_date}}': contract.event_date ? new Date(contract.event_date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : 'TBD',
+      '{{event_date}}': contract.event_date ? new Date(contract.event_date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : 'TBD',
       '{{venue_name}}': contract.venue_name || 'TBD',
       '{{venue_address}}': contract.venue_address || 'TBD',
       '{{guest_count}}': contract.guest_count || 'TBD',

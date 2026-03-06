@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate order type
-    const validTypes = ['cookies', 'cookies_large', 'cake', 'wedding'];
+    const validTypes = ['cookies', 'cookies_large', 'cake', 'wedding', 'tasting', 'cookie_cups', 'easter_collection'];
     if (!validTypes.includes(order_type)) {
       return NextResponse.json({ error: 'Invalid order type' }, { status: 400 });
     }

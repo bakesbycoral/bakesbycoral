@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "deploy": "npx wrangler pages deploy",
+    "deploy": "npx opennextjs-cloudflare build && npx wrangler deploy",
     "db:init": "node scripts/init-local-db.js",
     "db:init:seed": "node scripts/init-local-db.js --seed",
     "db:migrate": "npx wrangler d1 execute bakes-coral-db --file=src/lib/db/schema.sql --remote",

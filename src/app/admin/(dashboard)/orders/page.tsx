@@ -37,6 +37,8 @@ const orderTypeLabels: Record<string, string> = {
   cake: 'Cake',
   wedding: 'Wedding',
   tasting: 'Tasting Box',
+  easter_collection: 'Limited Collection',
+  cookie_cups: 'Cookie Cups',
 };
 
 const orderTypeColors: Record<string, string> = {
@@ -45,6 +47,8 @@ const orderTypeColors: Record<string, string> = {
   cake: 'bg-[#e4f7bf] text-[#3d5c1a]',
   wedding: 'bg-[#d0f0ff] text-[#1a4a5c]',
   tasting: 'bg-[#d6e2ff] text-[#2a3a5c]',
+  easter_collection: 'bg-[#fce4ec] text-[#5c1a2a]',
+  cookie_cups: 'bg-[#fff3e0] text-[#5c3a1a]',
 };
 
 function formatCurrency(cents: number | null): string {
@@ -53,7 +57,7 @@ function formatCurrency(cents: number | null): string {
 }
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
+  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',

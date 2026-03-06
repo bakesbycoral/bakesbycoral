@@ -1,15 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { EmailTemplateEditor } from '@/components/admin/EmailTemplateEditor';
 import { SmsTemplateEditor } from '@/components/admin/SmsTemplateEditor';
 import { DEFAULT_TEMPLATES, DEFAULT_SUBJECTS } from '@/lib/email';
 import { DEFAULT_ADMIN_TEMPLATES, DEFAULT_ADMIN_SUBJECTS } from '@/lib/email';
 import { DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
 
+interface EmailLogEntry {
+  id: number;
+  recipient: string;
+  subject: string;
+  status: 'sent' | 'failed';
+  error: string | null;
+  created_at: string;
+}
+
 const ALL_TEMPLATE_KEYS = [
   'form_submission', 'confirmation', 'confirmation_delivery', 'reminder', 'reminder_delivery', 'quote', 'quote_approved', 'balance_invoice', 'balance_invoice_delivery',
-  'contact_form', 'cake_inquiry', 'large_cookie_order', 'wedding_inquiry', 'tasting_order',
+  'contact_form', 'cake_inquiry', 'large_cookie_order', 'wedding_inquiry', 'tasting_order', 'cookie_cups_order', 'limited_collection_order',
 ];
 
 const ALL_SMS_KEYS = ['quote_sent', 'order_confirmed', 'balance_invoice', 'pickup_reminder', 'order_confirmed_delivery', 'balance_invoice_delivery', 'delivery_reminder'];
@@ -19,7 +28,34 @@ export default function EmailsPage() {
   const [subjects, setSubjects] = useState<Record<string, string>>({});
   const [smsTemplates, setSmsTemplates] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState<'email' | 'sms'>('email');
+  const [activeSection, setActiveSection] = useState<'email' | 'sms' | 'log'>('email');
+  const [emailLogs, setEmailLogs] = useState<EmailLogEntry[]>([]);
+  const [logPage, setLogPage] = useState(1);
+  const [logTotalPages, setLogTotalPages] = useState(1);
+  const [logTotal, setLogTotal] = useState(0);
+  const [logLoading, setLogLoading] = useState(false);
+  const [logFilter, setLogFilter] = useState('');
+  const [logStatusFilter, setLogStatusFilter] = useState('');
+
+  const loadEmailLogs = useCallback(async (page: number, search: string, status: string) => {
+    setLogLoading(true);
+    try {
+      const params = new URLSearchParams({ page: String(page) });
+      if (search) params.set('search', search);
+      if (status) params.set('status', status);
+      const res = await fetch(`/api/admin/email-log?${params}`);
+      if (res.ok) {
+        const data = await res.json() as { logs: EmailLogEntry[]; total: number; page: number; totalPages: number };
+        setEmailLogs(data.logs);
+        setLogTotalPages(data.totalPages);
+        setLogTotal(data.total);
+      }
+    } catch (e) {
+      console.error('Failed to load email logs:', e);
+    } finally {
+      setLogLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     async function loadTemplates() {
@@ -67,6 +103,11 @@ export default function EmailsPage() {
           loadedSubjects.wedding_inquiry = settings.email_subject_wedding_inquiry || DEFAULT_ADMIN_SUBJECTS.wedding_inquiry;
           loadedSubjects.tasting_order = settings.email_subject_tasting_order || DEFAULT_ADMIN_SUBJECTS.tasting_order;
 
+          loadedTemplates.cookie_cups_order = settings.email_template_cookie_cups_order || DEFAULT_ADMIN_TEMPLATES.cookie_cups_order;
+          loadedSubjects.cookie_cups_order = settings.email_subject_cookie_cups_order || DEFAULT_ADMIN_SUBJECTS.cookie_cups_order;
+          loadedTemplates.limited_collection_order = settings.email_template_limited_collection_order || DEFAULT_ADMIN_TEMPLATES.limited_collection_order;
+          loadedSubjects.limited_collection_order = settings.email_subject_limited_collection_order || DEFAULT_ADMIN_SUBJECTS.limited_collection_order;
+
           // SMS templates
           const loadedSmsTemplates: Record<string, string> = {};
           loadedSmsTemplates.quote_sent = settings.sms_template_quote_sent || DEFAULT_SMS_TEMPLATES.quote_sent;
@@ -90,6 +131,12 @@ export default function EmailsPage() {
 
     loadTemplates();
   }, []);
+
+  useEffect(() => {
+    if (activeSection === 'log') {
+      loadEmailLogs(logPage, logFilter, logStatusFilter);
+    }
+  }, [activeSection, logPage, logFilter, logStatusFilter, loadEmailLogs]);
 
   const handleSave = async (newSettings: Record<string, string>) => {
     const response = await fetch('/api/admin/settings', {
@@ -199,22 +246,151 @@ export default function EmailsPage() {
           </svg>
           SMS Templates
         </button>
+        <button
+          onClick={() => setActiveSection('log')}
+          className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+            activeSection === 'log'
+              ? 'bg-[#541409] text-[#EAD6D6]'
+              : 'bg-white text-[#541409] border border-[#EAD6D6] hover:border-[#541409]'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Sent Log
+        </button>
       </div>
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-[#EAD6D6]">
-        {activeSection === 'email' ? (
-          <EmailTemplateEditor
-            templates={templates}
-            subjects={subjects}
-            onSave={handleSave}
-          />
-        ) : (
-          <SmsTemplateEditor
-            templates={smsTemplates}
-            onSave={handleSaveSms}
-          />
-        )}
-      </div>
+      {activeSection === 'log' ? (
+        <div className="bg-white rounded-xl shadow-sm border border-[#EAD6D6]">
+          {/* Filters */}
+          <div className="p-4 border-b border-[#EAD6D6] flex flex-col sm:flex-row gap-3">
+            <input
+              type="text"
+              placeholder="Search by recipient or subject..."
+              value={logFilter}
+              onChange={(e) => { setLogFilter(e.target.value); setLogPage(1); }}
+              className="flex-1 px-3 py-2 border border-[#EAD6D6] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#541409]/20"
+            />
+            <select
+              value={logStatusFilter}
+              onChange={(e) => { setLogStatusFilter(e.target.value); setLogPage(1); }}
+              className="px-3 py-2 border border-[#EAD6D6] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#541409]/20"
+            >
+              <option value="">All Status</option>
+              <option value="sent">Sent</option>
+              <option value="failed">Failed</option>
+            </select>
+            <span className="text-sm text-[#541409]/60 self-center whitespace-nowrap">
+              {logTotal} email{logTotal !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          {logLoading ? (
+            <div className="p-8 text-center text-[#541409]/50">Loading...</div>
+          ) : emailLogs.length === 0 ? (
+            <div className="p-8 text-center text-[#541409]/50">
+              No emails logged yet. Emails will appear here once they are sent.
+            </div>
+          ) : (
+            <>
+              {/* Mobile cards */}
+              <div className="sm:hidden divide-y divide-[#EAD6D6]">
+                {emailLogs.map((log) => (
+                  <div key={log.id} className="p-4 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-[#541409] truncate mr-2">{log.recipient}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        log.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      }`}>
+                        {log.status}
+                      </span>
+                    </div>
+                    <p className="text-sm text-[#541409]/70 truncate">{log.subject}</p>
+                    <p className="text-xs text-[#541409]/50">
+                      {new Date(log.created_at + 'Z').toLocaleString()}
+                    </p>
+                    {log.error && <p className="text-xs text-red-600 truncate">{log.error}</p>}
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[#EAD6D6] text-left text-[#541409]/60">
+                      <th className="px-4 py-3 font-medium">Date</th>
+                      <th className="px-4 py-3 font-medium">Recipient</th>
+                      <th className="px-4 py-3 font-medium">Subject</th>
+                      <th className="px-4 py-3 font-medium">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#EAD6D6]/50">
+                    {emailLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-[#EAD6D6]/10">
+                        <td className="px-4 py-3 text-[#541409]/70 whitespace-nowrap">
+                          {new Date(log.created_at + 'Z').toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 text-[#541409] font-medium">{log.recipient}</td>
+                        <td className="px-4 py-3 text-[#541409]/70 max-w-xs truncate">{log.subject}</td>
+                        <td className="px-4 py-3">
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                            log.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                          }`}>
+                            {log.status}
+                          </span>
+                          {log.error && (
+                            <p className="text-xs text-red-500 mt-1 max-w-xs truncate" title={log.error}>{log.error}</p>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {logTotalPages > 1 && (
+                <div className="p-4 border-t border-[#EAD6D6] flex items-center justify-between">
+                  <button
+                    onClick={() => setLogPage(p => Math.max(1, p - 1))}
+                    disabled={logPage <= 1}
+                    className="px-3 py-1.5 text-sm border border-[#EAD6D6] rounded-lg disabled:opacity-40 hover:border-[#541409] transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm text-[#541409]/60">
+                    Page {logPage} of {logTotalPages}
+                  </span>
+                  <button
+                    onClick={() => setLogPage(p => Math.min(logTotalPages, p + 1))}
+                    disabled={logPage >= logTotalPages}
+                    className="px-3 py-1.5 text-sm border border-[#EAD6D6] rounded-lg disabled:opacity-40 hover:border-[#541409] transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#EAD6D6]">
+          {activeSection === 'email' ? (
+            <EmailTemplateEditor
+              templates={templates}
+              subjects={subjects}
+              onSave={handleSave}
+            />
+          ) : (
+            <SmsTemplateEditor
+              templates={smsTemplates}
+              onSave={handleSaveSms}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }

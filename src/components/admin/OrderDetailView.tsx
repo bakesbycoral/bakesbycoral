@@ -66,7 +66,7 @@ const orderTypeLabels: Record<string, string> = {
   cake: 'Custom Cake',
   wedding: 'Wedding',
   tasting: 'Tasting Order',
-  easter_collection: 'Easter Collection',
+  easter_collection: 'Limited Collection',
   cookie_cups: 'Cookie Cups',
 };
 

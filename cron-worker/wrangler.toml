@@ -1,0 +1,7 @@
+name = "bakes-by-coral-cron"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+# Run daily at 9 AM EST (14:00 UTC)
+[triggers]
+crons = ["0 14 * * *"]

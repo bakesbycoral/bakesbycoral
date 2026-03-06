@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
                     .first<{ value: string }>();
 
                   const dateFormatted = order.pickup_date
-                    ? new Date(order.pickup_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+                    ? new Date(order.pickup_date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
                     : '';
 
                   const smsBody = buildSmsMessage(
@@ -383,7 +383,7 @@ export async function POST(request: NextRequest) {
                   .first<{ value: string }>();
 
                 const dateFormatted = order.pickup_date
-                  ? new Date(order.pickup_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+                  ? new Date(order.pickup_date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
                   : '';
 
                 const smsBody = buildSmsMessage(
