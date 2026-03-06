@@ -40,12 +40,12 @@ export const RATE_LIMITS = {
   contractToken: { maxRequests: 20, windowMs: 15 * 60 * 1000 }, // 20 per 15 min
 } as const;
 
-export function getClientIp(request: Request): string {
+export function getClientIp(request: Request): string | null {
   return (
     request.headers.get('cf-connecting-ip') ||
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     request.headers.get('x-real-ip') ||
-    'unknown'
+    null
   );
 }
 
@@ -88,6 +88,7 @@ export function rateLimit(
   config: RateLimitConfig
 ): Response | null {
   const ip = getClientIp(request);
+  if (!ip) return null; // Skip rate limiting if IP cannot be determined
   const result = checkRateLimit(ip, endpoint, config);
 
   if (result.limited) {
