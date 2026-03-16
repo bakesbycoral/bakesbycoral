@@ -74,6 +74,13 @@ const COOKIE_FLAVORS = [
   { key: 'lemonSugar', label: 'Lemon Sugar' },
 ];
 
+const SEASONAL_COOKIE_FLAVORS = [
+  { key: 'keyLimePie', label: 'Key Lime Pie' },
+  { key: 'blueberryMuffin', label: 'Blueberry Muffin' },
+  { key: 'whiteChocolateRaspberry', label: 'White Chocolate Raspberry' },
+  { key: 'lemonSugarSandwiches', label: 'Lemon Sugar Sandwiches' },
+];
+
 const CAKE_TOPPINGS = [
   { value: 'light-beading', label: 'Light Beading (+$8)' },
   { value: 'moderate-beading', label: 'Moderate Beading (+$15)' },
@@ -344,23 +351,61 @@ export function OrderEditForm({ order, onCancel, onSave }: OrderEditFormProps) {
           <h2 className="font-semibold text-[#541409] mb-4">Cookie Order Details</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm text-[#541409]/70 mb-1">Quantity (dozen)</label>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.spring_box || false}
+                  onChange={(e) => updateFormData('spring_box', e.target.checked)}
+                  className="w-5 h-5 accent-[#541409] rounded"
+                />
+                <span className="text-[#541409] font-medium">Spring Cookie Box ($35)</span>
+                <span className="px-2 py-0.5 bg-[#541409] text-[#EAD6D6] rounded text-[10px]">SEASONAL</span>
+              </label>
+              <p className="text-xs text-[#541409]/60 ml-8 mt-1">3 each of Key Lime Pie, Blueberry Muffin, White Chocolate Raspberry, Lemon Sugar Sandwiches</p>
+            </div>
+
+            <div>
+              <label className="block text-sm text-[#541409]/70 mb-1">Build Your Own Quantity (dozen)</label>
               <select
-                value={formData.quantity || ''}
-                onChange={(e) => updateFormData('quantity', e.target.value)}
+                value={formData.byo_quantity || formData.quantity || ''}
+                onChange={(e) => {
+                  updateFormData('byo_quantity', e.target.value);
+                  const byo = parseInt(e.target.value) || 0;
+                  const springDozens = formData.spring_box ? 1 : 0;
+                  updateFormData('quantity', String(byo + springDozens));
+                }}
                 className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
               >
-                <option value="">Select</option>
+                <option value="">None (Spring Box only)</option>
                 <option value="1">1 Dozen - $30</option>
                 <option value="2">2 Dozen - $60</option>
-                <option value="3">3 Dozen - $90</option>
+                {!formData.spring_box && <option value="3">3 Dozen - $90</option>}
               </select>
             </div>
 
             <div>
-              <label className="block text-sm text-[#541409]/70 mb-2">Flavors (count per flavor)</label>
+              <label className="block text-sm text-[#541409]/70 mb-2">Core Flavors (count per flavor)</label>
               <div className="space-y-2">
                 {COOKIE_FLAVORS.map((flavor) => (
+                  <div key={flavor.key} className="flex items-center justify-between">
+                    <span className="text-[#541409]">{flavor.label}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="6"
+                      value={cookieFlavors[flavor.key] || 0}
+                      onChange={(e) => updateCookieFlavor(flavor.key, parseInt(e.target.value) || 0)}
+                      className="w-20 px-2 py-1 border border-[#EAD6D6] rounded text-center text-[#541409]"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm text-[#541409]/70 mb-2">Seasonal Flavors (count per flavor)</label>
+              <div className="space-y-2">
+                {SEASONAL_COOKIE_FLAVORS.map((flavor) => (
                   <div key={flavor.key} className="flex items-center justify-between">
                     <span className="text-[#541409]">{flavor.label}</span>
                     <input

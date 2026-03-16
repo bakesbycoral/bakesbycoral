@@ -330,53 +330,70 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
           {/* Order Details */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
             <h2 className="font-semibold text-[#541409] mb-4">Order Details</h2>
-            {order.order_type === 'cookies' && (
+            {order.order_type === 'cookies' && (() => {
+              const flavorLabels: Record<string, string> = {
+                chocolate_chip: 'Chocolate Chip',
+                vanilla_bean_sugar: 'Vanilla Bean Sugar',
+                cherry_almond: 'Cherry Almond',
+                espresso_butterscotch: 'Espresso Butterscotch',
+                lemon_sugar: 'Lemon Sugar',
+                key_lime_pie: 'Key Lime Pie',
+                blueberry_muffin: 'Blueberry Muffin',
+                white_chocolate_raspberry: 'White Chocolate Raspberry',
+                lemon_sugar_sandwiches: 'Lemon Sugar Sandwiches',
+              };
+              return (
               <dl className="space-y-3">
-                <div>
-                  <dt className="text-sm text-[#541409]/60">Flavors</dt>
-                  <dd className="font-medium text-[#541409]">
-                    {/* Support new flavor_counts format, cart_items format, and legacy flavors format */}
-                    {formData.flavor_counts ? (
+                {formData.spring_box && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60">Spring Cookie Box</dt>
+                    <dd className="font-medium text-[#541409]">
+                      <span className="inline-block px-2 py-0.5 bg-[#541409] text-[#EAD6D6] rounded text-xs mr-2">SEASONAL</span>
+                      12 pieces — 3 each of Key Lime Pie, Blueberry Muffin, White Chocolate Raspberry, Lemon Sugar Sandwiches ($35)
+                    </dd>
+                  </div>
+                )}
+                {formData.flavor_counts && Object.keys(formData.flavor_counts).length > 0 && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60">{formData.spring_box ? 'Build Your Own Flavors' : 'Flavors'}</dt>
+                    <dd className="font-medium text-[#541409]">
                       <ul className="space-y-1">
-                        {Object.entries(formData.flavor_counts as Record<string, number>).map(([flavor, count]) => {
-                          const flavorLabels: Record<string, string> = {
-                            chocolate_chip: 'Chocolate Chip',
-                            vanilla_bean_sugar: 'Vanilla Bean Sugar',
-                            cherry_almond: 'Cherry Almond',
-                            espresso_butterscotch: 'Espresso Butterscotch',
-                            lemon_sugar: 'Lemon Sugar',
-                          };
-                          return (
-                            <li key={flavor}>
-                              {flavorLabels[flavor] || flavor}: {count} cookies
-                            </li>
-                          );
-                        })}
+                        {Object.entries(formData.flavor_counts as Record<string, number>).map(([flavor, count]) => (
+                          <li key={flavor}>
+                            {flavorLabels[flavor] || flavor}: {count} cookies
+                          </li>
+                        ))}
                       </ul>
-                    ) : formData.cart_items ? (
-                      formData.cart_items.map((item: { flavor: string }, i: number) => {
-                        const flavorLabels: Record<string, string> = {
-                          chocolate_chip: 'Chocolate Chip',
-                          vanilla_bean_sugar: 'Vanilla Bean Sugar',
-                          cherry_almond: 'Cherry Almond',
-                          espresso_butterscotch: 'Espresso Butterscotch',
-                          lemon_sugar: 'Lemon Sugar',
-                        };
-                        return (
-                          <span key={i}>
-                            {i > 0 && ', '}
-                            {flavorLabels[item.flavor] || item.flavor}
-                          </span>
-                        );
-                      })
-                    ) : (
-                      formData.flavors?.join(', ') || '-'
-                    )}
-                  </dd>
-                </div>
+                    </dd>
+                  </div>
+                )}
+                {!formData.flavor_counts && formData.cart_items && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60">Flavors</dt>
+                    <dd className="font-medium text-[#541409]">
+                      {formData.cart_items.map((item: { flavor: string }, i: number) => (
+                        <span key={i}>
+                          {i > 0 && ', '}
+                          {flavorLabels[item.flavor] || item.flavor}
+                        </span>
+                      ))}
+                    </dd>
+                  </div>
+                )}
+                {!formData.flavor_counts && !formData.cart_items && formData.flavors && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60">Flavors</dt>
+                    <dd className="font-medium text-[#541409]">{formData.flavors.join(', ')}</dd>
+                  </div>
+                )}
                 <div>
                   <dt className="text-sm text-[#541409]/60">Quantity</dt>
-                  <dd className="font-medium text-[#541409]">{formData.quantity} dozen</dd>
+                  <dd className="font-medium text-[#541409]">
+                    {formData.quantity} dozen
+                    {formData.spring_box && formData.byo_quantity > 0 && (
+                      <span className="text-[#541409]/60 text-sm ml-1">(Spring Box + {formData.byo_quantity} dozen build your own)</span>
+                    )}
+                  </dd>
                 </div>
                 {formData.packaging && formData.packaging !== 'standard' && (
                   <div>
@@ -387,7 +404,8 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                   </div>
                 )}
               </dl>
-            )}
+              );
+            })()}
 
             {order.order_type === 'cookies_large' && (
               <dl className="space-y-3">
