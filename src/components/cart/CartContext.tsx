@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
-import { FlavorSelection, CartState, COOKIES_PER_DOZEN, HALF_DOZEN, DOUBLE_COUNT_FLAVOR } from '@/types/cart';
+import { FlavorSelection, CartState, COOKIES_PER_DOZEN, HALF_DOZEN, DOUBLE_COUNT_FLAVOR, MAX_DOZENS } from '@/types/cart';
 
 // Helper to calculate the "cookie cost" of a flavor (lemon sugar sandwiches count as 2x)
 function getCookieCost(flavor: string, quantity: number): number {
@@ -9,9 +9,11 @@ function getCookieCost(flavor: string, quantity: number): number {
 }
 
 interface CartContextType {
+  springBox: boolean;
   dozens: CartState['dozens'];
   flavors: FlavorSelection[];
   packaging: CartState['packaging'];
+  setSpringBox: (enabled: boolean) => void;
   setDozens: (dozens: CartState['dozens']) => void;
   addHalfDozen: (flavor: string, label: string) => void;
   removeHalfDozen: (flavor: string) => void;
@@ -22,6 +24,7 @@ interface CartContextType {
   targetCookies: number;
   remainingCookies: number;
   isComplete: boolean;
+  maxBuildYourOwnDozens: number;
   getCookieCostForFlavor: (flavor: string, quantity: number) => number;
 }
 
@@ -76,6 +79,7 @@ function storeCart(state: CartState): void {
 }
 
 const defaultState: CartState = {
+  springBox: false,
   dozens: null,
   flavors: [],
   packaging: 'standard',
@@ -100,6 +104,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
       storeCart(cartState);
     }
   }, [cartState, isHydrated]);
+
+  const setSpringBox = useCallback((enabled: boolean) => {
+    setCartState((prev) => {
+      const newState = { ...prev, springBox: enabled };
+      // If enabling spring box and current build-your-own dozens exceed new max, trim
+      const maxBYO = MAX_DOZENS - (enabled ? 1 : 0);
+      if (newState.dozens && newState.dozens > maxBYO) {
+        newState.dozens = null;
+        newState.flavors = [];
+      }
+      return newState;
+    });
+  }, []);
 
   const setDozens = useCallback((dozens: CartState['dozens']) => {
     setCartState((prev) => {
@@ -206,15 +223,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalCookies = cartState.flavors.reduce((sum, f) => sum + getCookieCost(f.flavor, f.quantity), 0);
   const targetCookies = cartState.dozens ? cartState.dozens * COOKIES_PER_DOZEN : 0;
   const remainingCookies = targetCookies - totalCookies;
-  const isComplete = cartState.dozens !== null && totalCookies === targetCookies;
+  const maxBuildYourOwnDozens = MAX_DOZENS - (cartState.springBox ? 1 : 0);
+  // Complete if: spring box only (no BYO selected), or BYO flavors filled, or both
+  const buildYourOwnComplete = cartState.dozens !== null && totalCookies === targetCookies;
+  const isComplete = cartState.springBox
+    ? (cartState.dozens === null || buildYourOwnComplete) // spring box alone is fine, or spring box + completed BYO
+    : buildYourOwnComplete; // BYO only needs flavors filled
   const getCookieCostForFlavor = getCookieCost;
 
   return (
     <CartContext.Provider
       value={{
+        springBox: cartState.springBox,
         dozens: cartState.dozens,
         flavors: cartState.flavors,
         packaging: cartState.packaging,
+        setSpringBox,
         setDozens,
         addHalfDozen,
         removeHalfDozen,
@@ -225,6 +249,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         targetCookies,
         remainingCookies,
         isComplete,
+        maxBuildYourOwnDozens,
         getCookieCostForFlavor,
       }}
     >

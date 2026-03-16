@@ -4,14 +4,14 @@ import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { TimeSlotPicker, CouponInput } from '@/components/forms';
 import { CartProvider, useCart, CartSidebar, FlavorCard } from '@/components/cart';
-import { FLAVORS, SEASONAL_FLAVORS, PRICE_PER_DOZEN, HEAT_SEAL_FEE } from '@/types/cart';
+import { FLAVORS, SEASONAL_FLAVORS, PRICE_PER_DOZEN, SPRING_BOX_PRICE, HEAT_SEAL_FEE, SPRING_BOX_FLAVORS } from '@/types/cart';
 
 // Seasonal flavors go live on March 2nd, 2026
 const SEASONAL_LIVE_DATE = new Date('2026-03-02T00:00:00');
 
 function CookieOrderContent() {
   const isSeasonalLive = new Date() >= SEASONAL_LIVE_DATE;
-  const { dozens, flavors, packaging, clearCart, isComplete, setDozens, setPackaging, totalCookies, targetCookies, remainingCookies } = useCart();
+  const { springBox, dozens, flavors, packaging, clearCart, isComplete, setSpringBox, setDozens, setPackaging, totalCookies, targetCookies, remainingCookies, maxBuildYourOwnDozens } = useCart();
   const checkoutFormRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
@@ -76,6 +76,7 @@ function CookieOrderContent() {
           phone: formData.phone,
           pickup_date: formData.pickupSlot.date,
           pickup_time: formData.pickupSlot.time,
+          spring_box: springBox,
           cart_items: cartItems,
           packaging: packaging,
           allergies: formData.allergies,
@@ -111,8 +112,11 @@ function CookieOrderContent() {
   };
 
   // Calculate order total for display
-  const subtotal = dozens ? dozens * PRICE_PER_DOZEN : 0;
-  const packagingFee = packaging === 'heat-sealed' && dozens ? dozens * HEAT_SEAL_FEE : 0;
+  const springBoxTotal = springBox ? SPRING_BOX_PRICE : 0;
+  const buildYourOwnTotal = dozens ? dozens * PRICE_PER_DOZEN : 0;
+  const subtotal = springBoxTotal + buildYourOwnTotal;
+  const totalDozensForPackaging = (springBox ? 1 : 0) + (dozens || 0);
+  const packagingFee = packaging === 'heat-sealed' && totalDozensForPackaging > 0 ? totalDozensForPackaging * HEAT_SEAL_FEE : 0;
   const total = subtotal + packagingFee;
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
@@ -147,7 +151,7 @@ function CookieOrderContent() {
           {/* Pricing Info */}
           <div className="bg-[#EAD6D6] rounded-lg p-6 mb-8 text-center">
             <p className="text-[#541409] font-medium">
-              $30 per dozen | Up to 3 dozen | Mix & match flavors in half-dozens!
+              Up to 3 dozen | Mix & match flavors in half-dozens!
             </p>
             <p className="text-sm text-[#541409]/70 mt-1">
               For 4+ dozen, please use the <Link href="/order/cookies-large" className="underline hover:opacity-70">large order form</Link>.
@@ -157,32 +161,97 @@ function CookieOrderContent() {
           {/* Single Card Order Flow */}
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-lg shadow-sm border border-[#EAD6D6] p-4 sm:p-6">
-              {/* Step 1: How Many Dozen */}
+              {/* Step 1: Choose What You'd Like */}
               <div className="mb-6">
-                <h2 className="text-lg font-serif text-[#541409] mb-3">1. How many dozen?</h2>
-                <div className="grid grid-cols-3 gap-2">
-                  {([1, 2, 3] as const).map((num) => (
+                <h2 className="text-lg font-serif text-[#541409] mb-3">1. What would you like?</h2>
+                <p className="text-xs text-stone-600 mb-3">Select one or both!</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Spring Cookie Box Card */}
+                  {isSeasonalLive && (
                     <button
-                      key={num}
-                      onClick={() => setDozens(num)}
-                      className={`py-3 px-4 rounded-md text-sm font-medium transition-colors ${
-                        dozens === num
-                          ? 'bg-[#541409] text-[#EAD6D6]'
-                          : 'border border-[#541409] text-[#541409] hover:bg-[#EAD6D6]'
+                      onClick={() => setSpringBox(!springBox)}
+                      className={`text-left p-4 rounded-lg border-2 transition-all ${
+                        springBox
+                          ? 'border-[#541409] bg-[#541409]/5 ring-1 ring-[#541409]'
+                          : 'border-[#EAD6D6] hover:border-[#541409]/50'
                       }`}
                     >
-                      {num} dozen
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="px-2 py-0.5 bg-[#541409] text-[#EAD6D6] rounded text-[10px] font-medium">SEASONAL</span>
+                        <span className="text-lg font-medium text-[#541409]">$35</span>
+                      </div>
+                      <h3 className="text-base font-serif text-[#541409] mt-2">Spring Cookie Box</h3>
+                      <p className="text-xs text-[#541409]/70 mt-1">
+                        A curated box of all 4 spring flavors — 3 of each (12 pieces)
+                      </p>
+                      <ul className="mt-2 text-xs text-[#541409]/60 space-y-0.5">
+                        {SPRING_BOX_FLAVORS.map((f) => (
+                          <li key={f.key}>{f.label} ({f.quantity})</li>
+                        ))}
+                      </ul>
                     </button>
-                  ))}
+                  )}
+
+                  {/* Build Your Own Card */}
+                  <button
+                    onClick={() => {
+                      if (dozens) {
+                        // Toggling off: clear BYO selection
+                        setDozens(null);
+                      } else {
+                        // Toggling on: default to 1 dozen
+                        setDozens(1);
+                      }
+                    }}
+                    className={`text-left p-4 rounded-lg border-2 transition-all ${
+                      dozens !== null
+                        ? 'border-[#541409] bg-[#541409]/5 ring-1 ring-[#541409]'
+                        : 'border-[#EAD6D6] hover:border-[#541409]/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="px-2 py-0.5 bg-[#EAD6D6] text-[#541409] rounded text-[10px] font-medium">CLASSIC</span>
+                      <span className="text-lg font-medium text-[#541409]">$30<span className="text-xs font-normal">/dozen</span></span>
+                    </div>
+                    <h3 className="text-base font-serif text-[#541409] mt-2">Build Your Own</h3>
+                    <p className="text-xs text-[#541409]/70 mt-1">
+                      Mix & match from all flavors — pick your favorites in half-dozen increments
+                    </p>
+                  </button>
                 </div>
               </div>
 
-              {dozens && (
+              {/* Build Your Own: Dozen Selection & Flavors */}
+              {dozens !== null && (
                 <>
-                  {/* Step 2: Choose Flavors */}
+                  <div className="mb-6 pt-6 border-t border-[#EAD6D6]">
+                    <h2 className="text-lg font-serif text-[#541409] mb-3">2. How many dozen?</h2>
+                    <div className="grid grid-cols-3 gap-2">
+                      {([1, 2, 3] as const).filter((num) => num <= maxBuildYourOwnDozens).map((num) => (
+                        <button
+                          key={num}
+                          onClick={() => setDozens(num)}
+                          className={`py-3 px-4 rounded-md text-sm font-medium transition-colors ${
+                            dozens === num
+                              ? 'bg-[#541409] text-[#EAD6D6]'
+                              : 'border border-[#541409] text-[#541409] hover:bg-[#EAD6D6]'
+                          }`}
+                        >
+                          {num} dozen
+                        </button>
+                      ))}
+                    </div>
+                    {springBox && (
+                      <p className="text-xs text-[#541409]/60 mt-2">
+                        Up to {maxBuildYourOwnDozens} dozen (Spring Box counts as 1 dozen)
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Choose Flavors */}
                   <div className="mb-6 pt-6 border-t border-[#EAD6D6]">
                     <div className="flex items-center justify-between mb-3">
-                      <h2 className="text-lg font-serif text-[#541409]">2. Choose your flavors</h2>
+                      <h2 className="text-lg font-serif text-[#541409]">{springBox ? '3' : '2'}. Choose your flavors</h2>
                       <span className="text-sm text-[#541409]/70">
                         {totalCookies} / {targetCookies} cookies
                       </span>
@@ -192,7 +261,7 @@ function CookieOrderContent() {
                     <div className="w-full bg-[#EAD6D6] rounded-full h-2 mb-4">
                       <div
                         className={`h-2 rounded-full transition-all ${
-                          isComplete ? 'bg-green-500' : 'bg-[#541409]'
+                          totalCookies === targetCookies ? 'bg-green-500' : 'bg-[#541409]'
                         }`}
                         style={{ width: `${Math.min((totalCookies / targetCookies) * 100, 100)}%` }}
                       />
@@ -223,10 +292,17 @@ function CookieOrderContent() {
                       </div>
                     )}
                   </div>
+                </>
+              )}
 
-                  {/* Step 3: Packaging */}
+              {/* Packaging - show when at least one option is selected */}
+              {(springBox || dozens !== null) && (
+                <>
+                  {/* Packaging */}
                   <div className="pt-6 border-t border-[#EAD6D6]">
-                    <h2 className="text-lg font-serif text-[#541409] mb-3">3. Packaging</h2>
+                    <h2 className="text-lg font-serif text-[#541409] mb-3">
+                      {dozens !== null ? (springBox ? '4' : '3') : '2'}. Packaging
+                    </h2>
                     <div className="space-y-2">
                       <label className="flex items-center cursor-pointer p-3 border border-[#EAD6D6] rounded hover:bg-[#EAD6D6]/10 transition-colors">
                         <input
@@ -374,20 +450,43 @@ function CookieOrderContent() {
                     {/* Order Summary */}
                     <div className="bg-[#EAD6D6]/30 rounded-lg p-4">
                       <h3 className="text-lg font-serif text-[#541409] mb-3">Order Summary</h3>
-                      <ul className="space-y-1 text-sm text-[#541409]">
-                        {flavors.map((f) => (
-                          <li key={f.flavor} className="flex justify-between">
-                            <span>{f.label}</span>
-                            <span>{f.quantity} cookies</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="mt-2 pt-2 border-t border-[#EAD6D6] text-sm flex justify-between text-[#541409]">
-                        <span>{dozens} dozen cookies</span>
-                        <span>{formatPrice(subtotal)}</span>
-                      </div>
+
+                      {springBox && (
+                        <>
+                          <div className="text-sm flex justify-between text-[#541409] font-medium">
+                            <span>Spring Cookie Box (12 pieces)</span>
+                            <span>{formatPrice(SPRING_BOX_PRICE)}</span>
+                          </div>
+                          <ul className="ml-2 space-y-0.5 text-xs text-[#541409]/70 mb-2">
+                            {SPRING_BOX_FLAVORS.map((f) => (
+                              <li key={f.key}>{f.label} ({f.quantity})</li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
+
+                      {dozens !== null && flavors.length > 0 && (
+                        <>
+                          {springBox && (
+                            <div className="text-sm font-medium text-[#541409] mt-2 mb-1">Build Your Own</div>
+                          )}
+                          <ul className="space-y-1 text-sm text-[#541409]">
+                            {flavors.map((f) => (
+                              <li key={f.flavor} className="flex justify-between">
+                                <span>{f.label}</span>
+                                <span>{f.quantity} cookies</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <div className="mt-1 text-sm flex justify-between text-[#541409]">
+                            <span>{dozens} dozen cookies</span>
+                            <span>{formatPrice(buildYourOwnTotal)}</span>
+                          </div>
+                        </>
+                      )}
+
                       {packagingFee > 0 && (
-                        <div className="text-sm flex justify-between text-[#541409]">
+                        <div className="mt-2 pt-2 border-t border-[#EAD6D6] text-sm flex justify-between text-[#541409]">
                           <span>Heat-sealed packaging</span>
                           <span>{formatPrice(packagingFee)}</span>
                         </div>

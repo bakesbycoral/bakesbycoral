@@ -14,6 +14,8 @@ interface CookieOrderData {
   name: string;
   email: string;
   phone: string;
+  // Spring Cookie Box
+  spring_box?: boolean;
   // New cart-based format (each item = half dozen / 6 cookies)
   cart_items?: CartItem[];
   packaging?: 'standard' | 'heat-sealed';
@@ -43,6 +45,11 @@ const FLAVOR_LABELS: Record<string, string> = {
   cherry_almond: 'Cherry Almond',
   espresso_butterscotch: 'Espresso Butterscotch',
   lemon_sugar: 'Lemon Sugar',
+  // Seasonal flavors
+  key_lime_pie: 'Key Lime Pie',
+  blueberry_muffin: 'Blueberry Muffin',
+  white_chocolate_raspberry: 'White Chocolate Raspberry',
+  lemon_sugar_sandwiches: 'Lemon Sugar Sandwiches',
   // Legacy flavors for backward compatibility
   snickerdoodle: 'Snickerdoodle',
   peanut_butter: 'Peanut Butter',
@@ -51,6 +58,7 @@ const FLAVOR_LABELS: Record<string, string> = {
 };
 
 const PRICE_PER_DOZEN = 3000; // cents - fallback if not in settings
+const SPRING_BOX_PRICE = 3500; // cents
 const HEAT_SEAL_FEE = 500;   // cents per dozen
 const COOKIES_PER_HALF_DOZEN = 6;
 const COOKIES_PER_DOZEN = 12;
@@ -82,10 +90,11 @@ export async function POST(request: NextRequest) {
 
     // Determine if using new cart format or legacy format
     const isCartFormat = Array.isArray(data.cart_items) && data.cart_items.length > 0;
+    const hasSpringBox = data.spring_box === true;
 
-    let quantity: number; // in dozens
-    let cartItems: CartItem[];
-    let packaging: 'standard' | 'heat-sealed';
+    let byoQuantity: number = 0; // build-your-own dozens
+    let cartItems: CartItem[] = [];
+    let packaging: 'standard' | 'heat-sealed' = data.packaging || 'standard';
 
     if (isCartFormat) {
       // New cart format - each cart_item represents a half-dozen (6 cookies)
@@ -98,14 +107,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Total cookies must be in full dozens (12, 24, or 36)' }, { status: 400 });
       }
 
-      quantity = totalCookies / COOKIES_PER_DOZEN;
-      packaging = data.packaging || 'standard';
+      byoQuantity = totalCookies / COOKIES_PER_DOZEN;
+      const maxByo = hasSpringBox ? 2 : 3;
 
-      if (quantity < 1 || quantity > 3) {
-        return NextResponse.json({ error: 'Orders must be 1-3 dozen' }, { status: 400 });
+      if (byoQuantity < 1 || byoQuantity > maxByo) {
+        return NextResponse.json({ error: `Build your own orders must be 1-${maxByo} dozen` }, { status: 400 });
       }
-    } else {
-      // Legacy format
+    } else if (!hasSpringBox) {
+      // Legacy format (only valid without spring box)
       if (!data.flavors || data.flavors.length === 0) {
         return NextResponse.json({ error: 'Please select at least one flavor' }, { status: 400 });
       }
@@ -114,9 +123,19 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid quantity' }, { status: 400 });
       }
 
-      quantity = parseInt(data.quantity);
+      byoQuantity = parseInt(data.quantity);
       cartItems = data.flavors.map(flavor => ({ flavor }));
-      packaging = 'standard';
+    }
+
+    // Must have at least one selection
+    if (!hasSpringBox && byoQuantity === 0) {
+      return NextResponse.json({ error: 'Please select a Spring Cookie Box or build your own order' }, { status: 400 });
+    }
+
+    // Total dozens (spring box counts as 1)
+    const totalDozens = (hasSpringBox ? 1 : 0) + byoQuantity;
+    if (totalDozens > 3) {
+      return NextResponse.json({ error: 'Orders cannot exceed 3 dozen total' }, { status: 400 });
     }
 
     if (!data.pickup_time) {
@@ -135,9 +154,10 @@ export async function POST(request: NextRequest) {
     const pricePerDozen = priceSetting ? parseInt(priceSetting.value) : PRICE_PER_DOZEN;
 
     // Calculate total
-    const cookieTotal = pricePerDozen * quantity;
-    const packagingTotal = packaging === 'heat-sealed' ? HEAT_SEAL_FEE * quantity : 0;
-    const totalAmount = cookieTotal + packagingTotal;
+    const springBoxAmount = hasSpringBox ? SPRING_BOX_PRICE : 0;
+    const byoAmount = pricePerDozen * byoQuantity;
+    const packagingTotal = packaging === 'heat-sealed' ? HEAT_SEAL_FEE * totalDozens : 0;
+    const totalAmount = springBoxAmount + byoAmount + packagingTotal;
 
     // Create order in database
     const orderId = crypto.randomUUID();
@@ -151,10 +171,12 @@ export async function POST(request: NextRequest) {
 
     // Store in structured format for form_data
     const formData = {
+      spring_box: hasSpringBox,
       cart_items: cartItems,
       flavor_counts: flavorCounts, // e.g. { chocolate_chip: 12, vanilla_bean_sugar: 6 }
       packaging: packaging,
-      quantity: quantity,
+      quantity: totalDozens,
+      byo_quantity: byoQuantity,
     };
 
     await db.prepare(`
@@ -230,12 +252,30 @@ export async function POST(request: NextRequest) {
       httpClient: Stripe.createFetchHttpClient(),
     });
 
-    // Create line items per flavor for better receipt clarity
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = Object.entries(flavorCounts).map(([flavor, cookieCount]) => {
+    // Create line items for Stripe checkout
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+
+    // Add Spring Cookie Box line item if applicable
+    if (hasSpringBox) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Spring Cookie Box',
+            description: 'Curated box of all 4 spring flavors — 3 of each (12 pieces)',
+          },
+          unit_amount: SPRING_BOX_PRICE,
+        },
+        quantity: 1,
+      });
+    }
+
+    // Add build-your-own flavor line items
+    Object.entries(flavorCounts).forEach(([flavor, cookieCount]) => {
       const dozenCount = cookieCount / COOKIES_PER_DOZEN;
       const isFullDozen = cookieCount % COOKIES_PER_DOZEN === 0;
 
-      return {
+      lineItems.push({
         price_data: {
           currency: 'usd',
           product_data: {
@@ -247,7 +287,7 @@ export async function POST(request: NextRequest) {
           unit_amount: Math.round((pricePerDozen / COOKIES_PER_DOZEN) * cookieCount),
         },
         quantity: 1,
-      };
+      });
     });
 
     // Add packaging fee as separate line item if applicable
@@ -257,7 +297,7 @@ export async function POST(request: NextRequest) {
           currency: 'usd',
           product_data: {
             name: 'Heat-Sealed Packaging',
-            description: `Individual heat-sealed packaging for ${quantity} dozen cookies`,
+            description: `Individual heat-sealed packaging for ${totalDozens} dozen cookies`,
           },
           unit_amount: packagingTotal,
         },

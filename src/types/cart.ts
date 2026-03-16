@@ -5,7 +5,8 @@ export interface FlavorSelection {
 }
 
 export interface CartState {
-  dozens: 1 | 2 | 3 | null;  // total dozen selected
+  springBox: boolean;          // whether the Spring Cookie Box is included
+  dozens: 1 | 2 | 3 | null;  // build-your-own dozen count (separate from spring box)
   flavors: FlavorSelection[];
   packaging: 'standard' | 'heat-sealed';
 }
@@ -26,10 +27,19 @@ export const SEASONAL_FLAVORS = [
 ] as const;
 
 export const PRICE_PER_DOZEN = 3000;  // cents
+export const SPRING_BOX_PRICE = 3500; // cents
 export const HEAT_SEAL_FEE = 500;     // cents per dozen
 export const MAX_DOZENS = 3;
 export const COOKIES_PER_DOZEN = 12;
 export const HALF_DOZEN = 6;
+
+// Spring Cookie Box: curated box of all 4 spring flavors, 3 of each (12 pieces)
+export const SPRING_BOX_FLAVORS = [
+  { key: 'key_lime_pie', label: 'Key Lime Pie', quantity: 3 },
+  { key: 'blueberry_muffin', label: 'Blueberry Muffin', quantity: 3 },
+  { key: 'white_chocolate_raspberry', label: 'White Chocolate Raspberry', quantity: 3 },
+  { key: 'lemon_sugar_sandwiches', label: 'Lemon Sugar Sandwiches', quantity: 3 },
+] as const;
 
 // Lemon sugar sandwiches count as 2x since each sandwich uses 2 cookies
 export const DOUBLE_COUNT_FLAVOR = 'lemon_sugar_sandwiches';
