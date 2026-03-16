@@ -56,6 +56,7 @@ function parsePickupHours(value: string | undefined): { start: string; end: stri
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
+    timeZone: 'America/New_York',
     weekday: 'short',
     month: 'short',
     day: 'numeric',

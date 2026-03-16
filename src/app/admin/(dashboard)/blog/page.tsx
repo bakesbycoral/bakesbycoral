@@ -49,6 +49,7 @@ function formatDate(dateString: string | null): string {
   if (!dateString) return '-';
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
+    timeZone: 'America/New_York',
     year: 'numeric',
     month: 'short',
     day: 'numeric',

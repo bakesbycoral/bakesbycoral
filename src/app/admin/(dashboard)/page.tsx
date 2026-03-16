@@ -70,6 +70,7 @@ function formatCurrency(cents: number | null): string {
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
+    timeZone: 'America/New_York',
     month: 'short',
     day: 'numeric',
   });

@@ -49,9 +49,12 @@ const statusColors: Record<string, string> = {
   no_show: 'bg-gray-100 text-gray-800',
 };
 
+const TIMEZONE = 'America/New_York';
+
 function formatDateTime(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleString('en-US', {
+    timeZone: TIMEZONE,
     weekday: 'short',
     year: 'numeric',
     month: 'short',
@@ -64,6 +67,7 @@ function formatDateTime(dateString: string): string {
 function formatTime(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleTimeString('en-US', {
+    timeZone: TIMEZONE,
     hour: 'numeric',
     minute: '2-digit',
   });

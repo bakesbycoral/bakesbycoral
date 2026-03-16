@@ -45,6 +45,7 @@ const statusColors: Record<string, string> = {
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
+    timeZone: 'America/New_York',
     year: 'numeric',
     month: 'short',
     day: 'numeric',

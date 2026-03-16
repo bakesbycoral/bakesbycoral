@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getDB, getEnvVar } from '@/lib/db';
+import { formatDate, formatTime } from '@/lib/dates';
 
 interface Order {
   id: string;
@@ -56,22 +57,6 @@ function formatCurrency(cents: number | null): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-function formatDate(dateStr: string): string {
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
-function formatTime(timeStr: string | null): string {
-  if (!timeStr) return '';
-  const [hours, minutes] = timeStr.split(':');
-  const hour = parseInt(hours);
-  const ampm = hour >= 12 ? 'PM' : 'AM';
-  const hour12 = hour % 12 || 12;
-  return `${hour12}:${minutes} ${ampm}`;
-}
 
 export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   const params = await searchParams;

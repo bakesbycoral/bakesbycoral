@@ -9,6 +9,7 @@ import { BalancePayment } from './BalancePayment';
 import { OrderEditForm } from './OrderEditForm';
 import { QuotesList } from './quotes';
 import { ContractsList } from './contracts';
+import { formatDate, formatTime, formatDateTime } from '@/lib/dates';
 
 interface Order {
   id: string;
@@ -85,35 +86,6 @@ function formatCurrency(cents: number | null): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
-function formatTime(timeStr: string | null): string {
-  if (!timeStr) return '-';
-  const [hours, minutes] = timeStr.split(':');
-  const hour = parseInt(hours);
-  const ampm = hour >= 12 ? 'PM' : 'AM';
-  const hour12 = hour % 12 || 12;
-  return `${hour12}:${minutes} ${ampm}`;
-}
-
-function formatDateTime(dateStr: string | null): string {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
 
 export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
   const [isEditing, setIsEditing] = useState(false);

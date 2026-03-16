@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { formatDateTime } from '@/lib/dates';
 
 interface Note {
   id: number;
@@ -13,16 +14,6 @@ interface Note {
 interface OrderNotesProps {
   orderId: string;
   notes: Note[];
-}
-
-function formatDateTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
 }
 
 export function OrderNotes({ orderId, notes }: OrderNotesProps) {
