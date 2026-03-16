@@ -33,6 +33,13 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://bakesbycoral.com'),
   title: 'Welcome',
   description: 'Multi-tenant platform',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({
