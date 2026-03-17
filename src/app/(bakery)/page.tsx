@@ -1,4 +1,14 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  description: 'Bakes by Coral — handcrafted gluten-free cakes, cookies & wedding desserts from a dedicated celiac-safe kitchen in Cincinnati. Order custom treats today!',
+  openGraph: {
+    title: 'Bakes by Coral | Gluten-Free Bakery in Cincinnati, OH',
+    description: 'Handcrafted gluten-free cakes, cookies & wedding desserts from a dedicated celiac-safe kitchen in Cincinnati. Order custom treats today!',
+    images: [{ url: '/hero-cookies.jpg', width: 1200, height: 630, alt: 'Bakes by Coral gluten-free cookies' }],
+  },
+};
 
 export default function HomePage() {
   return (

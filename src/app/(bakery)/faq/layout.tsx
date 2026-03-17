@@ -2,10 +2,11 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'FAQ',
-  description: 'Frequently asked questions about Bakes by Coral. Learn about our gluten-free process, ordering, allergies, pickup, and more. Cincinnati gluten-free bakery.',
+  description: 'Frequently asked questions about Bakes by Coral — learn about our gluten-free process, ordering, allergies, pickup & more. Cincinnati gluten-free bakery.',
   openGraph: {
     title: 'FAQ | Bakes by Coral',
-    description: 'Find answers to common questions about ordering gluten-free cakes and cookies from Bakes by Coral.',
+    description: 'Frequently asked questions about ordering gluten-free cakes and cookies from Bakes by Coral in Cincinnati.',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Bakes by Coral FAQ' }],
   },
 };
 

@@ -4,10 +4,11 @@ import { getDB } from '@/lib/db';
 
 export const metadata: Metadata = {
   title: 'Gallery',
-  description: 'Browse the gallery of gluten-free cakes, wedding cakes, cookies, and cookie cups. See what Bakes by Coral can create for you!',
+  description: 'Browse photos of gluten-free cakes, wedding cakes, cookies & cookie cups from Bakes by Coral in Cincinnati. See what we can create for you!',
   openGraph: {
     title: 'Gallery | Bakes by Coral',
-    description: 'Browse the gallery of gluten-free cakes, wedding cakes, cookies, and cookie cups.',
+    description: 'Browse photos of gluten-free cakes, wedding cakes, cookies & cookie cups from Bakes by Coral in Cincinnati.',
+    images: [{ url: '/miles-cake.jpg', width: 1200, height: 630, alt: 'Bakes by Coral gallery' }],
   },
 };
 

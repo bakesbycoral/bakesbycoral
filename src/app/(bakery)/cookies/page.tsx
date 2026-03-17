@@ -3,11 +3,12 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Gluten-Free Cookies',
-  description: 'Order soft, chewy gluten-free cookies in Cincinnati. $30/dozen. Chocolate chip, vanilla bean sugar, cherry almond, espresso butterscotch & lemon flavors. Celiac-safe.',
+  description: 'Gluten-free cookies baked from scratch in Cincinnati — chocolate chip, cherry almond, seasonal flavors & more. $30/dozen with bulk discounts available.',
   keywords: ['gluten-free cookies', 'Cincinnati cookies', 'celiac safe cookies', 'soft chewy cookies', 'gluten-free bakery'],
   openGraph: {
     title: 'Gluten-Free Cookies | Bakes by Coral',
-    description: 'Soft, chewy gluten-free cookies that taste just like the real thing. Order online for pickup in Cincinnati.',
+    description: 'Gluten-free cookies baked from scratch in Cincinnati — chocolate chip, cherry almond, seasonal flavors & more. $30/dozen.',
+    images: [{ url: '/choco-chip-tray.jpg', width: 1200, height: 630, alt: 'Gluten-free chocolate chip cookies by Bakes by Coral' }],
   },
 };
 

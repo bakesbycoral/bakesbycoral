@@ -44,7 +44,16 @@ export const metadata = {
     template: '%s | Bakes by Coral',
   },
   description:
-    'Handcrafted gluten-free cookies and custom cakes made with love in Cincinnati, OH. Order cookies, custom cakes, wedding desserts, and more. 100% gluten-free dedicated kitchen.',
+    'Handcrafted gluten-free cakes, cookies & wedding desserts from a dedicated celiac-safe kitchen in Cincinnati, OH. Order custom treats made with love today!',
+  openGraph: {
+    siteName: 'Bakes by Coral',
+    type: 'website',
+    locale: 'en_US',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Bakes by Coral — Gluten-Free Bakery' }],
+  },
+  twitter: {
+    card: 'summary_large_image' as const,
+  },
   alternates: {
     canonical: './',
   },

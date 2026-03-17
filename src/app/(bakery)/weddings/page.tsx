@@ -3,11 +3,12 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Gluten-Free Wedding Desserts',
-  description: 'Gluten-free wedding cakes and cookies in Cincinnati. Beautiful cutting cakes, dessert table cookies, and tasting boxes. Celiac-safe for your special day.',
+  description: 'Gluten-free wedding cakes & desserts in Cincinnati — tiered cakes, cookie favors & tasting boxes so every guest can celebrate. Book your consultation today.',
   keywords: ['gluten-free wedding cake', 'Cincinnati wedding cake', 'celiac safe wedding dessert', 'gluten-free wedding cookies', 'wedding tasting'],
   openGraph: {
     title: 'Gluten-Free Wedding Desserts | Bakes by Coral',
-    description: 'Make your wedding day unforgettable with beautiful gluten-free desserts. Cutting cakes, cookies, and tasting boxes available.',
+    description: 'Gluten-free wedding cakes & desserts in Cincinnati — tiered cakes, cookie favors & tasting boxes so every guest can celebrate.',
+    images: [{ url: '/bride-tini.jpg', width: 1200, height: 630, alt: 'Gluten-free wedding cake by Bakes by Coral' }],
   },
 };
 

@@ -3,11 +3,12 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Menu & Pricing',
-  description: 'View our gluten-free bakery menu. Cookies from $30/dozen, custom cakes from $60, wedding desserts, and tasting boxes. All celiac-safe, made in Cincinnati.',
+  description: 'View the full Bakes by Coral menu — gluten-free custom cakes from $60, cookies from $30/dozen & cookie cups from $30. Cincinnati pickup, made to order.',
   keywords: ['gluten-free menu', 'bakery prices', 'cookie prices', 'cake prices', 'Cincinnati bakery menu'],
   openGraph: {
     title: 'Menu & Pricing | Bakes by Coral',
-    description: 'Browse our full menu of gluten-free cookies, cakes, and wedding desserts with pricing.',
+    description: 'View the full Bakes by Coral menu — gluten-free custom cakes from $60, cookies from $30/dozen & cookie cups from $30.',
+    images: [{ url: '/25th-cake.jpg', width: 1200, height: 630, alt: 'Bakes by Coral gluten-free menu' }],
   },
 };
 

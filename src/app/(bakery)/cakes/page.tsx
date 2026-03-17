@@ -3,11 +3,12 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Custom Gluten-Free Cakes',
-  description: 'Order custom gluten-free celebration cakes in Cincinnati. 3-layer cakes starting at $60. Vanilla, chocolate, red velvet, lemon & more flavors. Celiac-safe dedicated kitchen.',
+  description: 'Order custom gluten-free celebration cakes in Cincinnati — 3-layer designs starting at $60 with 7 flavors and 6 fillings. 100% celiac-safe kitchen.',
   keywords: ['gluten-free cake', 'custom cake Cincinnati', 'celiac safe cake', 'gluten-free birthday cake', 'celebration cake'],
   openGraph: {
     title: 'Custom Gluten-Free Cakes | Bakes by Coral',
-    description: 'Beautiful custom gluten-free cakes for any celebration. Handcrafted in Cincinnati with love.',
+    description: 'Order custom gluten-free celebration cakes in Cincinnati — 3-layer designs starting at $60 with 7 flavors and 6 fillings.',
+    images: [{ url: '/christmas-cake.jpg', width: 1200, height: 630, alt: 'Custom gluten-free celebration cake by Bakes by Coral' }],
   },
 };
 
