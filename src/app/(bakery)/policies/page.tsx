@@ -254,7 +254,7 @@ export default function PoliciesPage() {
                 </div>
                 <div>
                   <h3 className="font-medium text-[#541409] mb-2">Your Rights</h3>
-                  <p>You may request to view, update, or delete your personal information at any time by contacting me at <a href="mailto:hello@bakesbycoral.com" className="text-[#541409] underline">hello@bakesbycoral.com</a>.</p>
+                  <p>You may request to view, update, or delete your personal information at any time by contacting me at <a href="mailto:coral@bakesbycoral.com" className="text-[#541409] underline">coral@bakesbycoral.com</a>.</p>
                 </div>
                 <div>
                   <h3 className="font-medium text-[#541409] mb-2">Updates</h3>

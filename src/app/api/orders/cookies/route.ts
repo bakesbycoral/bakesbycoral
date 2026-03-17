@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
     if (resendApiKey) {
       // Get admin email from settings
       const adminEmailSetting = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('admin_email').first<{ value: string }>();
-      const adminEmail = adminEmailSetting?.value || 'hello@bakesbycoral.com';
+      const adminEmail = adminEmailSetting?.value || 'coral@bakesbycoral.com';
 
       // Email to customer
       sendEmail(resendApiKey, {

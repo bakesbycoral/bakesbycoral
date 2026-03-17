@@ -173,7 +173,7 @@ export async function POST(
         to: quote.customer_email,
         subject: approvedEmail.subject,
         html: approvedEmail.html,
-        replyTo: 'hello@bakesbycoral.com',
+        replyTo: 'coral@bakesbycoral.com',
       });
     }
 

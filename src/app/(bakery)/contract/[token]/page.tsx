@@ -222,7 +222,7 @@ export default function ContractPage({ params }: { params: Promise<{ token: stri
                   This contract has expired. Please contact us to request a new contract.
                 </p>
                 <a
-                  href="mailto:hello@bakesbycoral.com"
+                  href="mailto:coral@bakesbycoral.com"
                   className="inline-block px-6 py-3 bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity"
                 >
                   Contact Us
@@ -296,8 +296,8 @@ export default function ContractPage({ params }: { params: Promise<{ token: stri
 
                   <p className="text-center text-sm text-[#541409]/60">
                     Questions? Email us at{' '}
-                    <a href="mailto:hello@bakesbycoral.com" className="text-[#541409] hover:underline">
-                      hello@bakesbycoral.com
+                    <a href="mailto:coral@bakesbycoral.com" className="text-[#541409] hover:underline">
+                      coral@bakesbycoral.com
                     </a>
                   </p>
                 </div>

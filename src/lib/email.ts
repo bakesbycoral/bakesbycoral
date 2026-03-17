@@ -1,7 +1,7 @@
 // Email sending utility using Resend
 
 // Parse comma-separated admin emails into an array
-export function parseAdminEmails(emailString: string | undefined, fallback = 'hello@bakesbycoral.com'): string[] {
+export function parseAdminEmails(emailString: string | undefined, fallback = 'coral@bakesbycoral.com'): string[] {
   if (!emailString) return [fallback];
   const emails = emailString.split(',').map(e => e.trim()).filter(e => e.length > 0);
   return emails.length > 0 ? emails : [fallback];
@@ -45,7 +45,7 @@ export async function sendEmail(
 
   try {
     const emailData: Record<string, unknown> = {
-      from: options.from || 'Bakes by Coral <hello@bakesbycoral.com>',
+      from: options.from || 'Bakes by Coral <coral@bakesbycoral.com>',
       to: Array.isArray(options.to) ? options.to : [options.to],
       reply_to: options.replyTo,
       subject: options.subject,
@@ -365,7 +365,7 @@ export function orderConfirmationEmail(data: {
 
           <p style="margin-top: 30px;">
             <strong>Questions?</strong><br>
-            Reply to this email or contact us at <a href="mailto:hello@bakesbycoral.com">hello@bakesbycoral.com</a>
+            Reply to this email or contact us at <a href="mailto:coral@bakesbycoral.com">coral@bakesbycoral.com</a>
           </p>
         </div>
         <div class="footer">

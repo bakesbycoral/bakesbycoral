@@ -97,7 +97,7 @@ export async function POST(
       to: quote.customer_email,
       subject: quoteEmailContent.subject,
       html: quoteEmailContent.html,
-      replyTo: 'hello@bakesbycoral.com',
+      replyTo: 'coral@bakesbycoral.com',
     });
 
     if (!emailSent) {

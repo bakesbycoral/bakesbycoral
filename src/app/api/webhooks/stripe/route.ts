@@ -178,12 +178,12 @@ export async function POST(request: NextRequest) {
                 to: order.customer_email,
                 subject: confirmEmail.subject,
                 html: confirmEmail.html,
-                replyTo: 'hello@bakesbycoral.com',
+                replyTo: 'coral@bakesbycoral.com',
               });
 
               // Send notification email to admin
               await sendEmail(getEnvVar('bakesbycoral_resend_api_key'), {
-                to: 'hello@bakesbycoral.com',
+                to: 'coral@bakesbycoral.com',
                 subject: `New Paid Order - ${order.order_number}`,
                 html: adminNewOrderEmail({
                   customerName: order.customer_name,
@@ -350,12 +350,12 @@ export async function POST(request: NextRequest) {
               to: order.customer_email,
               subject: confirmEmail.subject,
               html: confirmEmail.html,
-              replyTo: 'hello@bakesbycoral.com',
+              replyTo: 'coral@bakesbycoral.com',
             });
 
             // Send notification email to admin
             await sendEmail(getEnvVar('bakesbycoral_resend_api_key'), {
-              to: 'hello@bakesbycoral.com',
+              to: 'coral@bakesbycoral.com',
               subject: isDeposit
                 ? `Deposit Received - ${order.order_number}`
                 : `Payment Received - ${order.order_number}`,

@@ -35,7 +35,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   default_slot_capacity: '2',
   slot_interval_minutes: '30',
   // Email settings
-  admin_email: 'hello@bakesbycoral.com',
+  admin_email: 'coral@bakesbycoral.com',
   reminder_enabled: 'true',
   reminder_days_before: '1',
 };
@@ -342,7 +342,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               type="email"
               value={settings.admin_email || ''}
               onChange={(e) => handleNumberChange('admin_email', e.target.value)}
-              placeholder="hello@bakesbycoral.com"
+              placeholder="coral@bakesbycoral.com"
               className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409] placeholder:text-[#541409]/50"
             />
             <p className="text-xs text-[#541409]/60 mt-1">Where you receive order notifications and reminders</p>

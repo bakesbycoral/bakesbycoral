@@ -12,11 +12,12 @@ const jsonLd = {
   logo: 'https://bakesbycoral.com/logo.png',
   image: 'https://bakesbycoral.com/og-image.jpg',
   telephone: '+1-513-633-7850',
-  email: 'hello@bakesbycoral.com',
+  email: 'coral@bakesbycoral.com',
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Cincinnati',
     addressRegion: 'OH',
+    postalCode: '45245',
     addressCountry: 'US',
   },
   geo: {
@@ -35,6 +36,8 @@ const jsonLd = {
   sameAs: [
     'https://www.instagram.com/bakesbycoral',
     'https://www.facebook.com/bakesbycoral',
+    'https://www.tiktok.com/@bakes.by.coral',
+    'https://www.pinterest.com/bakesbycoral',
   ],
 };
 

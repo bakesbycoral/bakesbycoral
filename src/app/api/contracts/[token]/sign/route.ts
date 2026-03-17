@@ -111,7 +111,7 @@ export async function POST(
         to: contract.customer_email,
         subject: emailContent.subject,
         html: emailContent.html,
-        replyTo: 'hello@bakesbycoral.com',
+        replyTo: 'coral@bakesbycoral.com',
       });
 
       // Send notification to admin

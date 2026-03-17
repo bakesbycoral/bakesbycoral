@@ -171,7 +171,7 @@ export async function POST(
         to: order.customer_email,
         subject: balanceEmail.subject,
         html: balanceEmail.html,
-        replyTo: 'hello@bakesbycoral.com',
+        replyTo: 'coral@bakesbycoral.com',
       });
 
       // Send SMS notification

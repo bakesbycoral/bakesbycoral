@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
     if (resendApiKey) {
       const adminEmailSetting = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('admin_email').first<{ value: string }>();
-      const adminEmail = adminEmailSetting?.value || 'hello@bakesbycoral.com';
+      const adminEmail = adminEmailSetting?.value || 'coral@bakesbycoral.com';
 
       await sendEmail(resendApiKey, {
         to: customer_email,
