@@ -51,6 +51,15 @@ async function getGalleryImages(category?: string): Promise<GalleryImage[]> {
   return result.results;
 }
 
+const galleryBreadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bakesbycoral.com' },
+    { '@type': 'ListItem', position: 2, name: 'Gallery', item: 'https://bakesbycoral.com/gallery' },
+  ],
+};
+
 export default async function GalleryPage({
   searchParams,
 }: {
@@ -62,6 +71,10 @@ export default async function GalleryPage({
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(galleryBreadcrumb) }}
+      />
       {/* Hero Banner */}
       <section
         className="py-16 sm:py-20"

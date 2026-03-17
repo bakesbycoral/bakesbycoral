@@ -10,10 +10,27 @@ export const metadata: Metadata = {
   },
 };
 
+const policiesBreadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bakesbycoral.com' },
+    { '@type': 'ListItem', position: 2, name: 'Policies', item: 'https://bakesbycoral.com/policies' },
+  ],
+};
+
 export default function PoliciesLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(policiesBreadcrumb) }}
+      />
+      {children}
+    </>
+  );
 }

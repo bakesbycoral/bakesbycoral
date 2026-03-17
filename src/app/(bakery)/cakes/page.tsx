@@ -12,6 +12,34 @@ export const metadata: Metadata = {
   },
 };
 
+const cakesSchema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Custom Gluten-Free Celebration Cake',
+    description: 'Handcrafted 3-layer gluten-free celebration cake with your choice of 7 flavors and 6 fillings. Celiac-safe, made in a dedicated gluten-free kitchen.',
+    image: 'https://bakesbycoral.com/christmas-cake.jpg',
+    brand: { '@type': 'Brand', name: 'Bakes by Coral' },
+    offers: {
+      '@type': 'AggregateOffer',
+      lowPrice: '60.00',
+      highPrice: '180.00',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: 'https://bakesbycoral.com/order/cake',
+    },
+    category: 'Gluten-Free Cakes',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bakesbycoral.com' },
+      { '@type': 'ListItem', position: 2, name: 'Cakes', item: 'https://bakesbycoral.com/cakes' },
+    ],
+  },
+];
+
 export default function CakesPage() {
   const cakeFlavors = [
     { name: 'Vanilla Bean', value: 'vanilla-bean' },
@@ -34,6 +62,13 @@ export default function CakesPage() {
 
   return (
     <>
+      {cakesSchema.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       {/* Hero Banner */}
       <section
         className="py-16 sm:py-20"

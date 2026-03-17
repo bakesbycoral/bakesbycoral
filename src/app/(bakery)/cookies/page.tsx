@@ -15,6 +15,35 @@ export const metadata: Metadata = {
 // Seasonal flavors go live on March 16th, 2026
 const SEASONAL_LIVE_DATE = new Date('2026-03-16T00:00:00');
 
+const cookiesSchema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Gluten-Free Cookies',
+    description: 'Soft, chewy gluten-free cookies baked from scratch. Choose from chocolate chip, vanilla bean sugar, cherry almond, espresso butterscotch, lemon sugar, and seasonal flavors.',
+    image: 'https://bakesbycoral.com/choco-chip-tray.jpg',
+    brand: { '@type': 'Brand', name: 'Bakes by Coral' },
+    offers: {
+      '@type': 'Offer',
+      price: '30.00',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: 'https://bakesbycoral.com/order/cookies',
+      unitCode: 'DZN',
+      description: 'Per dozen',
+    },
+    category: 'Gluten-Free Cookies',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bakesbycoral.com' },
+      { '@type': 'ListItem', position: 2, name: 'Cookies', item: 'https://bakesbycoral.com/cookies' },
+    ],
+  },
+];
+
 export default function CookiesPage() {
   const isSeasonalLive = new Date() >= SEASONAL_LIVE_DATE;
 
@@ -35,6 +64,13 @@ export default function CookiesPage() {
 
   return (
     <>
+      {cookiesSchema.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       {/* Hero Banner */}
       <section
         className="py-16 sm:py-20"

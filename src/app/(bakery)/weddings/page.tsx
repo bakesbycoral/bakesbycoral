@@ -12,9 +12,44 @@ export const metadata: Metadata = {
   },
 };
 
+const weddingsSchema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Gluten-Free Wedding Desserts',
+    description: 'Gluten-free wedding cakes, cookie favors, cookie cups, and tasting boxes. Tiered wedding cakes starting at $205. Celiac-safe dedicated kitchen in Cincinnati.',
+    image: 'https://bakesbycoral.com/bride-tini.jpg',
+    brand: { '@type': 'Brand', name: 'Bakes by Coral' },
+    offers: {
+      '@type': 'AggregateOffer',
+      lowPrice: '30.00',
+      highPrice: '500.00',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: 'https://bakesbycoral.com/order/wedding',
+    },
+    category: 'Wedding Desserts',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bakesbycoral.com' },
+      { '@type': 'ListItem', position: 2, name: 'Weddings', item: 'https://bakesbycoral.com/weddings' },
+    ],
+  },
+];
+
 export default function WeddingsPage() {
   return (
     <>
+      {weddingsSchema.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       {/* Hero Banner */}
       <section
         className="py-16 sm:py-20"

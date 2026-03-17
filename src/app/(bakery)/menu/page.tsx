@@ -12,9 +12,22 @@ export const metadata: Metadata = {
   },
 };
 
+const menuBreadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bakesbycoral.com' },
+    { '@type': 'ListItem', position: 2, name: 'Menu', item: 'https://bakesbycoral.com/menu' },
+  ],
+};
+
 export default function MenuPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(menuBreadcrumb) }}
+      />
       {/* Hero Banner */}
       <section
         className="py-16 sm:py-20"

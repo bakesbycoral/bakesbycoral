@@ -11,10 +11,27 @@ export const metadata: Metadata = {
   },
 };
 
+const tastingBreadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bakesbycoral.com' },
+    { '@type': 'ListItem', position: 2, name: 'Tasting Boxes', item: 'https://bakesbycoral.com/tasting' },
+  ],
+};
+
 export default function TastingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(tastingBreadcrumb) }}
+      />
+      {children}
+    </>
+  );
 }
