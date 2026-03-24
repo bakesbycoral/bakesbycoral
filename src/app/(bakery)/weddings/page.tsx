@@ -213,29 +213,38 @@ export default function WeddingsPage() {
             <div className="absolute inset-4 border border-[#EAD6D6]/30 rounded pointer-events-none"></div>
 
             <h2 className="text-3xl sm:text-4xl font-serif text-[#EAD6D6] mb-6">
-              Cake & Cookie Tastings
+              Find Your Flavors
             </h2>
             <p className="text-[#EAD6D6]/80 max-w-2xl mx-auto mb-6">
-              Not sure which flavors to choose? Order a tasting box to sample before you decide!
-              Each tasting box includes 4 flavors so you can find your perfect match.
+              Before you commit, fall in love. My tasting boxes let you and your partner sample
+              handcrafted mini cakes and cookies so your wedding desserts are exactly what you&apos;ve been dreaming of.
             </p>
             <p className="text-[#EAD6D6]/80 max-w-2xl mx-auto mb-8 text-sm">
-              Book your wedding desserts within 30 days of your tasting form submission and the tasting fee
-              will be credited toward your order.
+              Book your wedding desserts within 30 days and 50% of your tasting fee is credited toward your order.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto mb-8">
-              <Link href="/tasting?type=cake" className="bg-[#EAD6D6]/10 rounded-lg p-4 hover:bg-[#EAD6D6]/20 transition-colors block">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-8">
+              <Link href="/tasting" className="bg-[#EAD6D6]/10 rounded-lg p-4 hover:bg-[#EAD6D6]/20 transition-colors block">
                 <h3 className="font-medium text-[#EAD6D6] mb-2">Cake Tasting Box</h3>
                 <p className="text-sm text-[#EAD6D6]/70">
-                  4 cake flavors in 8oz jars with vanilla buttercream + 4 fillings
+                  12oz mini cakes with filling pairings &amp; mock swiss buttercream
                 </p>
+                <p className="text-xs text-[#EAD6D6]/50 mt-2">4 count $55 | 6 count $75</p>
               </Link>
-              <Link href="/tasting?type=cookie" className="bg-[#EAD6D6]/10 rounded-lg p-4 hover:bg-[#EAD6D6]/20 transition-colors block">
+              <Link href="/tasting" className="bg-[#EAD6D6]/10 rounded-lg p-4 hover:bg-[#EAD6D6]/20 transition-colors block">
                 <h3 className="font-medium text-[#EAD6D6] mb-2">Cookie Tasting Box</h3>
                 <p className="text-sm text-[#EAD6D6]/70">
-                  4 cookie flavors, 2 of each, individually bagged
+                  6 flavors, 2 of each — 12 soft &amp; chewy cookies
                 </p>
+                <p className="text-xs text-[#EAD6D6]/50 mt-2">$35</p>
+              </Link>
+              <Link href="/tasting" className="bg-[#EAD6D6]/10 rounded-lg p-4 hover:bg-[#EAD6D6]/20 transition-colors block relative">
+                <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-[#EAD6D6] text-[#541409] rounded text-[9px] font-medium">BEST VALUE</span>
+                <h3 className="font-medium text-[#EAD6D6] mb-2">The All In Bride</h3>
+                <p className="text-sm text-[#EAD6D6]/70">
+                  Cake box + cookie box bundled together
+                </p>
+                <p className="text-xs text-[#EAD6D6]/50 mt-2">From $85</p>
               </Link>
             </div>
 

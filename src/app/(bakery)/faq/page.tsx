@@ -43,7 +43,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: 'Do you offer tastings?',
-    answer: 'Yes! I offer tasting boxes for couples planning wedding desserts. Cake tasting boxes include 4 flavors with fillings, and cookie boxes include 4 flavors (2 of each). If you book within 30 days, the tasting fee is credited to your order.',
+    answer: 'Yes! I offer cake tasting boxes (4 or 6 mini cakes with filling pairings and mock swiss buttercream) and cookie tasting boxes (6 flavors, 2 of each). I have 4 curated collections or you can create your own. Book your wedding desserts within 30 days and 50% of your tasting fee is credited toward your order.',
   },
 ];
 

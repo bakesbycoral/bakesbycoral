@@ -352,12 +352,20 @@ export default function HomePage() {
             {/* Tasting Box Section */}
             <Link href="/tasting" className="block hover:opacity-80 transition-opacity">
               <h3 className="text-2xl sm:text-3xl font-serif text-[#EAD6D6] mb-4">
-                Cake & Cookie Tastings
+                Find Your Flavors
               </h3>
             </Link>
-            <p className="text-[#EAD6D6]/80 max-w-2xl mx-auto mb-8">
-              Sample flavors before your big day! Tasting boxes include 4 cake flavors with fillings or 4 cookie flavors (2 of each). Book within 30 days and your tasting fee is credited toward your order.
+            <p className="text-[#EAD6D6]/80 max-w-2xl mx-auto mb-4">
+              Before you commit, fall in love. My tasting boxes let you and your partner sample
+              handcrafted mini cakes and cookies so your wedding desserts are exactly what you&apos;ve been dreaming of.
             </p>
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-[#EAD6D6]/60 mb-8">
+              <span>Cake Boxes from $55</span>
+              <span className="text-[#EAD6D6]/30">|</span>
+              <span>Cookie Boxes $35</span>
+              <span className="text-[#EAD6D6]/30">|</span>
+              <span>The All In Bride from $85</span>
+            </div>
             <Link
               href="/tasting"
               className="inline-flex px-8 py-4 bg-transparent border-2 border-[#EAD6D6] text-[#EAD6D6] font-medium rounded-sm hover:bg-[#EAD6D6]/10 transition-colors"
