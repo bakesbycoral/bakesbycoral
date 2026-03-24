@@ -238,8 +238,10 @@ export default function WeddingsPage() {
                 </p>
                 <p className="text-xs text-[#EAD6D6]/50 mt-2">$35</p>
               </Link>
-              <Link href="/tasting" className="bg-[#EAD6D6]/10 rounded-lg p-4 hover:bg-[#EAD6D6]/20 transition-colors block relative">
-                <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-[#EAD6D6] text-[#541409] rounded text-[9px] font-medium">BEST VALUE</span>
+              <Link href="/tasting" className="bg-[#EAD6D6]/10 rounded-lg p-4 hover:bg-[#EAD6D6]/20 transition-colors block">
+                <div className="text-center mb-2">
+                  <span className="px-2 py-0.5 bg-[#EAD6D6] text-[#541409] rounded text-[9px] font-medium">BEST VALUE</span>
+                </div>
                 <h3 className="font-medium text-[#EAD6D6] mb-2">The All In Bride</h3>
                 <p className="text-sm text-[#EAD6D6]/70">
                   Cake box + cookie box bundled together
