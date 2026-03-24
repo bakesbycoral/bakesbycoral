@@ -561,9 +561,9 @@ export default function WeddingInquiryPage() {
                         }}
                       >
                         <option value="">Select an option</option>
-                        <option value="6-inch">6" (serves 6-12) - Starting at $115</option>
-                        <option value="8-inch">8" (serves 14-20) - Starting at $155</option>
-                        <option value="10-inch">10" (serves 24-30) - Starting at $195</option>
+                        <option value="6-inch">6" (serves 6-12) - Starting at $100</option>
+                        <option value="8-inch">8" (serves 14-20) - Starting at $140</option>
+                        <option value="10-inch">10" (serves 24-30) - Starting at $180</option>
                         <option value="unsure">Not sure - need guidance</option>
                       </select>
                     </div>
@@ -1147,9 +1147,9 @@ export default function WeddingInquiryPage() {
                           <option value="">Select a size</option>
                           {formData.tieredCakeTiers === '2' && (
                             <>
-                              <option value="4+6">4&quot; + 6&quot; - Starting at $205</option>
-                              <option value="6+8">6&quot; + 8&quot; - Starting at $285</option>
-                              <option value="8+10">8&quot; + 10&quot; - Starting at $365</option>
+                              <option value="4+6">4&quot; + 6&quot; - Starting at $190</option>
+                              <option value="6+8">6&quot; + 8&quot; - Starting at $280</option>
+                              <option value="8+10">8&quot; + 10&quot; - Starting at $360</option>
                             </>
                           )}
                           {formData.tieredCakeTiers === '3' && (

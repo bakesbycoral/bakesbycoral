@@ -17,13 +17,13 @@ const weddingsSchema = [
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: 'Gluten-Free Wedding Desserts',
-    description: 'Gluten-free wedding cakes, cookie favors, cookie cups, and tasting boxes. Tiered wedding cakes starting at $205. Celiac-safe dedicated kitchen in Cincinnati.',
+    description: 'Gluten-free wedding cakes, cookie favors, cookie cups, and tasting boxes. Tiered wedding cakes starting at $190. Celiac-safe dedicated kitchen in Cincinnati.',
     image: 'https://bakesbycoral.com/bride-tini.jpg',
     brand: { '@type': 'Brand', name: 'Bakes by Coral' },
     offers: {
       '@type': 'AggregateOffer',
-      lowPrice: '30.00',
-      highPrice: '500.00',
+      lowPrice: '36.00',
+      highPrice: '495.00',
       priceCurrency: 'USD',
       availability: 'https://schema.org/InStock',
       url: 'https://bakesbycoral.com/order/wedding',
@@ -136,7 +136,7 @@ export default function WeddingsPage() {
                 </li>
                 <li className="flex items-start">
                   <span className="text-[#541409] mr-2">•</span>
-                  Starting at $205
+                  Starting at $190
                 </li>
               </ul>
             </Link>
