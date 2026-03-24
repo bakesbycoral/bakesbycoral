@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Gluten-Free Cookies',
   description: 'Gluten-free cookies baked from scratch in Cincinnati — chocolate chip, cherry almond, seasonal flavors & more. $30/dozen with bulk discounts available.',
-  keywords: ['gluten-free cookies', 'Cincinnati cookies', 'celiac safe cookies', 'soft chewy cookies', 'gluten-free bakery'],
+  keywords: ['gluten-free cookies', 'Cincinnati cookies', 'celiac safe cookies', 'soft chewy cookies', 'gluten-free bakery', 'spring cookie box', 'key lime pie cookies'],
   openGraph: {
     title: 'Gluten-Free Cookies | Bakes by Coral',
     description: 'Gluten-free cookies baked from scratch in Cincinnati — chocolate chip, cherry almond, seasonal flavors & more. $30/dozen.',

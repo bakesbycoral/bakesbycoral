@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Cake Tasting Boxes',
-  description: 'Sample gluten-free mini cakes before your wedding — 14 curated flavors with filling pairings & mock swiss buttercream. 4 count $55, 6 count $75. Cincinnati pickup.',
-  keywords: ['gluten-free tasting box', 'wedding cake tasting Cincinnati', 'mini cake tasting', 'gluten-free cake flavors', 'wedding cake sampling'],
+  title: 'Wedding Tasting Boxes',
+  description: 'Find your wedding flavors — cake tasting boxes with 14 mini cake options, cookie tasting boxes & The All In Bride bundle. Gluten-free, Cincinnati pickup.',
+  keywords: ['gluten-free tasting box', 'wedding cake tasting Cincinnati', 'mini cake tasting', 'cookie tasting box', 'wedding cake sampling', 'gluten-free wedding dessert'],
   openGraph: {
-    title: 'Cake Tasting Boxes | Bakes by Coral',
-    description: 'Sample gluten-free mini cakes before your wedding — 14 curated flavors with filling pairings & mock swiss buttercream.',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Bakes by Coral cake tasting boxes' }],
+    title: 'Wedding Tasting Boxes | Bakes by Coral',
+    description: 'Find your wedding flavors — cake tasting boxes, cookie tasting boxes & The All In Bride bundle. 100% gluten-free, made from scratch in Cincinnati.',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Bakes by Coral wedding tasting boxes' }],
   },
 };
 
