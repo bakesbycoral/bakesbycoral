@@ -15,7 +15,13 @@ export function formatDateTime(dateStr: string | null): string {
 
 export function formatDate(dateStr: string | null): string {
   if (!dateStr) return '-';
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
+  // If it's already a full datetime string (contains T or Z), parse directly
+  // Otherwise it's a date-only string (YYYY-MM-DD), add noon to avoid timezone shift
+  const date = (dateStr.includes('T') || dateStr.includes('Z'))
+    ? new Date(dateStr)
+    : new Date(dateStr + 'T12:00:00');
+  if (isNaN(date.getTime())) return '-';
+  return date.toLocaleDateString('en-US', {
     timeZone: TIMEZONE,
     weekday: 'long',
     month: 'long',
