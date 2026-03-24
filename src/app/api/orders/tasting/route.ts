@@ -16,11 +16,16 @@ interface TastingOrderData {
   email: string;
   phone: string;
   wedding_date?: string;
-  tasting_type: string;
-  box_name: string;
-  box_count: number;
-  cakes: CakeItem[];
+  tasting_type: 'cake' | 'cookie' | 'bundle';
+  // Cake box
+  box_name?: string;
+  box_count?: number;
+  cakes?: CakeItem[];
   add_on_cakes?: CakeItem[];
+  // Cookie box
+  cookie_box_name?: string;
+  cookie_flavors?: string[];
+  // Logistics
   pickup_or_delivery: string;
   delivery_location?: string;
   pickup_date: string;
@@ -28,11 +33,10 @@ interface TastingOrderData {
   coupon_code?: string | null;
 }
 
-const BASE_PRICES: Record<number, number> = {
-  6: 7500,
-  4: 5500,
-};
-const ADD_ON_PRICE = 1500; // $15 per add-on cake
+const CAKE_PRICES: Record<number, number> = { 6: 7500, 4: 5500 };
+const COOKIE_PRICE = 3500;
+const BUNDLE_PRICES: Record<number, number> = { 6: 10000, 4: 8500 };
+const ADD_ON_PRICE = 1500;
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,30 +46,42 @@ export async function POST(request: NextRequest) {
     const data: TastingOrderData = await request.json();
 
     // Basic validation
-    if (!data.name?.trim()) {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
-    }
-    if (!data.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    if (!data.name?.trim()) return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    if (!data.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
       return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
-    }
-    if (!data.phone?.trim()) {
-      return NextResponse.json({ error: 'Phone is required' }, { status: 400 });
-    }
-    if (!data.pickup_date) {
-      return NextResponse.json({ error: 'Pickup date is required' }, { status: 400 });
-    }
-    if (!data.box_count || ![4, 6].includes(data.box_count)) {
-      return NextResponse.json({ error: 'Please select a 4 or 6 count box' }, { status: 400 });
-    }
-    if (!data.cakes || data.cakes.length !== data.box_count) {
-      return NextResponse.json({ error: `Please select exactly ${data.box_count} cakes for your box` }, { status: 400 });
+    if (!data.phone?.trim()) return NextResponse.json({ error: 'Phone is required' }, { status: 400 });
+    if (!data.pickup_date) return NextResponse.json({ error: 'Pickup date is required' }, { status: 400 });
+    if (!['cake', 'cookie', 'bundle'].includes(data.tasting_type))
+      return NextResponse.json({ error: 'Please select a tasting type' }, { status: 400 });
+
+    // Validate cake data
+    if (data.tasting_type === 'cake' || data.tasting_type === 'bundle') {
+      if (!data.box_count || ![4, 6].includes(data.box_count))
+        return NextResponse.json({ error: 'Please select a 4 or 6 count box' }, { status: 400 });
+      if (!data.cakes || data.cakes.length !== data.box_count)
+        return NextResponse.json({ error: `Please select exactly ${data.box_count} cakes` }, { status: 400 });
     }
 
-    // Pricing
-    const basePrice = BASE_PRICES[data.box_count] || 7500;
+    // Validate cookie data
+    if (data.tasting_type === 'cookie' || data.tasting_type === 'bundle') {
+      if (!data.cookie_flavors || data.cookie_flavors.length !== 6)
+        return NextResponse.json({ error: 'Please select 6 cookie flavors' }, { status: 400 });
+    }
+
+    // Calculate pricing
     const addOnCount = data.add_on_cakes?.length || 0;
     const addOnTotal = addOnCount * ADD_ON_PRICE;
-    const totalAmount = basePrice + addOnTotal;
+    let baseAmount = 0;
+
+    if (data.tasting_type === 'cake') {
+      baseAmount = CAKE_PRICES[data.box_count!] || 7500;
+    } else if (data.tasting_type === 'cookie') {
+      baseAmount = COOKIE_PRICE;
+    } else if (data.tasting_type === 'bundle') {
+      baseAmount = BUNDLE_PRICES[data.box_count!] || 10000;
+    }
+
+    const totalAmount = baseAmount + addOnTotal;
 
     // Create order
     const db = getDB();
@@ -74,10 +90,12 @@ export async function POST(request: NextRequest) {
 
     const formDataJson = JSON.stringify({
       wedding_date: data.wedding_date || null,
-      tasting_type: 'cake',
-      box_name: data.box_name,
-      box_count: data.box_count,
-      cakes: data.cakes,
+      tasting_type: data.tasting_type,
+      box_name: data.box_name || null,
+      cookie_box_name: data.cookie_box_name || null,
+      box_count: data.box_count || null,
+      cakes: data.cakes || [],
+      cookie_flavors: data.cookie_flavors || [],
       add_on_cakes: data.add_on_cakes || [],
       pickup_or_delivery: data.pickup_or_delivery,
       delivery_location: data.delivery_location || null,
@@ -90,20 +108,12 @@ export async function POST(request: NextRequest) {
         event_date, pickup_date, pickup_time, total_amount, deposit_amount, form_data, created_at
       ) VALUES (?, ?, 'tasting', 'pending_payment', ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `).bind(
-      orderId,
-      orderNumber,
-      sanitizeInput(data.name),
-      sanitizeInput(data.email),
-      sanitizeInput(data.phone),
-      data.wedding_date || null,
-      data.pickup_date,
-      data.pickup_time || null,
-      totalAmount,
-      totalAmount,
-      formDataJson
+      orderId, orderNumber,
+      sanitizeInput(data.name), sanitizeInput(data.email), sanitizeInput(data.phone),
+      data.wedding_date || null, data.pickup_date, data.pickup_time || null,
+      totalAmount, totalAmount, formDataJson
     ).run();
 
-    // Auto-add customer to clients list
     await upsertClientFromOrder(sanitizeInput(data.name), sanitizeInput(data.email), sanitizeInput(data.phone));
 
     // Send email notification
@@ -111,24 +121,17 @@ export async function POST(request: NextRequest) {
     if (resendApiKey) {
       try {
         const tastingTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
-          .bind('email_template_tasting_order')
-          .first<{ value: string }>();
+          .bind('email_template_tasting_order').first<{ value: string }>();
         const tastingSubject = await db.prepare('SELECT value FROM settings WHERE key = ?')
-          .bind('email_subject_tasting_order')
-          .first<{ value: string }>();
+          .bind('email_subject_tasting_order').first<{ value: string }>();
 
         const emailContent = buildTastingOrderNotification(
-          tastingTemplate?.value,
-          tastingSubject?.value,
+          tastingTemplate?.value, tastingSubject?.value,
           {
-            orderNumber,
-            amount: totalAmount,
-            customerName: sanitizeInput(data.name),
-            customerEmail: sanitizeInput(data.email),
-            customerPhone: sanitizeInput(data.phone),
-            tastingType: 'cake',
-            weddingDate: data.wedding_date || '',
-            pickupDate: data.pickup_date,
+            orderNumber, amount: totalAmount,
+            customerName: sanitizeInput(data.name), customerEmail: sanitizeInput(data.email),
+            customerPhone: sanitizeInput(data.phone), tastingType: data.tasting_type,
+            weddingDate: data.wedding_date || '', pickupDate: data.pickup_date,
             pickupTime: data.pickup_time || '',
             adminUrl: 'https://bakesbycoral.com/admin/orders',
           }
@@ -147,36 +150,55 @@ export async function POST(request: NextRequest) {
 
     // Create Stripe checkout
     const stripeKey = getEnvVar('bakesbycoral_stripe_secret_key');
-    if (!stripeKey) {
-      return NextResponse.json({ error: 'Payment system not configured' }, { status: 500 });
-    }
+    if (!stripeKey) return NextResponse.json({ error: 'Payment system not configured' }, { status: 500 });
 
-    const stripe = new Stripe(stripeKey, {
-      httpClient: Stripe.createFetchHttpClient(),
-    });
+    const stripe = new Stripe(stripeKey, { httpClient: Stripe.createFetchHttpClient() });
 
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
-      {
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+
+    if (data.tasting_type === 'cake') {
+      lineItems.push({
         price_data: {
           currency: 'usd',
           product_data: {
-            name: `${data.box_name} Tasting Box`,
+            name: `${data.box_name || 'Cake'} Tasting Box`,
             description: `${data.box_count} mini cakes with filling pairings & mock swiss buttercream`,
           },
-          unit_amount: basePrice,
+          unit_amount: CAKE_PRICES[data.box_count!] || 7500,
         },
         quantity: 1,
-      },
-    ];
+      });
+    } else if (data.tasting_type === 'cookie') {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `${data.cookie_box_name || 'Cookie'} Tasting Box`,
+            description: '6 flavors, 2 of each — 12 cookies',
+          },
+          unit_amount: COOKIE_PRICE,
+        },
+        quantity: 1,
+      });
+    } else if (data.tasting_type === 'bundle') {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'The All In Bride Bundle',
+            description: `${data.box_count}-count cake box + cookie box`,
+          },
+          unit_amount: BUNDLE_PRICES[data.box_count!] || 10000,
+        },
+        quantity: 1,
+      });
+    }
 
     if (addOnCount > 0) {
       lineItems.push({
         price_data: {
           currency: 'usd',
-          product_data: {
-            name: 'Add-On Mini Cake',
-            description: 'Additional 12oz mini cake with filling & buttercream',
-          },
+          product_data: { name: 'Add-On Mini Cake', description: 'Additional 12oz mini cake with filling & buttercream' },
           unit_amount: ADD_ON_PRICE,
         },
         quantity: addOnCount,
@@ -192,25 +214,15 @@ export async function POST(request: NextRequest) {
       success_url: `${siteUrl}/order/success?order=${orderNumber}`,
       cancel_url: `${siteUrl}/tasting?cancelled=true`,
       customer_email: data.email,
-      metadata: {
-        order_id: orderId,
-        order_number: orderNumber,
-        order_type: 'tasting',
-      },
+      metadata: { order_id: orderId, order_number: orderNumber, order_type: 'tasting' },
     });
 
-    // Update order with Stripe session ID
-    await db.prepare('UPDATE orders SET stripe_session_id = ? WHERE id = ?')
-      .bind(session.id, orderId)
-      .run();
+    await db.prepare('UPDATE orders SET stripe_session_id = ? WHERE id = ?').bind(session.id, orderId).run();
 
     return NextResponse.json({ checkoutUrl: session.url });
   } catch (error) {
     console.error('Tasting order error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(
-      { error: `Failed to process order: ${errorMessage}` },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: `Failed to process order: ${errorMessage}` }, { status: 500 });
   }
 }
