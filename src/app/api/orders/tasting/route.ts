@@ -5,21 +5,34 @@ import { sanitizeInput } from '@/lib/validation';
 import { sendEmail, buildTastingOrderNotification } from '@/lib/email';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
+interface CakeItem {
+  name: string;
+  cake: string;
+  filling: string;
+}
+
 interface TastingOrderData {
   name: string;
   email: string;
   phone: string;
-  wedding_date: string;
+  wedding_date?: string;
   tasting_type: string;
-  cake_flavors?: string[];
-  fillings?: string[];
-  cookie_flavors?: string[];
+  box_name: string;
+  box_count: number;
+  cakes: CakeItem[];
+  add_on_cakes?: CakeItem[];
   pickup_or_delivery: string;
   delivery_location?: string;
   pickup_date: string;
   pickup_time: string;
   coupon_code?: string | null;
 }
+
+const BASE_PRICES: Record<number, number> = {
+  6: 7500,
+  4: 5500,
+};
+const ADD_ON_PRICE = 1500; // $15 per add-on cake
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,23 +51,21 @@ export async function POST(request: NextRequest) {
     if (!data.phone?.trim()) {
       return NextResponse.json({ error: 'Phone is required' }, { status: 400 });
     }
-    if (!data.tasting_type || !['cake', 'cookie', 'both'].includes(data.tasting_type)) {
-      return NextResponse.json({ error: 'Please select a tasting type' }, { status: 400 });
-    }
-    if (!data.wedding_date) {
-      return NextResponse.json({ error: 'Wedding date is required' }, { status: 400 });
-    }
     if (!data.pickup_date) {
       return NextResponse.json({ error: 'Pickup date is required' }, { status: 400 });
     }
+    if (!data.box_count || ![4, 6].includes(data.box_count)) {
+      return NextResponse.json({ error: 'Please select a 4 or 6 count box' }, { status: 400 });
+    }
+    if (!data.cakes || data.cakes.length !== data.box_count) {
+      return NextResponse.json({ error: `Please select exactly ${data.box_count} cakes for your box` }, { status: 400 });
+    }
 
     // Pricing
-    const prices: Record<string, number> = {
-      cake: 7000,
-      cookie: 3000,
-      both: 10000,
-    };
-    const totalAmount = prices[data.tasting_type] || 7000;
+    const basePrice = BASE_PRICES[data.box_count] || 7500;
+    const addOnCount = data.add_on_cakes?.length || 0;
+    const addOnTotal = addOnCount * ADD_ON_PRICE;
+    const totalAmount = basePrice + addOnTotal;
 
     // Create order
     const db = getDB();
@@ -62,11 +73,12 @@ export async function POST(request: NextRequest) {
     const orderNumber = `TST-${Date.now().toString(36).toUpperCase()}`;
 
     const formDataJson = JSON.stringify({
-      wedding_date: data.wedding_date,
-      tasting_type: data.tasting_type,
-      cake_flavors: data.cake_flavors || [],
-      fillings: data.fillings || [],
-      cookie_flavors: data.cookie_flavors || [],
+      wedding_date: data.wedding_date || null,
+      tasting_type: 'cake',
+      box_name: data.box_name,
+      box_count: data.box_count,
+      cakes: data.cakes,
+      add_on_cakes: data.add_on_cakes || [],
       pickup_or_delivery: data.pickup_or_delivery,
       delivery_location: data.delivery_location || null,
       coupon_code: data.coupon_code || null,
@@ -83,7 +95,7 @@ export async function POST(request: NextRequest) {
       sanitizeInput(data.name),
       sanitizeInput(data.email),
       sanitizeInput(data.phone),
-      data.wedding_date,
+      data.wedding_date || null,
       data.pickup_date,
       data.pickup_time || null,
       totalAmount,
@@ -94,11 +106,10 @@ export async function POST(request: NextRequest) {
     // Auto-add customer to clients list
     await upsertClientFromOrder(sanitizeInput(data.name), sanitizeInput(data.email), sanitizeInput(data.phone));
 
-    // Send email
+    // Send email notification
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
     if (resendApiKey) {
       try {
-        // Get email template from settings
         const tastingTemplate = await db.prepare('SELECT value FROM settings WHERE key = ?')
           .bind('email_template_tasting_order')
           .first<{ value: string }>();
@@ -115,8 +126,8 @@ export async function POST(request: NextRequest) {
             customerName: sanitizeInput(data.name),
             customerEmail: sanitizeInput(data.email),
             customerPhone: sanitizeInput(data.phone),
-            tastingType: data.tasting_type,
-            weddingDate: data.wedding_date,
+            tastingType: 'cake',
+            weddingDate: data.wedding_date || '',
             pickupDate: data.pickup_date,
             pickupTime: data.pickup_time || '',
             adminUrl: 'https://bakesbycoral.com/admin/orders',
@@ -144,30 +155,42 @@ export async function POST(request: NextRequest) {
       httpClient: Stripe.createFetchHttpClient(),
     });
 
-    const tastingNames: Record<string, string> = {
-      cake: 'Cake Tasting Box',
-      cookie: 'Cookie Tasting Box',
-      both: 'Cake & Cookie Tasting Boxes',
-    };
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `${data.box_name} Tasting Box`,
+            description: `${data.box_count} mini cakes with filling pairings & mock swiss buttercream`,
+          },
+          unit_amount: basePrice,
+        },
+        quantity: 1,
+      },
+    ];
+
+    if (addOnCount > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Add-On Mini Cake',
+            description: 'Additional 12oz mini cake with filling & buttercream',
+          },
+          unit_amount: ADD_ON_PRICE,
+        },
+        quantity: addOnCount,
+      });
+    }
+
+    const siteUrl = getEnvVar('NEXT_PUBLIC_SITE_URL') || 'https://bakesbycoral.com';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: tastingNames[data.tasting_type] || 'Tasting Box',
-              description: `Wedding tasting for ${data.wedding_date}`,
-            },
-            unit_amount: totalAmount,
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: lineItems,
       mode: 'payment',
-      success_url: `https://bakes-by-coral.coral-44f.workers.dev/order/success?order=${orderNumber}`,
-      cancel_url: `https://bakes-by-coral.coral-44f.workers.dev/tasting?cancelled=true`,
+      success_url: `${siteUrl}/order/success?order=${orderNumber}`,
+      cancel_url: `${siteUrl}/tasting?cancelled=true`,
       customer_email: data.email,
       metadata: {
         order_id: orderId,
