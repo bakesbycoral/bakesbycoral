@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar } from '@/lib/db';
 import { sendEmail, adminPickupReminderEmail, buildPickupReminderFromTemplate } from '@/lib/email';
 import { sendSms, buildSmsMessage, DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
+import { formatDateMedium, getDateDaysFromNowInTimeZone } from '@/lib/dates';
 
 interface OrderForReminder {
   id: string;
@@ -64,12 +65,7 @@ export async function GET(request: NextRequest) {
       .first<{ value: string }>();
 
     // Calculate target pickup date in US Eastern time
-    const now = new Date();
-    const easternNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-    easternNow.setDate(easternNow.getDate() + daysBeforePickup);
-    const targetDateStr = easternNow.getFullYear() + '-' +
-      String(easternNow.getMonth() + 1).padStart(2, '0') + '-' +
-      String(easternNow.getDate()).padStart(2, '0');
+    const targetDateStr = getDateDaysFromNowInTimeZone(daysBeforePickup);
 
     // Find confirmed orders with pickup on target date that haven't received reminders
     const orders = await db.prepare(`
@@ -153,11 +149,7 @@ export async function GET(request: NextRequest) {
               .bind(smsTemplateKey)
               .first<{ value: string }>();
 
-            const dateFormatted = new Date(order.pickup_date + 'T12:00:00').toLocaleDateString('en-US', {
-              weekday: 'short',
-              month: 'short',
-              day: 'numeric',
-            });
+            const dateFormatted = formatDateMedium(order.pickup_date);
 
             const smsBody = buildSmsMessage(
               smsTemplate?.value,

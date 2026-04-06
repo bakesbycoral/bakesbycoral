@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { getDB, getEnvVar } from '@/lib/db';
 import { verifySession } from '@/lib/auth/session';
+import { formatDateShort, formatDateTime, getCurrentMonthStartUtcSqlite } from '@/lib/dates';
 
 async function getTenantId(): Promise<string> {
   const cookieStore = await cookies();
@@ -12,6 +13,7 @@ async function getTenantId(): Promise<string> {
 
 async function getAnalyticsData(tenantId: string) {
   const db = getDB();
+  const monthStartUtcSqlite = getCurrentMonthStartUtcSqlite();
 
   // Get total clients
   const clientsResult = await db.prepare(`
@@ -41,8 +43,8 @@ async function getAnalyticsData(tenantId: string) {
   // Get contact submissions this month
   const contactsResult = await db.prepare(`
     SELECT COUNT(*) as total FROM contact_submissions
-    WHERE tenant_id = ? AND created_at >= date('now', 'start of month')
-  `).bind(tenantId).first<{ total: number }>();
+    WHERE tenant_id = ? AND created_at >= ?
+  `).bind(tenantId, monthStartUtcSqlite).first<{ total: number }>();
 
   // Get blog posts
   const postsResult = await db.prepare(`
@@ -163,7 +165,7 @@ export default async function AnalyticsPage() {
                     <div className="text-sm text-gray-500">{booking.booking_type_name}</div>
                   </div>
                   <div className="text-sm text-gray-600">
-                    {new Date(booking.start_time).toLocaleDateString()}
+                    {formatDateTime(booking.start_time)}
                   </div>
                 </div>
               ))}
@@ -185,7 +187,7 @@ export default async function AnalyticsPage() {
                     <div className="text-sm text-gray-500">{contact.email}</div>
                   </div>
                   <div className="text-sm text-gray-600">
-                    {new Date(contact.created_at).toLocaleDateString()}
+                    {formatDateShort(contact.created_at)}
                   </div>
                 </div>
               ))}

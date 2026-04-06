@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { getDB, getEnvVar } from '@/lib/db';
 import { verifySession } from '@/lib/auth/session';
+import { formatDateTime } from '@/lib/dates';
 
 interface Campaign {
   id: string;
@@ -78,19 +79,6 @@ const statusColors: Record<string, string> = {
   sent: 'bg-green-100 text-green-800',
   cancelled: 'bg-red-100 text-red-800',
 };
-
-function formatDate(dateString: string | null): string {
-  if (!dateString) return '-';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    timeZone: 'America/New_York',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
 
 export default async function NewsletterPage() {
   const tenantId = await getTenantId();
@@ -204,7 +192,7 @@ export default async function NewsletterPage() {
                     {campaign.total_sent}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {formatDate(campaign.sent_at || campaign.scheduled_at)}
+                    {formatDateTime(campaign.sent_at || campaign.scheduled_at)}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <Link

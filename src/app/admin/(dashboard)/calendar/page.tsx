@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { getDB, getEnvVar } from '@/lib/db';
 import { getBlackoutDates } from '@/lib/db/blackout';
 import { verifySession } from '@/lib/auth/session';
+import { formatDateMedium, getCurrentDatePartsInTimeZone } from '@/lib/dates';
 
 interface Order {
   id: string;
@@ -115,9 +116,9 @@ async function getTenantId(): Promise<string> {
 export default async function CalendarPage({ searchParams }: CalendarPageProps) {
   const params = await searchParams;
   const tenantId = await getTenantId();
-  const now = new Date();
-  const year = params.year ? parseInt(params.year) : now.getFullYear();
-  const month = params.month ? parseInt(params.month) : now.getMonth();
+  const today = getCurrentDatePartsInTimeZone();
+  const year = params.year ? parseInt(params.year) : today.year;
+  const month = params.month ? parseInt(params.month) : today.month - 1;
   const selectedDay = params.day ? parseInt(params.day) : null;
 
   const db = getDB();
@@ -287,7 +288,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
               {calendarDays.map((day, index) => {
                 const dateStr = day ? `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}` : '';
                 const dayOrders = day ? ordersByDate[dateStr] || [] : [];
-                const isToday = day && year === now.getFullYear() && month === now.getMonth() && day === now.getDate();
+                const isToday = day && year === today.year && month === today.month - 1 && day === today.day;
                 const isSelected = day === selectedDay;
                 const isBlocked = day ? !!blackoutDateMap[dateStr] : false;
                 const blockedReason = isBlocked ? blackoutDateMap[dateStr]?.reason : null;
@@ -409,11 +410,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
             {selectedDay ? (
               <>
                 <h2 className="font-semibold text-[#541409] mb-1">
-                  {new Date(selectedDateStr! + 'T12:00:00').toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                  {formatDateMedium(selectedDateStr)}
                 </h2>
 
                 {selectedDayBlocked ? (
@@ -647,7 +644,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                   </div>
                   <div className="text-right">
                     <div className="font-medium text-[#541409] text-sm">
-                      {new Date(order.pickup_date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                      {formatDateMedium(order.pickup_date)}
                     </div>
                     <div className="text-xs text-[#541409]/60">{formatTime(order.pickup_time)}</div>
                   </div>
@@ -705,7 +702,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                   </div>
                   <div className="text-right">
                     <div className="font-medium text-[#541409] text-sm">
-                      {new Date(order.pickup_date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                      {formatDateMedium(order.pickup_date)}
                     </div>
                     <div className="text-xs text-[#541409]/60">{formatTime(order.pickup_time)}</div>
                   </div>

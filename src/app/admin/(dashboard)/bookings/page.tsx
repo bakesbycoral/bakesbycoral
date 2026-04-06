@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { getDB, getEnvVar } from '@/lib/db';
 import { verifySession } from '@/lib/auth/session';
+import { formatClockTime, formatDateTime } from '@/lib/dates';
 
 interface Booking {
   id: string;
@@ -48,30 +49,6 @@ const statusColors: Record<string, string> = {
   completed: 'bg-blue-100 text-blue-800',
   no_show: 'bg-gray-100 text-gray-800',
 };
-
-const TIMEZONE = 'America/New_York';
-
-function formatDateTime(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleString('en-US', {
-    timeZone: TIMEZONE,
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
-
-function formatTime(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString('en-US', {
-    timeZone: TIMEZONE,
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
 
 export default async function BookingsPage() {
   const tenantId = await getTenantId();
@@ -146,7 +123,7 @@ export default async function BookingsPage() {
                         {formatDateTime(booking.start_time)}
                       </div>
                       <div className="text-sm text-gray-500">
-                        until {formatTime(booking.end_time)}
+                        until {formatClockTime(booking.end_time)}
                       </div>
                     </div>
                   </td>

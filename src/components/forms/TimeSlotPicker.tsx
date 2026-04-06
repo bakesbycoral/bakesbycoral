@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { OrderType } from '@/types';
+import { formatDateMedium } from '@/lib/dates';
 
 interface SlotData {
   date: string;
@@ -266,11 +267,7 @@ export function TimeSlotPicker({
         {selectedDate && (
           <div className="border-t border-stone-200 p-4 bg-stone-50">
             <h4 className="text-sm font-medium text-[#541409] mb-3">
-              Available Times for {new Date(selectedDate + 'T12:00:00').toLocaleDateString('en-US', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric'
-              })}
+              Available Times for {formatDateMedium(selectedDate)}
             </h4>
             {selectedDateSlots.length === 0 ? (
               <p className="text-sm text-stone-500">No time slots available for this date.</p>
@@ -312,11 +309,7 @@ export function TimeSlotPicker({
               <div>
                 <span className="text-sm text-stone-600">Selected:</span>
                 <span className="ml-2 font-medium text-[#541409]">
-                  {new Date(value.date + 'T12:00:00').toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric'
-                  })} at {formatTime(value.time)}
+                  {formatDateMedium(value.date)} at {formatTime(value.time)}
                 </span>
               </div>
               <button

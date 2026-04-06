@@ -6,6 +6,7 @@ import { getDB, getEnvVar } from '@/lib/db';
 import Stripe from 'stripe';
 import { sendEmail, adminNewOrderEmail, buildConfirmationFromTemplate } from '@/lib/email';
 import { sendSms, buildSmsMessage, DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
+import { formatDateMedium } from '@/lib/dates';
 
 async function verifyStripeSignature(
   payload: string,
@@ -208,9 +209,7 @@ export async function POST(request: NextRequest) {
                     .bind(smsTemplateKey)
                     .first<{ value: string }>();
 
-                  const dateFormatted = order.pickup_date
-                    ? new Date(order.pickup_date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-                    : '';
+                  const dateFormatted = order.pickup_date ? formatDateMedium(order.pickup_date) : '';
 
                   const smsBody = buildSmsMessage(
                     smsTemplate?.value,
@@ -393,9 +392,7 @@ export async function POST(request: NextRequest) {
                   .bind(smsTemplateKeyInvoice)
                   .first<{ value: string }>();
 
-                const dateFormatted = order.pickup_date
-                  ? new Date(order.pickup_date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-                  : '';
+                const dateFormatted = order.pickup_date ? formatDateMedium(order.pickup_date) : '';
 
                 const smsBody = buildSmsMessage(
                   smsTemplate?.value,

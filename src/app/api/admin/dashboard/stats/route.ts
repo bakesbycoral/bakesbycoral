@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { getAdminSession } from '@/lib/auth/admin-session';
+import {
+  getCurrentDateInTimeZone,
+  getCurrentDateTimeInTimeZone,
+  getCurrentMonthStartUtcSqlite,
+  getDateDaysFromNowInTimeZone,
+  toSqliteUtcString,
+} from '@/lib/dates';
 
 interface OrderStats {
   pending: number;
@@ -40,6 +47,12 @@ export async function GET() {
 
     const db = getDB();
     const tenantId = session.tenantId;
+    const thirtyDaysAgoUtcSqlite = toSqliteUtcString(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+    const todayDate = getCurrentDateInTimeZone();
+    const tomorrowDate = getDateDaysFromNowInTimeZone(1);
+    const nowBusinessDateTime = getCurrentDateTimeInTimeZone();
+    const nextWeekBusinessDateTime = getCurrentDateTimeInTimeZone(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
+    const monthStartUtcSqlite = getCurrentMonthStartUtcSqlite();
 
     // Get order stats (for bakery tenants)
     const orderStats = await db.prepare(`
@@ -50,19 +63,19 @@ export async function GET() {
         SUM(CASE WHEN status = 'inquiry' THEN 1 ELSE 0 END) as inquiries,
         SUM(CASE WHEN status IN ('confirmed', 'completed') THEN total_amount ELSE 0 END) as revenue
       FROM orders
-      WHERE tenant_id = ? AND created_at >= datetime('now', '-30 days')
-    `).bind(tenantId).first<OrderStats>();
+      WHERE tenant_id = ? AND created_at >= ?
+    `).bind(tenantId, thirtyDaysAgoUtcSqlite).first<OrderStats>();
 
     // Get booking stats (for consulting tenants)
     const bookingStats = await db.prepare(`
       SELECT
-        SUM(CASE WHEN start_time >= datetime('now') THEN 1 ELSE 0 END) as upcoming,
-        SUM(CASE WHEN date(start_time) = date('now') THEN 1 ELSE 0 END) as today,
-        SUM(CASE WHEN start_time >= datetime('now') AND start_time <= datetime('now', '+7 days') THEN 1 ELSE 0 END) as thisWeek,
+        SUM(CASE WHEN start_time >= ? THEN 1 ELSE 0 END) as upcoming,
+        SUM(CASE WHEN start_time >= ? AND start_time < ? THEN 1 ELSE 0 END) as today,
+        SUM(CASE WHEN start_time >= ? AND start_time <= ? THEN 1 ELSE 0 END) as thisWeek,
         SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending
       FROM bookings
       WHERE tenant_id = ?
-    `).bind(tenantId).first<BookingStats>();
+    `).bind(nowBusinessDateTime, `${todayDate}T00:00:00`, `${tomorrowDate}T00:00:00`, nowBusinessDateTime, nextWeekBusinessDateTime, tenantId).first<BookingStats>();
 
     // Get blog stats
     const blogStats = await db.prepare(`
@@ -81,8 +94,8 @@ export async function GET() {
         (SELECT COUNT(*) FROM newsletter_subscribers WHERE tenant_id = ?) as subscribers,
         (SELECT COUNT(*) FROM newsletter_subscribers WHERE tenant_id = ? AND status = 'subscribed') as activeSubscribers,
         (SELECT COUNT(*) FROM newsletter_campaigns WHERE tenant_id = ?) as campaigns,
-        (SELECT COUNT(*) FROM newsletter_campaigns WHERE tenant_id = ? AND sent_at >= datetime('now', '-30 days')) as sentThisMonth
-    `).bind(tenantId, tenantId, tenantId, tenantId).first<NewsletterStats>();
+        (SELECT COUNT(*) FROM newsletter_campaigns WHERE tenant_id = ? AND sent_at >= ?) as sentThisMonth
+    `).bind(tenantId, tenantId, tenantId, tenantId, monthStartUtcSqlite).first<NewsletterStats>();
 
     return NextResponse.json({
       tenantId,

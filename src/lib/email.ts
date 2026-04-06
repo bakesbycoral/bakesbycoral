@@ -1,3 +1,5 @@
+import { formatDate as formatBusinessDate, formatTime as formatBusinessTime } from '@/lib/dates';
+
 // Email sending utility using Resend
 
 // Parse comma-separated admin emails into an array
@@ -258,23 +260,12 @@ export function formatOrderDetails(orderType: string, formData: Record<string, u
 
 // Format time for display
 function formatTime(timeStr: string): string {
-  if (!timeStr) return '';
-  const [hours, minutes] = timeStr.split(':');
-  const hour = parseInt(hours);
-  const ampm = hour >= 12 ? 'PM' : 'AM';
-  const hour12 = hour % 12 || 12;
-  return `${hour12}:${minutes} ${ampm}`;
+  return formatBusinessTime(timeStr) === '-' ? '' : formatBusinessTime(timeStr);
 }
 
 // Format date for display
 function formatDate(dateStr: string): string {
-  if (!dateStr) return '';
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  return formatBusinessDate(dateStr) === '-' ? '' : formatBusinessDate(dateStr);
 }
 
 // Format price for display

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import type { Contract } from '@/types';
+import { formatDate, getCurrentDateInTimeZone } from '@/lib/dates';
 
 // GET /api/contracts/[token] - Public: view contract by signing token
 export async function GET(
@@ -33,9 +34,8 @@ export async function GET(
 
     // Check if expired
     if (contract.valid_until) {
-      const validUntil = new Date(contract.valid_until);
-      validUntil.setHours(23, 59, 59, 999);
-      if (new Date() > validUntil && contract.status === 'sent') {
+      const todayDate = getCurrentDateInTimeZone();
+      if (todayDate > contract.valid_until && contract.status === 'sent') {
         await db.prepare(`
           UPDATE contracts SET status = 'expired', updated_at = datetime('now') WHERE id = ?
         `).bind(contract.id).run();
@@ -46,7 +46,7 @@ export async function GET(
     // Replace {{variables}} in contract_body with actual values
     let renderedBody = contract.contract_body || '';
     const replacements: Record<string, string> = {
-      '{{event_date}}': contract.event_date ? new Date(contract.event_date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : 'TBD',
+      '{{event_date}}': contract.event_date ? formatDate(contract.event_date) : 'TBD',
       '{{venue_name}}': contract.venue_name || 'TBD',
       '{{venue_address}}': contract.venue_address || 'TBD',
       '{{guest_count}}': contract.guest_count || 'TBD',

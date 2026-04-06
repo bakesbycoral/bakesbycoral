@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { formatDateShort, formatRelativeTime } from '@/lib/dates';
 
 interface DashboardStats {
   tenantId: string;
@@ -66,29 +67,6 @@ const statusColors: Record<string, string> = {
 function formatCurrency(cents: number | null): string {
   if (cents === null || cents === 0) return '$0';
   return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
-    timeZone: 'America/New_York',
-    month: 'short',
-    day: 'numeric',
-  });
-}
-
-function formatRelativeTime(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return formatDate(dateStr);
 }
 
 export default function DashboardPage() {
@@ -230,7 +208,7 @@ export default function DashboardPage() {
               </div>
               <div className="text-right">
                 <div className="font-medium text-gray-900">
-                  {order.pickup_date ? formatDate(order.pickup_date) : '-'}
+                  {order.pickup_date ? formatDateShort(order.pickup_date) : '-'}
                 </div>
                 <div className="text-sm text-gray-500">{formatCurrency(order.total_amount)}</div>
               </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import type { QuoteStatus, QuoteLineItem } from '@/types';
+import { formatDate } from '@/lib/dates';
 
 interface QuoteData {
   id: string;
@@ -119,16 +120,6 @@ export default function QuotePage({ params }: { params: Promise<{ token: string 
       setError(err instanceof Error ? err.message : 'Failed to create balance invoice');
       setIsPayingBalance(false);
     }
-  };
-
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return '-';
-    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    });
   };
 
   const formatCurrency = (cents: number) => {

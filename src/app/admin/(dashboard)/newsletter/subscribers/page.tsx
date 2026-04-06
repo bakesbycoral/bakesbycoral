@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { getDB, getEnvVar } from '@/lib/db';
 import { verifySession } from '@/lib/auth/session';
+import { formatDateShort } from '@/lib/dates';
 
 interface Subscriber {
   id: string;
@@ -41,16 +42,6 @@ const statusColors: Record<string, string> = {
   bounced: 'bg-red-100 text-red-800',
   complained: 'bg-yellow-100 text-yellow-800',
 };
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    timeZone: 'America/New_York',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
 
 export default async function SubscribersPage() {
   const tenantId = await getTenantId();
@@ -122,7 +113,7 @@ export default async function SubscribersPage() {
                     {subscriber.source || '-'}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {formatDate(subscriber.subscribed_at)}
+                    {formatDateShort(subscriber.subscribed_at)}
                   </td>
                 </tr>
               ))}

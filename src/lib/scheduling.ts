@@ -7,6 +7,7 @@ import {
   type PickupHours,
 } from './db/settings';
 import type { OrderType } from '@/types';
+import { formatDate as formatBusinessDate, formatDateShort as formatBusinessDateShort } from './dates';
 
 // Default values used as fallbacks when DB is not available
 const DEFAULT_PICKUP_HOURS: Record<number, PickupHours> = {
@@ -198,23 +199,12 @@ export function formatTime(time: string): string {
 
 // Format date for display
 export function formatDate(dateStr: string): string {
-  const date = new Date(dateStr + 'T12:00:00');
-  return date.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  return formatBusinessDate(dateStr);
 }
 
 // Format date short
 export function formatDateShort(dateStr: string): string {
-  const date = new Date(dateStr + 'T12:00:00');
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  return formatBusinessDateShort(dateStr);
 }
 
 // Load all scheduling config at once for efficient rendering

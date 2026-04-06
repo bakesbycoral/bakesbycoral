@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { QuoteStatusBadge } from './QuoteStatusBadge';
 import { QuoteBuilder } from './QuoteBuilder';
 import type { Quote, QuoteLineItem } from '@/types';
+import { formatDateShort } from '@/lib/dates';
 
 interface QuoteWithDetails extends Quote {
   order_order_number?: string;
@@ -69,16 +70,6 @@ export function QuotesList({ orderId, orderStatus }: QuotesListProps) {
     setSelectedQuote(null);
     setIsCreating(false);
     fetchQuotes();
-  };
-
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return '-';
-    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
-      timeZone: 'America/New_York',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
   };
 
   const formatCurrency = (cents: number | null) => {
@@ -149,8 +140,8 @@ export function QuotesList({ orderId, orderStatus }: QuotesListProps) {
                     <QuoteStatusBadge status={quote.status} />
                   </div>
                   <div className="mt-1 text-sm text-[#541409]/60">
-                    Created {formatDate(quote.created_at)} •
-                    {quote.valid_until && ` Valid until ${formatDate(quote.valid_until)}`}
+                    Created {formatDateShort(quote.created_at)} •
+                    {quote.valid_until && ` Valid until ${formatDateShort(quote.valid_until)}`}
                   </div>
                 </div>
                 <div className="text-right">

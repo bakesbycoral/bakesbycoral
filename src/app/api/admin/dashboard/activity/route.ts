@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getDB } from '@/lib/db';
 import { getAdminSession } from '@/lib/auth/admin-session';
+import { getCurrentDateInTimeZone, getCurrentDateTimeInTimeZone } from '@/lib/dates';
 
 interface RecentOrder {
   id: string;
@@ -51,6 +52,8 @@ export async function GET() {
 
     const db = getDB();
     const tenantId = session.tenantId;
+    const todayDate = getCurrentDateInTimeZone();
+    const nowBusinessDateTime = getCurrentDateTimeInTimeZone();
 
     // Get recent orders
     const recentOrders = await db.prepare(`
@@ -65,10 +68,10 @@ export async function GET() {
     const upcomingPickups = await db.prepare(`
       SELECT id, order_number, order_type, status, customer_name, pickup_date, total_amount, created_at
       FROM orders
-      WHERE tenant_id = ? AND pickup_date >= date('now') AND status IN ('confirmed', 'deposit_paid')
+      WHERE tenant_id = ? AND pickup_date >= ? AND status IN ('confirmed', 'deposit_paid')
       ORDER BY pickup_date ASC
       LIMIT 5
-    `).bind(tenantId).all<RecentOrder>();
+    `).bind(tenantId, todayDate).all<RecentOrder>();
 
     // Get recent bookings
     const recentBookings = await db.prepare(`
@@ -87,10 +90,10 @@ export async function GET() {
              b.start_time, b.status, b.created_at
       FROM bookings b
       LEFT JOIN booking_types bt ON b.booking_type_id = bt.id
-      WHERE b.tenant_id = ? AND b.start_time >= datetime('now') AND b.status != 'cancelled'
+      WHERE b.tenant_id = ? AND b.start_time >= ? AND b.status != 'cancelled'
       ORDER BY b.start_time ASC
       LIMIT 5
-    `).bind(tenantId).all<RecentBooking>();
+    `).bind(tenantId, nowBusinessDateTime).all<RecentBooking>();
 
     // Get recent blog posts
     const recentPosts = await db.prepare(`

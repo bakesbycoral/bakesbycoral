@@ -6,6 +6,7 @@ import { SmsTemplateEditor } from '@/components/admin/SmsTemplateEditor';
 import { DEFAULT_TEMPLATES, DEFAULT_SUBJECTS } from '@/lib/email';
 import { DEFAULT_ADMIN_TEMPLATES, DEFAULT_ADMIN_SUBJECTS } from '@/lib/email';
 import { DEFAULT_SMS_TEMPLATES } from '@/lib/sms';
+import { formatDateTime } from '@/lib/dates';
 
 interface EmailLogEntry {
   id: number;
@@ -308,7 +309,7 @@ export default function EmailsPage() {
                     </div>
                     <p className="text-sm text-[#541409]/70 truncate">{log.subject}</p>
                     <p className="text-xs text-[#541409]/50">
-                      {new Date(log.created_at + 'Z').toLocaleString()}
+                      {formatDateTime(log.created_at, 'utc')}
                     </p>
                     {log.error && <p className="text-xs text-red-600 truncate">{log.error}</p>}
                   </div>
@@ -330,7 +331,7 @@ export default function EmailsPage() {
                     {emailLogs.map((log) => (
                       <tr key={log.id} className="hover:bg-[#EAD6D6]/10">
                         <td className="px-4 py-3 text-[#541409]/70 whitespace-nowrap">
-                          {new Date(log.created_at + 'Z').toLocaleString()}
+                          {formatDateTime(log.created_at, 'utc')}
                         </td>
                         <td className="px-4 py-3 text-[#541409] font-medium">{log.recipient}</td>
                         <td className="px-4 py-3 text-[#541409]/70 max-w-xs truncate">{log.subject}</td>

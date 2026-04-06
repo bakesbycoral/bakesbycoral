@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import type { ContractStatus } from '@/types';
+import { formatDate } from '@/lib/dates';
 
 interface ContractData {
   id: string;
@@ -76,16 +77,6 @@ export default function ContractPage({ params }: { params: Promise<{ token: stri
       setError(err instanceof Error ? err.message : 'Failed to sign contract');
       setIsSigning(false);
     }
-  };
-
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return '-';
-    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    });
   };
 
   if (isLoading) {

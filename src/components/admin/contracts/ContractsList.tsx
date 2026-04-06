@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ContractStatusBadge } from './ContractStatusBadge';
 import { ContractBuilder } from './ContractBuilder';
 import type { Contract } from '@/types';
+import { formatDateShort } from '@/lib/dates';
 
 interface ContractWithDetails extends Contract {
   order_order_number?: string;
@@ -68,16 +69,6 @@ export function ContractsList({ orderId, orderStatus }: ContractsListProps) {
     setSelectedContract(null);
     setIsCreating(false);
     fetchContracts();
-  };
-
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return '-';
-    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
-      timeZone: 'America/New_York',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
   };
 
   const formatCurrency = (cents: number | null) => {
@@ -148,13 +139,13 @@ export function ContractsList({ orderId, orderStatus }: ContractsListProps) {
                     <ContractStatusBadge status={contract.status} />
                   </div>
                   <div className="mt-1 text-sm text-[#541409]/60">
-                    Created {formatDate(contract.created_at)}
-                    {contract.event_date && ` • Event: ${formatDate(contract.event_date)}`}
-                    {contract.valid_until && ` • Valid until ${formatDate(contract.valid_until)}`}
+                    Created {formatDateShort(contract.created_at)}
+                    {contract.event_date && ` • Event: ${formatDateShort(contract.event_date)}`}
+                    {contract.valid_until && ` • Valid until ${formatDateShort(contract.valid_until)}`}
                   </div>
                   {contract.signed_at && (
                     <div className="mt-1 text-sm text-green-600">
-                      Signed by {contract.signer_name} on {formatDate(contract.signed_at)}
+                      Signed by {contract.signer_name} on {formatDateShort(contract.signed_at)}
                     </div>
                   )}
                 </div>
