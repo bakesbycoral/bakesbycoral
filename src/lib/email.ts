@@ -1186,6 +1186,9 @@ export function buildConfirmationFromTemplate(
     formData?: Record<string, unknown>;
     isDelivery?: boolean;
     deliveryAddress?: string;
+    actionUrl?: string;
+    actionLabel?: string;
+    headerText?: string;
   }
 ): { subject: string; html: string } {
   const isDelivery = data.isDelivery || false;
@@ -1208,12 +1211,20 @@ export function buildConfirmationFromTemplate(
   };
 
   const processedSubject = replaceTemplateVariables(subjectText, variables);
-  const processedBody = replaceTemplateVariables(templateText, variables)
+  let processedBody = replaceTemplateVariables(templateText, variables)
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br>');
 
-  const html = wrapInEmailTemplate(processedBody, processedSubject);
+  if (data.actionUrl && data.actionLabel) {
+    processedBody += `
+      <div style="text-align: center; margin-top: 20px;">
+        <a href="${data.actionUrl}" class="btn">${data.actionLabel}</a>
+      </div>
+    `;
+  }
+
+  const html = wrapInEmailTemplate(processedBody, processedSubject, data.headerText);
 
   return { subject: processedSubject, html };
 }

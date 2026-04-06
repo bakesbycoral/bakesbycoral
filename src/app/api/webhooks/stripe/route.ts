@@ -274,6 +274,7 @@ export async function POST(request: NextRequest) {
 
         if (orderId) {
           const isDeposit = invoice.metadata?.payment_type === 'deposit';
+          const siteUrl = getEnvVar('NEXT_PUBLIC_SITE_URL');
 
           await db.prepare(`
             UPDATE orders
@@ -317,6 +318,14 @@ export async function POST(request: NextRequest) {
             const orderFormData = order.form_data ? JSON.parse(order.form_data) : {};
             const orderIsDelivery = orderFormData.pickup_or_delivery === 'delivery';
             const orderDeliveryAddress = orderFormData.delivery_location || orderFormData.venue_address || orderFormData.event_location || '';
+            const quoteToken = quoteId
+              ? await db.prepare('SELECT approval_token FROM quotes WHERE id = ?')
+                .bind(quoteId)
+                .first<{ approval_token: string }>()
+              : null;
+            const quoteUrl = isDeposit && quoteToken?.approval_token && siteUrl
+              ? `${siteUrl}/quote/${quoteToken.approval_token}`
+              : undefined;
 
             // Get email template from settings (use delivery version if applicable)
             const emailTemplateKey = orderIsDelivery ? 'email_template_confirmation_delivery' : 'email_template_confirmation';
@@ -342,6 +351,8 @@ export async function POST(request: NextRequest) {
                 formData: orderFormData,
                 isDelivery: orderIsDelivery,
                 deliveryAddress: orderDeliveryAddress,
+                actionUrl: quoteUrl,
+                actionLabel: isDeposit ? 'View Quote / Pay Remaining Balance' : undefined,
               }
             );
 

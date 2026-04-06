@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-type CustomerTemplateKey = 'quote' | 'quote_approved' | 'confirmation' | 'reminder' | 'balance_invoice';
+type CustomerTemplateKey = 'quote' | 'quote_approved' | 'confirmation' | 'deposit_received' | 'reminder' | 'balance_invoice';
 type AdminTemplateKey = 'contact_form' | 'cake_inquiry' | 'large_cookie_order' | 'wedding_inquiry' | 'tasting_order';
 type TemplateSection = 'customer' | 'admin';
 
@@ -10,6 +10,7 @@ const CUSTOMER_TEMPLATE_LABELS: Record<CustomerTemplateKey, string> = {
   quote: 'Quote Email',
   quote_approved: 'Quote Approved',
   confirmation: 'Order Confirmation',
+  deposit_received: 'Deposit Received',
   reminder: 'Pickup Reminder',
   balance_invoice: 'Balance Invoice',
 };
@@ -26,6 +27,7 @@ const CUSTOMER_HEADER_TEXT: Record<CustomerTemplateKey, string> = {
   quote: 'Quote for Your Order',
   quote_approved: 'Quote Approved!',
   confirmation: '',
+  deposit_received: '',
   reminder: 'Pickup Reminder',
   balance_invoice: 'Balance Due',
 };
@@ -56,6 +58,26 @@ See you soon!
 Coral`,
 
   confirmation: `Hi {{customer_name}},
+
+Great news! Your order has been confirmed and payment received.
+
+**Order Details:**
+Order Number: {{order_number}}
+Pickup Date: {{pickup_date}}
+{{pickup_time}}
+
+{{order_details}}
+
+**Total:** {{total_amount}}
+
+We're excited to bake for you! If you have any questions, just reply to this email.
+
+Thank you for choosing Bakes by Coral!
+
+Best,
+Coral`,
+
+  deposit_received: `Hi {{customer_name}},
 
 Great news! Your order has been confirmed and payment received.
 
@@ -237,6 +259,7 @@ const DEFAULT_ADMIN_TEMPLATES: Record<AdminTemplateKey, string> = {
 const DEFAULT_CUSTOMER_SUBJECTS: Record<CustomerTemplateKey, string> = {
   reminder: 'Pickup Reminder - {{order_number}}',
   confirmation: 'Order Confirmed - {{order_number}}',
+  deposit_received: 'Deposit Received - {{order_number}}',
   quote: 'Your Quote from Bakes by Coral - {{quote_number}}',
   quote_approved: 'Quote Approved! - {{quote_number}}',
   balance_invoice: 'Balance Due - {{order_number}}',
@@ -384,6 +407,12 @@ function generateCustomerEmailHtml(template: string, subject: string, headerText
         <a href="#" style="display: inline-block; background: #541409; color: #EAD6D6 !important; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;">Pay Deposit</a>
       </div>
     `;
+  } else if (templateKey === 'deposit_received') {
+    processedBody += `
+      <div style="text-align: center; margin-top: 20px;">
+        <a href="#" style="display: inline-block; background: #541409; color: #EAD6D6 !important; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;">View Quote / Pay Remaining Balance</a>
+      </div>
+    `;
   } else if (templateKey === 'balance_invoice') {
     processedBody += `
       <div style="text-align: center; margin-top: 20px;">
@@ -509,6 +538,7 @@ export default function EmailPreviewPage() {
           // Load customer templates
           setCustomerTemplates({
             confirmation: settings.email_template_confirmation || DEFAULT_CUSTOMER_TEMPLATES.confirmation,
+            deposit_received: settings.email_template_confirmation || DEFAULT_CUSTOMER_TEMPLATES.deposit_received,
             reminder: settings.email_template_reminder || DEFAULT_CUSTOMER_TEMPLATES.reminder,
             quote: settings.email_template_quote || DEFAULT_CUSTOMER_TEMPLATES.quote,
             quote_approved: settings.email_template_quote_approved || DEFAULT_CUSTOMER_TEMPLATES.quote_approved,
@@ -517,6 +547,7 @@ export default function EmailPreviewPage() {
 
           setCustomerSubjects({
             confirmation: settings.email_subject_confirmation || DEFAULT_CUSTOMER_SUBJECTS.confirmation,
+            deposit_received: DEFAULT_CUSTOMER_SUBJECTS.deposit_received,
             reminder: settings.email_subject_reminder || DEFAULT_CUSTOMER_SUBJECTS.reminder,
             quote: settings.email_subject_quote || DEFAULT_CUSTOMER_SUBJECTS.quote,
             quote_approved: settings.email_subject_quote_approved || DEFAULT_CUSTOMER_SUBJECTS.quote_approved,
