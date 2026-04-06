@@ -116,6 +116,8 @@ function TastingPageContent() {
   const searchParams = useSearchParams();
   const cancelled = searchParams.get('cancelled');
   const formRef = useRef<HTMLDivElement>(null);
+  const cakeCollectionRef = useRef<HTMLDivElement>(null);
+  const [pendingScrollTarget, setPendingScrollTarget] = useState<'cake-collection' | 'form' | null>(null);
 
   // ── Top-level selection ─────────────────────────────────────────
   const [productType, setProductType] = useState<ProductType>('');
@@ -162,6 +164,21 @@ function TastingPageContent() {
       formRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [productType, cakeBoxMode, cookieBoxMode]);
+
+  useEffect(() => {
+    if (!pendingScrollTarget) return;
+
+    const targetRef = pendingScrollTarget === 'cake-collection' ? cakeCollectionRef : formRef;
+    if (!targetRef.current) return;
+
+    targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setPendingScrollTarget(null);
+  }, [pendingScrollTarget, productType]);
+
+  const handleProductSelect = (nextProductType: ProductType) => {
+    setProductType(nextProductType);
+    setPendingScrollTarget(nextProductType === 'cookie' ? 'form' : 'cake-collection');
+  };
 
   // ── Pricing ─────────────────────────────────────────────────────
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(0)}`;
@@ -504,7 +521,7 @@ function TastingPageContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Cake Tasting */}
-            <button onClick={() => setProductType('cake')}
+            <button onClick={() => handleProductSelect('cake')}
               className={`text-left p-6 rounded-xl border-2 transition-all group ${productType === 'cake' ? 'border-[#541409] bg-white shadow-lg scale-[1.02]' : 'border-[#EAD6D6] bg-white hover:border-[#541409]/40 hover:shadow-md'}`}>
                             <h3 className="font-serif text-[#541409] text-xl font-medium">Cake Tasting Box</h3>
               <p className="text-sm text-stone-500 mt-2 leading-relaxed">
@@ -522,7 +539,7 @@ function TastingPageContent() {
             </button>
 
             {/* Cookie Tasting */}
-            <button onClick={() => setProductType('cookie')}
+            <button onClick={() => handleProductSelect('cookie')}
               className={`text-left p-6 rounded-xl border-2 transition-all group ${productType === 'cookie' ? 'border-[#541409] bg-white shadow-lg scale-[1.02]' : 'border-[#EAD6D6] bg-white hover:border-[#541409]/40 hover:shadow-md'}`}>
                             <h3 className="font-serif text-[#541409] text-xl font-medium">Cookie Tasting Box</h3>
               <p className="text-sm text-stone-500 mt-2 leading-relaxed">
@@ -536,7 +553,7 @@ function TastingPageContent() {
             </button>
 
             {/* The All In Bride Bundle */}
-            <button onClick={() => setProductType('bundle')}
+            <button onClick={() => handleProductSelect('bundle')}
               className={`text-left p-6 rounded-xl border-2 transition-all group relative overflow-hidden ${productType === 'bundle' ? 'border-[#541409] bg-white shadow-lg scale-[1.02]' : 'border-[#EAD6D6] bg-white hover:border-[#541409]/40 hover:shadow-md'}`}>
               <div className="absolute top-3 right-3 px-2 py-0.5 bg-[#541409] text-[#EAD6D6] rounded text-[10px] font-medium">BEST VALUE</div>
                             <h3 className="font-serif text-[#541409] text-xl font-medium">The All In Bride</h3>
@@ -556,10 +573,34 @@ function TastingPageContent() {
         </div>
       </section>
 
+      <section className="py-10 sm:py-12 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl font-serif text-[#541409] text-center mb-3">Recent Tastings</h2>
+          <p className="text-center text-stone-500 mb-6">A little peek at some recent tasting boxes and sweet extras</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <div className="aspect-[5/6] rounded-xl overflow-hidden shadow-sm">
+                <img src="/tastings.jpg" alt="Tastings" className="w-full h-full object-cover" />
+              </div>
+            </div>
+            <div>
+              <div className="aspect-[5/6] rounded-xl overflow-hidden shadow-sm">
+                <img src="/tastings2.jpg" alt="Tastings 2" className="w-full h-full object-cover" />
+              </div>
+            </div>
+            <div>
+              <div className="aspect-[5/6] rounded-xl overflow-hidden shadow-sm">
+                <img src="/spring-box.jpg" alt="Spring box" className="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Mini Cake Menu ─────────────────────────────────────────── */}
       {(productType === 'cake' || productType === 'bundle') && (
         <section className="py-12 bg-white">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div ref={cakeCollectionRef} className="max-w-5xl mx-auto px-4 sm:px-6">
             <h2 className="text-2xl font-serif text-[#541409] text-center mb-2">The Mini Cake Collection</h2>
             <p className="text-center text-sm text-stone-500 mb-8">Each 12oz cake is layered with filling &amp; finished with mock swiss buttercream</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">

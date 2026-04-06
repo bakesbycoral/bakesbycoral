@@ -10,6 +10,7 @@ import { OrderEditForm } from './OrderEditForm';
 import { QuotesList } from './quotes';
 import { ContractsList } from './contracts';
 import { formatDate, formatTime, formatDateTime } from '@/lib/dates';
+import { getDisplayOrderTypeLabel, hasCookieCupsFormData, isCookieCakeFormData, parseOrderFormData } from '@/lib/orderTypeDisplay';
 
 interface Order {
   id: string;
@@ -59,16 +60,6 @@ const statusColors: Record<string, string> = {
   confirmed: 'bg-[#c1ecf8] text-[#1a4a5c]',
   completed: 'bg-neutral-100 text-neutral-700',
   cancelled: 'bg-red-100 text-red-700',
-};
-
-const orderTypeLabels: Record<string, string> = {
-  cookies: 'Cookies (1-3 Dozen)',
-  cookies_large: 'Large Cookie Order (4+ Dozen)',
-  cake: 'Custom Cake',
-  wedding: 'Wedding',
-  tasting: 'Tasting Order',
-  easter_collection: 'Limited Collection',
-  cookie_cups: 'Cookie Cups',
 };
 
 const orderTypeColors: Record<string, string> = {
@@ -142,7 +133,8 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
     }
   };
 
-  const formData = order.form_data ? JSON.parse(order.form_data) : {};
+  const formData = parseOrderFormData(order.form_data) as Record<string, any>;
+  const displayOrderTypeLabel = getDisplayOrderTypeLabel(order.order_type, formData);
 
   // Calculate balance due
   const balanceDue = order.total_amount && order.deposit_amount
@@ -161,7 +153,7 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
             </Link>
             <h1 className="text-2xl font-bold text-[#541409]">Edit {order.order_number}</h1>
             <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6] text-[#541409]'}`}>
-              {orderTypeLabels[order.order_type] || order.order_type}
+              {displayOrderTypeLabel}
             </span>
           </div>
         </div>
@@ -187,7 +179,7 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
             <h1 className="text-xl md:text-2xl font-bold text-[#541409]">{order.order_number}</h1>
             <div className="flex items-center gap-2 mt-1">
               <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6] text-[#541409]'}`}>
-                {orderTypeLabels[order.order_type] || order.order_type}
+                {displayOrderTypeLabel}
               </span>
               <span className={`px-2 py-1 text-xs font-medium rounded-lg capitalize ${statusColors[order.status] || 'bg-[#EAD6D6]'}`}>
                 {order.status.replace('_', ' ')}
@@ -496,6 +488,193 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                   <div className="pt-2 border-t border-[#EAD6D6]">
                     <dt className="text-sm text-[#541409]/60">Add-On</dt>
                     <dd className="font-medium text-[#541409]">Half Dozen Cookies ($14) — {formData.cookie_flavor}</dd>
+                  </div>
+                )}
+              </dl>
+            )}
+
+            {order.order_type === 'cookie_cups' && (
+              <dl className="space-y-3">
+                {formData.product_type === 'cookie_cups_and_cake' ? (
+                  <>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Cookie Cups Quantity</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.quantity || '-')} cookie cups</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Event Type</dt>
+                        <dd className="font-medium text-[#541409] capitalize">{String(formData.event_type || '-').replace('-', ' ')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Cookie Cake Size</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.size || '-')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Cookie Cake Shape</dt>
+                        <dd className="font-medium text-[#541409] capitalize">{String(formData.shape || '-')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Cookie Cake Layers</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.layers || '-')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Cookie Cake Servings</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.servings || '-')}</dd>
+                      </div>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Cookie Cup Add-Ons</dt>
+                      <dd className="text-[#541409]">
+                        {[
+                          formData.chocolate_molds ? 'Chocolate Molds' : '',
+                          formData.edible_glitter ? 'Edible Glitter' : '',
+                        ].filter(Boolean).join(', ') || 'None'}
+                      </dd>
+                    </div>
+                    {formData.colors && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Cookie Cup Colors</dt>
+                        <dd className="text-[#541409]">{String(formData.colors)}</dd>
+                      </div>
+                    )}
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Cookie Cake Design</dt>
+                      <dd className="text-[#541409]">
+                        Base: {String(formData.base_color || '-')} | Piping: {String(formData.piping_colors || '-')}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Cookie Cake Message</dt>
+                      <dd className="text-[#541409]">
+                        {String(formData.custom_messaging || '-')} {formData.message_style ? `(${String(formData.message_style).replace('-', ' ')})` : ''}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Cookie Cake Add-Ons</dt>
+                      <dd className="text-[#541409]">
+                        {Array.isArray(formData.toppings) && formData.toppings.length > 0
+                          ? (formData.toppings as string[]).map((item) => item.replace(/-/g, ' ')).join(', ')
+                          : 'None'}
+                      </dd>
+                    </div>
+                    {formData.design_details && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Design Notes</dt>
+                        <dd className="text-[#541409] whitespace-pre-wrap">{String(formData.design_details)}</dd>
+                      </div>
+                    )}
+                  </>
+                ) : isCookieCakeFormData(formData) ? (
+                  <>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Size</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.size || '-')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Shape</dt>
+                        <dd className="font-medium text-[#541409] capitalize">{String(formData.shape || '-')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Layers</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.layers || '-')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Servings</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.servings || '-')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Flavor</dt>
+                        <dd className="font-medium text-[#541409] capitalize">{String(formData.flavor || 'chocolate-chip').replace('-', ' ')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Event Type</dt>
+                        <dd className="font-medium text-[#541409] capitalize">{String(formData.event_type || '-').replace('-', ' ')}</dd>
+                      </div>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Design</dt>
+                      <dd className="text-[#541409]">
+                        Base: {String(formData.base_color || '-')} | Piping: {String(formData.piping_colors || '-')}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Custom Message</dt>
+                      <dd className="text-[#541409]">
+                        {String(formData.custom_messaging || '-')} {formData.message_style ? `(${String(formData.message_style).replace('-', ' ')})` : ''}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Add-Ons</dt>
+                      <dd className="text-[#541409]">
+                        {Array.isArray(formData.toppings) && formData.toppings.length > 0
+                          ? (formData.toppings as string[]).map((item) => item.replace(/-/g, ' ')).join(', ')
+                          : 'None'}
+                      </dd>
+                    </div>
+                    {formData.design_details && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Design Notes</dt>
+                        <dd className="text-[#541409] whitespace-pre-wrap">{String(formData.design_details)}</dd>
+                      </div>
+                    )}
+                  </>
+                ) : hasCookieCupsFormData(formData) ? (
+                  <>
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Quantity</dt>
+                      <dd className="font-medium text-[#541409]">{String(formData.quantity || '-')} cookie cups</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Event Type</dt>
+                      <dd className="font-medium text-[#541409] capitalize">{String(formData.event_type || '-').replace('-', ' ')}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Add-Ons</dt>
+                      <dd className="text-[#541409]">
+                        {[
+                          formData.chocolate_molds ? 'Chocolate Molds' : '',
+                          formData.edible_glitter ? 'Edible Glitter' : '',
+                        ].filter(Boolean).join(', ') || 'None'}
+                      </dd>
+                    </div>
+                    {formData.colors && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Colors</dt>
+                        <dd className="text-[#541409]">{String(formData.colors)}</dd>
+                      </div>
+                    )}
+                    {formData.design_details && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Design Notes</dt>
+                        <dd className="text-[#541409] whitespace-pre-wrap">{String(formData.design_details)}</dd>
+                      </div>
+                    )}
+                  </>
+                ) : null}
+
+                {Array.isArray(formData.inspiration_image_urls) && formData.inspiration_image_urls.length > 0 && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60 mb-2">Inspiration Photos ({formData.inspiration_image_urls.length})</dt>
+                    <dd className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {(formData.inspiration_image_urls as string[]).map((url: string, i: number) => (
+                        <a
+                          key={i}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block aspect-square rounded-lg overflow-hidden border border-[#EAD6D6] hover:border-[#541409] transition-colors"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={url}
+                            alt={`Inspiration photo ${i + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </a>
+                      ))}
+                    </dd>
                   </div>
                 )}
               </dl>

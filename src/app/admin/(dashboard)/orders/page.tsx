@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getDB, getEnvVar } from '@/lib/db';
 import { formatDate, formatTime } from '@/lib/dates';
+import { getDisplayOrderTypeLabel, parseOrderFormData } from '@/lib/orderTypeDisplay';
 
 interface Order {
   id: string;
@@ -13,6 +14,7 @@ interface Order {
   pickup_time: string | null;
   total_amount: number | null;
   created_at: string;
+  form_data?: string | null;
 }
 
 interface OrdersPageProps {
@@ -39,7 +41,7 @@ const orderTypeLabels: Record<string, string> = {
   wedding: 'Wedding',
   tasting: 'Tasting Box',
   easter_collection: 'Limited Collection',
-  cookie_cups: 'Cookie Cups',
+  cookie_cups: 'Cookie Cups/Cakes',
 };
 
 const orderTypeColors: Record<string, string> = {
@@ -182,6 +184,9 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           </div>
         ) : (
           orders.map((order) => (
+            (() => {
+              const displayLabel = getDisplayOrderTypeLabel(order.order_type, parseOrderFormData(order.form_data));
+              return (
             <Link
               key={order.id}
               href={`/admin/orders/${order.id}`}
@@ -198,7 +203,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6] text-[#541409]'}`}>
-                  {orderTypeLabels[order.order_type] || order.order_type}
+                  {displayLabel}
                 </span>
                 <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded capitalize ${statusColors[order.status] || 'bg-[#EAD6D6]'}`}>
                   {order.status.replace('_', ' ')}
@@ -210,6 +215,8 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                 )}
               </div>
             </Link>
+              );
+            })()
           ))
         )}
       </div>
@@ -236,6 +243,9 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
               </tr>
             ) : (
               orders.map((order) => (
+                (() => {
+                  const displayLabel = getDisplayOrderTypeLabel(order.order_type, parseOrderFormData(order.form_data));
+                  return (
                 <tr key={order.id} className="hover:bg-[#EAD6D6]/20">
                   <td className="px-6 py-4">
                     <Link href={`/admin/orders/${order.id}`} className="font-medium text-[#541409] hover:opacity-70">
@@ -249,7 +259,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6] text-[#541409]'}`}>
-                      {orderTypeLabels[order.order_type] || order.order_type}
+                      {displayLabel}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -275,6 +285,8 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                     </span>
                   </td>
                 </tr>
+                  );
+                })()
               ))
             )}
           </tbody>

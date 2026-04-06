@@ -14,7 +14,7 @@ const navLinks = [
 const menuLinks = [
   { href: '/cakes', label: 'Cakes' },
   { href: '/cookies', label: 'Cookies' },
-  { href: '/cookie-cups', label: 'Cookie Cups' },
+  { href: '/cookie-cups-cakes', label: 'Cookie Cups & Cakes' },
 ];
 
 const moreLinks = [

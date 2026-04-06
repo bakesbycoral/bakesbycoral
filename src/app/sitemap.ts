@@ -42,7 +42,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/cookie-cups`,
+      url: `${baseUrl}/cookie-cups-cakes`,
       lastModified: new Date(),
       changeFrequency: 'monthly' as const,
       priority: 0.8,

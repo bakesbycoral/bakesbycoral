@@ -3,11 +3,11 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Menu & Pricing',
-  description: 'View the full Bakes by Coral menu — gluten-free custom cakes from $60, cookies from $30/dozen & cookie cups from $30. Cincinnati pickup, made to order.',
+  description: 'View the full Bakes by Coral menu — gluten-free custom cakes from $60, cookies from $30/dozen, and cookie cups & cakes from $25. Cincinnati pickup, made to order.',
   keywords: ['gluten-free menu', 'bakery prices', 'cookie prices', 'cake prices', 'Cincinnati bakery menu'],
   openGraph: {
     title: 'Menu & Pricing | Bakes by Coral',
-    description: 'View the full Bakes by Coral menu — gluten-free custom cakes from $60, cookies from $30/dozen & cookie cups from $30.',
+    description: 'View the full Bakes by Coral menu — gluten-free custom cakes from $60, cookies from $30/dozen, and cookie cups & cakes from $25.',
     images: [{ url: '/25th-cake.jpg', width: 1200, height: 630, alt: 'Bakes by Coral gluten-free menu' }],
   },
 };
@@ -171,59 +171,58 @@ export default function MenuPage() {
         </div>
       </section>
 
-      {/* Cookie Cups Section */}
+      {/* Cookie Cups & Cakes Section */}
       <section className="py-16 sm:py-24 bg-[#F7F3ED]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <Link href="/cookie-cups" className="inline-block px-4 py-1.5 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full mb-4 hover:opacity-80 transition-opacity">
-                Party Perfect
+              <Link href="/cookie-cups-cakes" className="inline-block px-4 py-1.5 bg-[#EAD6D6] text-[#541409] text-sm font-medium rounded-full mb-4 hover:opacity-80 transition-opacity">
+                Celebration Favorites
               </Link>
-              <Link href="/cookie-cups" className="block hover:opacity-70 transition-opacity">
+              <Link href="/cookie-cups-cakes" className="block hover:opacity-70 transition-opacity">
                 <h2 className="text-3xl sm:text-4xl font-serif text-[#541409] mb-6">
-                  Cookie Cups
+                  Cookie Cups & Cakes
                 </h2>
               </Link>
               <p className="text-stone-600 leading-relaxed mb-6">
-                Mini chocolate chip cookie cups filled with vanilla buttercream frosting.
-                Fully customized with your colors and designs. Perfect for parties,
-                showers, and celebrations.
+                Mini chocolate chip cookie cups and thick chocolate chip cookie cakes,
+                both customized with buttercream, colors, and celebration-ready designs.
               </p>
 
               <div className="space-y-4 mb-8">
-                <Link href="/cookie-cups" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
-                  <span className="font-medium text-[#541409]">1 Dozen</span>
+                <Link href="/cookie-cups-cakes" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
+                  <span className="font-medium text-[#541409]">Cookie Cups</span>
                   <span className="text-stone-600">$30</span>
                 </Link>
-                <Link href="/cookie-cups" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
-                  <span className="font-medium text-[#541409]">2 Dozen</span>
-                  <span className="text-stone-600">$60</span>
+                <Link href="/cookie-cups-cakes" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
+                  <span className="font-medium text-[#541409]">6&quot; Cookie Cake</span>
+                  <span className="text-stone-600">From $25</span>
                 </Link>
-                <Link href="/cookie-cups" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
-                  <span className="font-medium text-[#541409]">3 Dozen</span>
-                  <span className="text-stone-600">$90</span>
+                <Link href="/cookie-cups-cakes" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
+                  <span className="font-medium text-[#541409]">8&quot; Cookie Cake</span>
+                  <span className="text-stone-600">From $40</span>
                 </Link>
-                <Link href="/cookie-cups" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
-                  <span className="font-medium text-[#541409]">4 Dozen</span>
-                  <span className="text-stone-600">$120</span>
+                <Link href="/cookie-cups-cakes" className="flex justify-between items-center border-b border-stone-200 pb-2 hover:bg-[#EAD6D6]/25 -mx-2 px-2 py-1 rounded transition-colors">
+                  <span className="font-medium text-[#541409]">10&quot; Cookie Cake</span>
+                  <span className="text-stone-600">From $55</span>
                 </Link>
                 <div className="text-sm text-stone-500 pt-1">
-                  Includes piped designs & sprinkles. Add chocolate molds or edible glitter +$4/dozen each
+                  Buttercream, piped designs, colors, and messaging included. Cookie cakes are chocolate chip only.
                 </div>
               </div>
 
               <Link
-                href="/cookie-cups"
+                href="/cookie-cups-cakes"
                 className="inline-flex px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity"
               >
-                Order Cookie Cups
+                Order Cookie Cups & Cakes
               </Link>
             </div>
 
-            <Link href="/cookie-cups" className="aspect-square rounded-lg overflow-hidden shadow-lg block hover:shadow-xl hover:scale-[1.02] transition-all">
+            <Link href="/cookie-cups-cakes" className="aspect-square rounded-lg overflow-hidden shadow-lg block hover:shadow-xl hover:scale-[1.02] transition-all">
               <img
-                src="/cookie-cups.jpg"
-                alt="Cookie Cups"
+                src="/pattys-cups.jpeg"
+                alt="Cookie Cups and Cookie Cakes"
                 className="w-full h-full object-cover"
               />
             </Link>

@@ -4,6 +4,7 @@ import { getDB, getEnvVar } from '@/lib/db';
 import { getBlackoutDates } from '@/lib/db/blackout';
 import { verifySession } from '@/lib/auth/session';
 import { formatDateMedium, getCurrentDatePartsInTimeZone } from '@/lib/dates';
+import { getDisplayOrderTypeLabel, parseOrderFormData } from '@/lib/orderTypeDisplay';
 
 interface Order {
   id: string;
@@ -21,6 +22,7 @@ interface Order {
 interface ParsedOrder extends Order {
   isDelivery: boolean;
   deliveryLocation?: string;
+  displayTypeLabel?: string;
 }
 
 interface BlackoutDate {
@@ -54,7 +56,7 @@ const orderTypeLabels: Record<string, string> = {
   wedding: 'Wedding',
   tasting: 'Tasting',
   easter_collection: 'Limited Collection',
-  cookie_cups: 'Cookie Cups',
+  cookie_cups: 'Cookie Cups/Cakes',
 };
 
 const statusColors: Record<string, string> = {
@@ -149,7 +151,12 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
         // ignore parse errors
       }
     }
-    return { ...order, isDelivery, deliveryLocation };
+    return {
+      ...order,
+      isDelivery,
+      deliveryLocation,
+      displayTypeLabel: getDisplayOrderTypeLabel(order.order_type, parseOrderFormData(order.form_data)),
+    };
   });
 
   // Get slot capacity setting
@@ -489,7 +496,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                                               px-2 py-0.5 text-xs font-medium rounded
                                               ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6]'}
                                             `}>
-                                              {orderTypeLabels[order.order_type]}
+                                              {order.displayTypeLabel || orderTypeLabels[order.order_type]}
                                             </span>
                                             <span className={`
                                               px-2 py-0.5 text-xs rounded capitalize
@@ -554,7 +561,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                                               px-2 py-0.5 text-xs font-medium rounded
                                               ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6]'}
                                             `}>
-                                              {orderTypeLabels[order.order_type]}
+                                              {order.displayTypeLabel || orderTypeLabels[order.order_type]}
                                             </span>
                                             <span className={`
                                               px-2 py-0.5 text-xs rounded capitalize
@@ -635,7 +642,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                 >
                   <div className="flex items-center gap-3">
                     <div className={`px-2 py-1 text-xs font-medium rounded ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6]'}`}>
-                      {orderTypeLabels[order.order_type]}
+                      {order.displayTypeLabel || orderTypeLabels[order.order_type]}
                     </div>
                     <div>
                       <div className="font-medium text-[#541409] text-sm">{order.customer_name}</div>
@@ -684,7 +691,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                 >
                   <div className="flex items-center gap-3">
                     <div className={`px-2 py-1 text-xs font-medium rounded ${orderTypeColors[order.order_type] || 'bg-[#EAD6D6]'}`}>
-                      {orderTypeLabels[order.order_type]}
+                      {order.displayTypeLabel || orderTypeLabels[order.order_type]}
                     </div>
                     <div>
                       <div className="font-medium text-[#541409] text-sm">{order.customer_name}</div>

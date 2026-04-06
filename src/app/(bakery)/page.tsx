@@ -220,29 +220,29 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Cookie Cups Card */}
+            {/* Cookie Cups & Cakes Card */}
             <div className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden col-span-2 md:col-span-1">
-              <Link href="/cookie-cups" className="aspect-[4/3] overflow-hidden block">
+              <Link href="/cookie-cups-cakes" className="aspect-[4/3] overflow-hidden block">
                 <img
-                  src="/cookie-cups.jpg"
-                  alt="Cookie Cups"
+                  src="/cyanna-cookie-cake.jpg"
+                  alt="Cookie Cups and Cookie Cakes"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </Link>
               <div className="p-3 sm:p-6">
-                <Link href="/cookie-cups" className="block hover:opacity-70 transition-opacity">
-                  <h3 className="text-lg sm:text-2xl font-serif text-[#541409] mb-1 sm:mb-2">Cookie Cups</h3>
+                <Link href="/cookie-cups-cakes" className="block hover:opacity-70 transition-opacity">
+                  <h3 className="text-lg sm:text-2xl font-serif text-[#541409] mb-1 sm:mb-2">Cookie Cups & Cakes</h3>
                 </Link>
                 <p className="text-stone-600 mb-2 sm:mb-4 text-xs sm:text-base">
-                  Mini chocolate chip cookie cups with vanilla buttercream.
+                  Mini buttercream cookie cups and thick chocolate chip cookie cakes.
                 </p>
                 <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-4">
-                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#EAD6D6] text-[#541409] text-xs sm:text-sm rounded-full">From $30</span>
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#EAD6D6] text-[#541409] text-xs sm:text-sm rounded-full">From $25</span>
                   <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#F7F3ED] text-stone-600 text-xs sm:text-sm rounded-full">1 week</span>
                 </div>
                 <div className="flex flex-wrap gap-2 sm:gap-4">
                   <Link
-                    href="/cookie-cups"
+                    href="/cookie-cups-cakes"
                     className="inline-flex items-center text-[#541409] font-medium hover:opacity-70 transition-opacity text-xs sm:text-base"
                   >
                     Order

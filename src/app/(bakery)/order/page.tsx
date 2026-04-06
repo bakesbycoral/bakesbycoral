@@ -82,25 +82,25 @@ export default function OrderPage() {
               </div>
             </Link>
 
-            {/* Cookie Cups Order */}
+            {/* Cookie Cups & Cakes Order */}
             <Link
-              href="/cookie-cups"
+              href="/cookie-cups-cakes"
               className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src="/cookie-cups.jpg"
-                  alt="Cookie Cups"
+                  alt="Cookie Cups and Cookie Cakes"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div className="p-6">
-                <h2 className="text-2xl font-serif text-[#541409] mb-2">Cookie Cups</h2>
+                <h2 className="text-2xl font-serif text-[#541409] mb-2">Cookie Cups & Cakes</h2>
                 <p className="text-stone-600 mb-4">
-                  Mini chocolate chip cookie cups with vanilla buttercream.
+                  Mini cookie cups and thick chocolate chip cookie cakes for celebrations.
                 </p>
                 <span className="inline-flex items-center text-[#541409] font-medium group-hover:opacity-70 transition-opacity">
-                  Start Cookie Cups Order
+                  Start Cookie Cups & Cakes Order
                   <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>

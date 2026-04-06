@@ -1,4 +1,5 @@
 import { formatDate as formatBusinessDate, formatTime as formatBusinessTime } from '@/lib/dates';
+import { getCookieCupsAndCakesDetails, getDisplayOrderTypeLabel } from '@/lib/orderTypeDisplay';
 
 // Email sending utility using Resend
 
@@ -210,7 +211,7 @@ const ORDER_TYPE_LABELS: Record<string, string> = {
   wedding: 'Wedding Inquiry',
   tasting: 'Tasting Order',
   easter_collection: 'Limited Collection Order',
-  cookie_cups: 'Cookie Cups Order',
+  cookie_cups: 'Cookie Cups & Cakes Order',
 };
 
 // Format order details for email
@@ -255,6 +256,10 @@ export function formatOrderDetails(orderType: string, formData: Record<string, u
     if (formData.theme) lines.push(`**Theme:** ${formData.theme}`);
   }
 
+  if (orderType === 'cookie_cups') {
+    lines.push(...getCookieCupsAndCakesDetails(formData));
+  }
+
   return lines.join('\n');
 }
 
@@ -290,7 +295,9 @@ export function buildEmailFromTemplate(
   const variables: Record<string, string> = {
     customer_name: data.customerName,
     order_number: data.orderNumber,
-    order_type: ORDER_TYPE_LABELS[data.orderType] || data.orderType,
+    order_type: data.formData
+      ? `${getDisplayOrderTypeLabel(data.orderType, data.formData)} Order`
+      : (ORDER_TYPE_LABELS[data.orderType] || data.orderType),
     pickup_date: data.pickupDate ? formatDate(data.pickupDate) : 'TBD',
     pickup_time: data.pickupTime ? formatTime(data.pickupTime) : 'TBD',
     total_amount: data.totalAmount ? formatPrice(data.totalAmount) : '',
