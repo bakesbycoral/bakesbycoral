@@ -12,9 +12,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Seasonal flavors go live on March 16th, 2026
-const SEASONAL_LIVE_DATE = new Date('2026-03-16T00:00:00');
-
 const cookiesSchema = [
   {
     '@context': 'https://schema.org',
@@ -45,15 +42,6 @@ const cookiesSchema = [
 ];
 
 export default function CookiesPage() {
-  const isSeasonalLive = new Date() >= SEASONAL_LIVE_DATE;
-
-  const seasonalFlavors = [
-    { name: 'Key Lime Pie', description: 'Tangy key lime brown sugar cookie topped with key lime pie frosting' },
-    { name: 'Blueberry Muffin', description: 'Soft cookie bursting with blueberries and a buttery streusel topping' },
-    { name: 'Lemon Sugar Sandwiches', description: 'Soft lemon sugar cookies filled with sweet lemon cream cheese' },
-    { name: 'White Chocolate Raspberry', description: 'White chocolate chips and tart raspberry in every bite' },
-  ];
-
   const cookieFlavors = [
     { name: 'Chocolate Chip', description: 'Classic soft & chewy with semi-sweet chocolate chips, topped with flaky sea salt' },
     { name: 'Vanilla Bean Sugar', description: 'Melt-in-your-mouth vanilla bean cookie rolled in sugar' },
@@ -129,38 +117,6 @@ export default function CookiesPage() {
           </div>
         </div>
       </section>
-
-      {/* Seasonal Collection - only shows after March 2nd, 2026 */}
-      {isSeasonalLive && (
-        <section className="py-16 sm:py-24 bg-[#541409]">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-12">
-              <span className="inline-block px-4 py-1 bg-[#EAD6D6]/20 text-[#EAD6D6] text-sm font-medium rounded-full mb-4">
-                Limited Time
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-serif text-[#EAD6D6]">
-                Seasonal Collection
-              </h2>
-              <p className="mt-3 text-[#EAD6D6]/80">
-                Spring flavors available now
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {seasonalFlavors.map((cookie) => (
-                <Link
-                  key={cookie.name}
-                  href="/order/cookies"
-                  className="bg-[#EAD6D6] rounded-lg p-6 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all block"
-                >
-                  <h3 className="text-lg font-serif text-[#541409] mb-2">{cookie.name}</h3>
-                  <p className="text-[#541409]/70 text-sm">{cookie.description}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Flavors Section */}
       <section className="py-16 sm:py-24 bg-[#EAD6D6]">

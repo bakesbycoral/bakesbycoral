@@ -4,11 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { TimeSlotPicker, CouponInput } from '@/components/forms';
 
-// Seasonal flavors go live on March 2nd, 2026
-const SEASONAL_LIVE_DATE = new Date('2026-03-02T00:00:00');
-
 export default function LargeCookieOrderPage() {
-  const isSeasonalLive = new Date() >= SEASONAL_LIVE_DATE;
+  const isSeasonalLive = false;
   const [formData, setFormData] = useState({
     name: '',
     email: '',
