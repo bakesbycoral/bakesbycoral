@@ -6,8 +6,11 @@ import { TimeSlotPicker, CouponInput } from '@/components/forms';
 import { CartProvider, useCart, CartSidebar, FlavorCard } from '@/components/cart';
 import { FLAVORS, SEASONAL_FLAVORS, PRICE_PER_DOZEN, SPRING_BOX_PRICE, HEAT_SEAL_FEE, SPRING_BOX_FLAVORS } from '@/types/cart';
 
+// Seasonal flavors go live on March 2nd, 2026
+const SEASONAL_LIVE_DATE = new Date('2026-03-02T00:00:00');
+
 function CookieOrderContent() {
-  const isSeasonalLive = false;
+  const isSeasonalLive = new Date() >= SEASONAL_LIVE_DATE;
   const { springBox, dozens, flavors, packaging, clearCart, isComplete, setSpringBox, setDozens, setPackaging, totalCookies, targetCookies, remainingCookies, maxBuildYourOwnDozens } = useCart();
   const checkoutFormRef = useRef<HTMLDivElement>(null);
 
