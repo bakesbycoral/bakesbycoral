@@ -21,6 +21,8 @@ interface QuoteData {
   customer_name: string;
   pickup_date: string | null;
   event_date: string | null;
+  deposit_paid_at: string | null;
+  paid_at: string | null;
   line_items: QuoteLineItem[];
 }
 
@@ -37,6 +39,7 @@ export default function QuotePage({ params }: { params: Promise<{ token: string 
   const [quote, setQuote] = useState<QuoteData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isApproving, setIsApproving] = useState(false);
+  const [isPayingBalance, setIsPayingBalance] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -88,6 +91,33 @@ export default function QuotePage({ params }: { params: Promise<{ token: string 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to approve quote');
       setIsApproving(false);
+    }
+  };
+
+  const handlePayBalance = async () => {
+    setIsPayingBalance(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/quotes/${token}/balance`, {
+        method: 'POST',
+      });
+
+      const data = await response.json() as { success?: boolean; error?: string; invoice_url?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create balance invoice');
+      }
+
+      if (data.invoice_url) {
+        window.location.href = data.invoice_url;
+        return;
+      }
+
+      throw new Error('No invoice URL returned');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create balance invoice');
+      setIsPayingBalance(false);
     }
   };
 
@@ -143,6 +173,9 @@ export default function QuotePage({ params }: { params: Promise<{ token: string 
   const isExpired = quote.status === 'expired';
   const isApproved = quote.status === 'approved' || quote.status === 'converted';
   const canApprove = quote.status === 'sent';
+  const depositPaid = !!quote.deposit_paid_at;
+  const fullyPaid = !!quote.paid_at;
+  const balanceDue = Math.max(0, quote.total_amount - (quote.deposit_amount || 0));
 
   return (
     <div className="min-h-screen bg-[#F7F3ED]">
@@ -295,15 +328,35 @@ export default function QuotePage({ params }: { params: Promise<{ token: string 
                 <p className="text-[#541409]/60 text-sm mb-4">
                   {quote.approved_at && `Approved on ${formatDate(quote.approved_at)}`}
                 </p>
-                {quote.stripe_invoice_url && (
+                {!depositPaid && quote.stripe_invoice_url && (
                   <a
                     href={quote.stripe_invoice_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block px-6 py-3 bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity"
                   >
-                    View Invoice
+                    Pay Deposit
                   </a>
+                )}
+                {depositPaid && !fullyPaid && (
+                  <>
+                    <p className="text-[#541409]/80 mb-4">
+                      Your deposit has been paid. If you&apos;d like, you can pay the remaining balance of{' '}
+                      <strong>{formatCurrency(balanceDue)}</strong> now.
+                    </p>
+                    <button
+                      onClick={handlePayBalance}
+                      disabled={isPayingBalance}
+                      className="px-6 py-3 bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 transition-opacity font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isPayingBalance ? 'Redirecting...' : `Pay Remaining Balance (${formatCurrency(balanceDue)})`}
+                    </button>
+                  </>
+                )}
+                {fullyPaid && (
+                  <p className="text-[#541409]/80">
+                    Your order has been paid in full. Thank you!
+                  </p>
                 )}
               </div>
             )}

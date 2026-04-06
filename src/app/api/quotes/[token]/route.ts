@@ -17,7 +17,8 @@ export async function GET(
 
     // Get quote with order details
     const quote = await db.prepare(`
-      SELECT q.*, o.order_number, o.order_type, o.customer_name, o.customer_email, o.pickup_date, o.event_date
+      SELECT q.*, o.order_number, o.order_type, o.customer_name, o.customer_email, o.pickup_date, o.event_date,
+             o.deposit_paid_at, o.paid_at
       FROM quotes q
       JOIN orders o ON q.order_id = o.id
       WHERE q.approval_token = ?
@@ -28,6 +29,8 @@ export async function GET(
       customer_email: string;
       pickup_date: string | null;
       event_date: string | null;
+      deposit_paid_at: string | null;
+      paid_at: string | null;
     }>();
 
     if (!quote) {
@@ -70,6 +73,8 @@ export async function GET(
         customer_name: quote.customer_name,
         pickup_date: quote.pickup_date,
         event_date: quote.event_date,
+        deposit_paid_at: quote.deposit_paid_at,
+        paid_at: quote.paid_at,
         line_items: lineItemsResult.results || [],
       },
     });
