@@ -58,7 +58,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Image not found' }, { status: 404 });
     }
 
-    const validCategories = ['cakes', 'wedding-cakes', 'cookies', 'cookie-cups'];
+    const validCategories = ['cakes', 'wedding-cakes', 'cookies', 'cookie-cups', 'cookie-cakes'];
     const finalCategory = category && validCategories.includes(category) ? category : undefined;
 
     await db.prepare(`

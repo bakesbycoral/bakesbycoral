@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Image URL is required' }, { status: 400 });
     }
 
-    const validCategories = ['cakes', 'wedding-cakes', 'cookies', 'cookie-cups'];
+    const validCategories = ['cakes', 'wedding-cakes', 'cookies', 'cookie-cups', 'cookie-cakes'];
     const finalCategory = category && validCategories.includes(category) ? category : 'cakes';
 
     const db = getDB();
