@@ -10,6 +10,7 @@ const categories = [
   { value: 'wedding-cakes', label: 'Wedding Cakes' },
   { value: 'cookies', label: 'Cookies' },
   { value: 'cookie-cups', label: 'Cookie Cups' },
+  { value: 'cookie-cakes', label: 'Cookie Cakes' },
 ];
 
 export default function NewGalleryImagePage() {

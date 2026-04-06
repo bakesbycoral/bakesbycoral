@@ -17,6 +17,7 @@ const categoryLabels: Record<string, string> = {
   'wedding-cakes': 'Wedding Cakes',
   cookies: 'Cookies',
   'cookie-cups': 'Cookie Cups',
+  'cookie-cakes': 'Cookie Cakes',
 };
 
 const categoryColors: Record<string, string> = {
@@ -24,6 +25,7 @@ const categoryColors: Record<string, string> = {
   'wedding-cakes': 'bg-purple-100 text-purple-800',
   cookies: 'bg-amber-100 text-amber-800',
   'cookie-cups': 'bg-blue-100 text-blue-800',
+  'cookie-cakes': 'bg-rose-100 text-rose-800',
 };
 
 export default function AdminGalleryPage() {
