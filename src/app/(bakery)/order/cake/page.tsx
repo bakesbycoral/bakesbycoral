@@ -55,7 +55,7 @@ function CakeOrderContent() {
       ...prev,
       ...(size && ['4-inch', '6-inch', '8-inch', '10-inch'].includes(size) ? { cakeSize: size } : {}),
       ...(flavor && ['vanilla-bean', 'chocolate', 'confetti', 'red-velvet', 'lemon', 'vanilla-latte', 'marble'].includes(flavor) ? { cakeFlavor: flavor } : {}),
-      ...(filling && ['chocolate-ganache', 'cookies-and-cream', 'vanilla-bean-ganache', 'fresh-strawberries', 'lemon-ganache', 'raspberry'].includes(filling) ? { filling: filling } : {}),
+      ...(filling && ['chocolate-ganache', 'cream-cheese', 'vanilla-bean-ganache', 'fresh-strawberries', 'lemon-ganache', 'raspberry', 'salted-caramel'].includes(filling) ? { filling: filling } : {}),
     }));
   }, [searchParams]);
 
@@ -337,11 +337,12 @@ function CakeOrderContent() {
                     >
                       <option value="">Select an option (or leave blank)</option>
                       <option value="chocolate-ganache">Chocolate Ganache (+$10)</option>
-                      <option value="cookies-and-cream">Cookies & Cream (+$5)</option>
+                      <option value="cream-cheese">Cream Cheese (+$5)</option>
                       <option value="vanilla-bean-ganache">Vanilla Bean Ganache (+$10)</option>
                       <option value="fresh-strawberries">Fresh Strawberries (+$8)</option>
                       <option value="lemon-ganache">Lemon Ganache (+$10)</option>
                       <option value="raspberry">Raspberry (+$8)</option>
+                      <option value="salted-caramel">Salted Caramel (+$5)</option>
                     </select>
                   </div>
                 </div>

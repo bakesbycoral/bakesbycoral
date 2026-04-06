@@ -619,11 +619,12 @@ export default function WeddingInquiryPage() {
                       >
                         <option value="">Select an option (or leave blank)</option>
                         <option value="chocolate-ganache">Chocolate Ganache (+$10)</option>
-                        <option value="cookies-and-cream">Cookies & Cream (+$5)</option>
+                        <option value="cream-cheese">Cream Cheese (+$5)</option>
                         <option value="vanilla-bean-ganache">Vanilla Bean Ganache (+$10)</option>
                         <option value="fresh-strawberries">Fresh Strawberries (+$8)</option>
                         <option value="lemon-ganache">Lemon Ganache (+$10)</option>
                         <option value="raspberry">Raspberry (+$8)</option>
+                        <option value="salted-caramel">Salted Caramel (+$5)</option>
                       </select>
                     </div>
 
@@ -1218,11 +1219,12 @@ export default function WeddingInquiryPage() {
                             >
                               <option value="">Select an option (or leave blank)</option>
                               <option value="chocolate-ganache">Chocolate Ganache (+$10)</option>
-                              <option value="cookies-and-cream">Cookies & Cream (+$5)</option>
+                              <option value="cream-cheese">Cream Cheese (+$5)</option>
                               <option value="vanilla-bean-ganache">Vanilla Bean Ganache (+$10)</option>
                               <option value="fresh-strawberries">Fresh Strawberries (+$8)</option>
                               <option value="lemon-ganache">Lemon Ganache (+$10)</option>
                               <option value="raspberry">Raspberry (+$8)</option>
+                              <option value="salted-caramel">Salted Caramel (+$5)</option>
                             </select>
                           </div>
                         </div>

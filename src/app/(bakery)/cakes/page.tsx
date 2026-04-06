@@ -3,11 +3,11 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Custom Gluten-Free Cakes',
-  description: 'Order custom gluten-free celebration cakes in Cincinnati — 3-layer designs starting at $60 with 7 flavors and 6 fillings. 100% celiac-safe kitchen.',
+  description: 'Order custom gluten-free celebration cakes in Cincinnati — 3-layer designs starting at $60 with 7 flavors and 7 fillings. 100% celiac-safe kitchen.',
   keywords: ['gluten-free cake', 'custom cake Cincinnati', 'celiac safe cake', 'gluten-free birthday cake', 'celebration cake'],
   openGraph: {
     title: 'Custom Gluten-Free Cakes | Bakes by Coral',
-    description: 'Order custom gluten-free celebration cakes in Cincinnati — 3-layer designs starting at $60 with 7 flavors and 6 fillings.',
+    description: 'Order custom gluten-free celebration cakes in Cincinnati — 3-layer designs starting at $60 with 7 flavors and 7 fillings.',
     images: [{ url: '/christmas-cake.jpg', width: 1200, height: 630, alt: 'Custom gluten-free celebration cake by Bakes by Coral' }],
   },
 };
@@ -17,7 +17,7 @@ const cakesSchema = [
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: 'Custom Gluten-Free Celebration Cake',
-    description: 'Handcrafted 3-layer gluten-free celebration cake with your choice of 7 flavors and 6 fillings. Celiac-safe, made in a dedicated gluten-free kitchen.',
+    description: 'Handcrafted 3-layer gluten-free celebration cake with your choice of 7 flavors and 7 fillings. Celiac-safe, made in a dedicated gluten-free kitchen.',
     image: 'https://bakesbycoral.com/christmas-cake.jpg',
     brand: { '@type': 'Brand', name: 'Bakes by Coral' },
     offers: {
@@ -53,11 +53,12 @@ export default function CakesPage() {
 
   const fillings = [
     { name: 'Chocolate Ganache', value: 'chocolate-ganache' },
-    { name: 'Cookies & Cream', value: 'cookies-and-cream' },
+    { name: 'Cream Cheese', value: 'cream-cheese' },
     { name: 'Vanilla Bean Ganache', value: 'vanilla-bean-ganache' },
     { name: 'Fresh Strawberries', value: 'fresh-strawberries' },
     { name: 'Lemon Ganache', value: 'lemon-ganache' },
     { name: 'Raspberry', value: 'raspberry' },
+    { name: 'Salted Caramel', value: 'salted-caramel' },
   ];
 
   return (
@@ -302,3 +303,4 @@ export default function CakesPage() {
     </>
   );
 }
+
