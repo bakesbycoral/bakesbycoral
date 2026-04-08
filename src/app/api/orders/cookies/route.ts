@@ -224,6 +224,8 @@ export async function POST(request: NextRequest) {
           orderType: 'cookies',
           pickupDate: data.pickup_date,
           pickupTime: data.pickup_time,
+          totalAmount: totalAmount,
+          formData: formData,
         }),
         replyTo: adminEmail,
       }).catch(err => console.error('Failed to send customer email:', err));

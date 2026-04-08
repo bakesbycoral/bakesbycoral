@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar, upsertClientFromOrder } from '@/lib/db';
 import Stripe from 'stripe';
 import { sanitizeInput } from '@/lib/validation';
-import { sendEmail, buildTastingOrderNotification } from '@/lib/email';
+import { sendEmail, buildTastingOrderNotification, orderConfirmationEmail } from '@/lib/email';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 interface CakeItem {
@@ -143,6 +143,22 @@ export async function POST(request: NextRequest) {
           html: emailContent.html,
           replyTo: data.email,
         });
+
+        // Customer confirmation
+        sendEmail(resendApiKey, {
+          to: data.email,
+          subject: `Tasting Box Order Received - ${orderNumber}`,
+          html: orderConfirmationEmail({
+            customerName: data.name,
+            orderNumber,
+            orderType: 'tasting',
+            pickupDate: data.pickup_date,
+            pickupTime: data.pickup_time,
+            totalAmount: totalAmount,
+            formData: JSON.parse(formDataJson),
+          }),
+          replyTo: 'coral@bakesbycoral.com',
+        }).catch(err => console.error('Failed to send customer email:', err));
       } catch (emailErr) {
         console.error('Email error:', emailErr);
       }

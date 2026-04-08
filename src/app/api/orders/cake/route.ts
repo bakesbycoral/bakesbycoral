@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar, upsertClientFromOrder } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
-import { sendEmail, buildCakeInquiryNotification } from '@/lib/email';
+import { sendEmail, buildCakeInquiryNotification, orderConfirmationEmail } from '@/lib/email';
 import { uploadInspirationImages } from '@/lib/uploads';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
@@ -144,6 +144,30 @@ export async function POST(request: NextRequest) {
           html: emailContent.html,
           replyTo: email,
         });
+
+        // Customer confirmation
+        const cakeFormData = {
+          size: cakeSize, shape: cakeShape, flavor: cakeFlavor, filling,
+          base_color: baseColor, piping_colors: pipingColors,
+          custom_messaging: customMessaging, message_style: messageStyle,
+          toppings: JSON.parse(toppings || '[]'),
+          allergies: sanitizeInput(allergies),
+          add_half_dozen_cookies: addHalfDozenCookies,
+          cookie_flavor: addHalfDozenCookies ? cookieFlavor : null,
+        };
+        sendEmail(resendApiKey, {
+          to: email,
+          subject: `Cake Inquiry Received - ${orderNumber}`,
+          html: orderConfirmationEmail({
+            customerName: name,
+            orderNumber,
+            orderType: 'cake',
+            pickupDate: pickupDate || undefined,
+            pickupTime: pickupTime || undefined,
+            formData: cakeFormData,
+          }),
+          replyTo: 'coral@bakesbycoral.com',
+        }).catch(err => console.error('Failed to send customer email:', err));
       } catch (emailError) {
         console.error('Email sending error:', emailError);
       }

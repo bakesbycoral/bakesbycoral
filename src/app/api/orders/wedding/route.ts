@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar, upsertClientFromOrder } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
-import { sendEmail, buildWeddingInquiryNotification } from '@/lib/email';
+import { sendEmail, buildWeddingInquiryNotification, orderConfirmationEmail } from '@/lib/email';
 import { uploadInspirationImages } from '@/lib/uploads';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
@@ -215,12 +215,46 @@ export async function POST(request: NextRequest) {
           }
         );
 
+        // Admin notification
         await sendEmail(resendApiKey, {
           to: 'coral@bakesbycoral.com',
           subject: emailContent.subject,
           html: emailContent.html,
           replyTo: email,
         });
+
+        // Customer confirmation with full order details
+        const storedFormData = JSON.parse(JSON.stringify({
+          partner_name: sanitizeInput(partnerName),
+          venue_name: sanitizeInput(venueName),
+          venue_address: sanitizeInput(venueAddress),
+          start_time: startTime,
+          onsite_contact: sanitizeInput(onsiteContact),
+          guest_count: guestCount,
+          services_needed: servicesNeeded,
+          pickup_or_delivery: pickupOrDelivery,
+          setup_requirements: sanitizeInput(setupRequirements),
+          cake: { shape: cakeShape, size: cakeSize, flavor: cakeFlavor, filling: cakeFilling, base_color: baseColor, piping_colors: pipingColors, custom_messaging: customMessaging, message_style: messageStyle, toppings: JSON.parse(cakeToppings || '[]') },
+          cookies: { quantity: cookieQuantity, flavors: JSON.parse(cookieFlavors || '{}'), packaging: cookiePackaging },
+          tiered_cake: { tiers: tieredCakeTiers, size: tieredCakeSize, shape: tieredCakeShape, flavors: { tier1: tieredCakeFlavorTier1, tier2: tieredCakeFlavorTier2, tier3: tieredCakeFlavorTier3 }, fillings: { tier1: tieredCakeFillingTier1, tier2: tieredCakeFillingTier2, tier3: tieredCakeFillingTier3 }, base_color: tieredCakeBaseColor, piping_colors: tieredCakePipingColors, messaging: tieredCakeMessaging, message_style: tieredCakeMessageStyle, toppings: JSON.parse(tieredCakeToppings || '[]'), design_notes: sanitizeInput(tieredCakeDesignNotes) },
+          dietary_restrictions: sanitizeInput(dietaryRestrictions),
+          how_found_us: sanitizeInput(howFoundUs),
+          inspiration_image_count: imageCount,
+        }));
+
+        sendEmail(resendApiKey, {
+          to: email,
+          subject: `Wedding Inquiry Received - ${orderNumber}`,
+          html: orderConfirmationEmail({
+            customerName: name,
+            orderNumber,
+            orderType: 'wedding',
+            pickupDate: pickupDate || undefined,
+            pickupTime: pickupTime || undefined,
+            formData: storedFormData,
+          }),
+          replyTo: 'coral@bakesbycoral.com',
+        }).catch(err => console.error('Failed to send customer email:', err));
       } catch (emailError) {
         console.error('Email sending error:', emailError);
       }

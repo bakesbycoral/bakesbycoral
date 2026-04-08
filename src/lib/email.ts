@@ -214,50 +214,174 @@ const ORDER_TYPE_LABELS: Record<string, string> = {
   cookie_cups: 'Cookie Cups & Cakes Order',
 };
 
-// Format order details for email
+// Helper to format a label from snake_case/kebab-case
+function prettyLabel(str: string): string {
+  return str.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// Format order details for email — comprehensive for all order types
 export function formatOrderDetails(orderType: string, formData: Record<string, unknown>): string {
   const lines: string[] = [];
 
+  // ── Cookies ───────────────────────────────────────────────────
   if (orderType === 'cookies' || orderType === 'cookies_large') {
+    if (formData.spring_box) {
+      lines.push('**Spring Cookie Box:** Yes ($35)');
+    }
     if (formData.flavor_counts) {
-      lines.push('**Cookies:**');
+      lines.push('**Flavors:**');
       const counts = formData.flavor_counts as Record<string, number>;
       for (const [flavor, count] of Object.entries(counts)) {
-        const label = flavor.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-        lines.push(`• ${label}: ${count} cookies`);
+        lines.push(`  • ${prettyLabel(flavor)}: ${count} cookies`);
       }
     } else if (formData.flavors) {
       lines.push('**Flavors:** ' + (formData.flavors as string[]).join(', '));
     }
-    if (formData.quantity) {
-      lines.push(`**Quantity:** ${formData.quantity} dozen`);
-    }
-    if (formData.packaging === 'heat-sealed') {
-      lines.push('**Packaging:** Heat-sealed (+$5/dozen)');
-    }
+    if (formData.quantity) lines.push(`**Quantity:** ${formData.quantity} dozen`);
+    if (formData.byo_quantity) lines.push(`**Build Your Own:** ${formData.byo_quantity} dozen`);
+    if (formData.packaging) lines.push(`**Packaging:** ${formData.packaging === 'heat-sealed' ? 'Heat-sealed (+$5/dozen)' : 'Standard'}`);
+    if (formData.allergies) lines.push(`**Allergies:** ${formData.allergies}`);
+    if (formData.how_did_you_hear) lines.push(`**How did you hear about us:** ${formData.how_did_you_hear}`);
   }
 
+  // ── Cake ──────────────────────────────────────────────────────
   if (orderType === 'cake') {
-    if (formData.size) lines.push(`**Size:** ${formData.size}-inch`);
-    if (formData.shape) lines.push(`**Shape:** ${formData.shape}`);
-    if (formData.flavor) lines.push(`**Flavor:** ${formData.flavor}`);
-    if (formData.filling) lines.push(`**Filling:** ${formData.filling}`);
-    if (formData.frosting || formData.buttercream) {
-      lines.push(`**Frosting:** ${formData.frosting || formData.buttercream}`);
-    }
-    if (formData.design_style) lines.push(`**Design Style:** ${formData.design_style}`);
-    if (formData.color_palette) lines.push(`**Colors:** ${formData.color_palette}`);
+    if (formData.size || formData.cake_size) lines.push(`**Size:** ${formData.size || formData.cake_size}`);
+    if (formData.shape) lines.push(`**Shape:** ${prettyLabel(String(formData.shape))}`);
+    if (formData.flavor || formData.cake_flavor) lines.push(`**Flavor:** ${prettyLabel(String(formData.flavor || formData.cake_flavor))}`);
+    if (formData.filling) lines.push(`**Filling:** ${prettyLabel(String(formData.filling))}`);
+    if (formData.frosting || formData.buttercream) lines.push(`**Frosting:** ${prettyLabel(String(formData.frosting || formData.buttercream))}`);
+    if (formData.design_style) lines.push(`**Design Style:** ${prettyLabel(String(formData.design_style))}`);
+    if (formData.base_color) lines.push(`**Base Color:** ${formData.base_color}`);
+    if (formData.piping_colors) lines.push(`**Piping Colors:** ${formData.piping_colors}`);
+    if (formData.custom_messaging) lines.push(`**Message:** ${formData.custom_messaging}`);
+    if (formData.message_style) lines.push(`**Message Style:** ${prettyLabel(String(formData.message_style))}`);
+    if (formData.color_palette) lines.push(`**Color Palette:** ${formData.color_palette}`);
+    if (formData.design_notes || formData.design) lines.push(`**Design Notes:** ${formData.design_notes || formData.design}`);
+    const toppings = formData.toppings as string[] | undefined;
+    if (toppings && toppings.length > 0) lines.push(`**Toppings:** ${toppings.map(prettyLabel).join(', ')}`);
+    if (formData.add_half_dozen_cookies) lines.push(`**Add-On:** Half Dozen Cookies — ${formData.cookie_flavor}`);
+    if (formData.allergies) lines.push(`**Allergies:** ${formData.allergies}`);
+    if (formData.how_did_you_hear) lines.push(`**How did you hear about us:** ${formData.how_did_you_hear}`);
   }
 
+  // ── Wedding ───────────────────────────────────────────────────
   if (orderType === 'wedding') {
+    if (formData.partner_name) lines.push(`**Partner Name:** ${formData.partner_name}`);
+    if (formData.venue_name) lines.push(`**Venue:** ${formData.venue_name}`);
+    if (formData.venue_address) lines.push(`**Venue Address:** ${formData.venue_address}`);
+    if (formData.start_time) lines.push(`**Start Time:** ${formatTime(String(formData.start_time))}`);
+    if (formData.onsite_contact) lines.push(`**On-Site Contact:** ${formData.onsite_contact}`);
     if (formData.guest_count) lines.push(`**Guest Count:** ${formData.guest_count}`);
-    if (formData.services_needed) lines.push(`**Services:** ${formData.services_needed}`);
-    if (formData.cake_tiers) lines.push(`**Cake Tiers:** ${formData.cake_tiers}`);
-    if (formData.theme) lines.push(`**Theme:** ${formData.theme}`);
+    const services = String(formData.services_needed || '').replace(/,/g, ', ').replace(/_/g, ' ');
+    if (services) lines.push(`**Services Needed:** ${prettyLabel(services)}`);
+    if (formData.pickup_or_delivery) lines.push(`**Pickup/Delivery:** ${prettyLabel(String(formData.pickup_or_delivery))}`);
+    if (formData.setup_requirements) lines.push(`**Setup Requirements:** ${formData.setup_requirements}`);
+
+    // Cutting cake details
+    const cake = formData.cake as Record<string, unknown> | undefined;
+    if (cake && (cake.size || cake.flavor)) {
+      lines.push('', '--- Cutting Cake ---');
+      if (cake.size) lines.push(`**Size:** ${cake.size}`);
+      if (cake.shape) lines.push(`**Shape:** ${prettyLabel(String(cake.shape))}`);
+      if (cake.flavor) lines.push(`**Flavor:** ${prettyLabel(String(cake.flavor))}`);
+      if (cake.filling) lines.push(`**Filling:** ${prettyLabel(String(cake.filling))}`);
+      if (cake.base_color) lines.push(`**Base Color:** ${cake.base_color}`);
+      if (cake.piping_colors) lines.push(`**Piping Colors:** ${cake.piping_colors}`);
+      if (cake.custom_messaging) lines.push(`**Message:** ${cake.custom_messaging}`);
+      if (cake.message_style) lines.push(`**Message Style:** ${prettyLabel(String(cake.message_style))}`);
+      const cakeToppings = cake.toppings as string[] | undefined;
+      if (cakeToppings && cakeToppings.length > 0) lines.push(`**Toppings:** ${cakeToppings.map(prettyLabel).join(', ')}`);
+    }
+
+    // Tiered cake details
+    const tiered = formData.tiered_cake as Record<string, unknown> | undefined;
+    if (tiered && (tiered.tiers || tiered.size)) {
+      lines.push('', '--- Tiered Wedding Cake ---');
+      if (tiered.tiers) lines.push(`**Tiers:** ${tiered.tiers}`);
+      if (tiered.size) lines.push(`**Size:** ${tiered.size}`);
+      if (tiered.shape) lines.push(`**Shape:** ${prettyLabel(String(tiered.shape))}`);
+      const flavors = tiered.flavors as Record<string, string> | undefined;
+      if (flavors) {
+        for (const [tier, flavor] of Object.entries(flavors)) {
+          if (flavor) lines.push(`**${prettyLabel(tier)} Flavor:** ${prettyLabel(flavor)}`);
+        }
+      }
+      const fillings = tiered.fillings as Record<string, string> | undefined;
+      if (fillings) {
+        for (const [tier, filling] of Object.entries(fillings)) {
+          if (filling) lines.push(`**${prettyLabel(tier)} Filling:** ${prettyLabel(filling)}`);
+        }
+      }
+      if (tiered.base_color) lines.push(`**Base Color:** ${tiered.base_color}`);
+      if (tiered.piping_colors) lines.push(`**Piping Colors:** ${tiered.piping_colors}`);
+      if (tiered.messaging) lines.push(`**Message:** ${tiered.messaging}`);
+      if (tiered.message_style) lines.push(`**Message Style:** ${prettyLabel(String(tiered.message_style))}`);
+      const tieredToppings = tiered.toppings as string[] | undefined;
+      if (tieredToppings && tieredToppings.length > 0) lines.push(`**Toppings:** ${tieredToppings.map(prettyLabel).join(', ')}`);
+      if (tiered.design_notes) lines.push(`**Design Notes:** ${tiered.design_notes}`);
+    }
+
+    // Cookie details
+    const cookies = formData.cookies as Record<string, unknown> | undefined;
+    if (cookies && (cookies.quantity || cookies.packaging)) {
+      lines.push('', '--- Cookies ---');
+      if (cookies.quantity) lines.push(`**Quantity:** ${cookies.quantity} dozen`);
+      if (cookies.packaging) lines.push(`**Packaging:** ${prettyLabel(String(cookies.packaging))}`);
+      const cookieFlavors = cookies.flavors as Record<string, number> | undefined;
+      if (cookieFlavors) {
+        const selected = Object.entries(cookieFlavors).filter(([, v]) => v > 0);
+        if (selected.length > 0) {
+          lines.push('**Flavors:**');
+          for (const [flavor, count] of selected) {
+            lines.push(`  • ${prettyLabel(flavor)}: ${count}`);
+          }
+        }
+      }
+    }
+
+    // Cookie cups details
+    const cookieCups = formData.cookie_cups as Record<string, unknown> | undefined;
+    if (cookieCups && cookieCups.quantity) {
+      lines.push('', '--- Cookie Cups ---');
+      if (cookieCups.quantity) lines.push(`**Quantity:** ${cookieCups.quantity} dozen`);
+    }
+
+    if (formData.dietary_restrictions) lines.push(`\n**Dietary Restrictions:** ${formData.dietary_restrictions}`);
+    if (formData.how_found_us) lines.push(`**How did you find us:** ${formData.how_found_us}`);
+    if (formData.inspiration_image_count) lines.push(`**Inspiration Images:** ${formData.inspiration_image_count} uploaded`);
   }
 
+  // ── Cookie Cups & Cakes ───────────────────────────────────────
   if (orderType === 'cookie_cups') {
     lines.push(...getCookieCupsAndCakesDetails(formData));
+  }
+
+  // ── Tasting ───────────────────────────────────────────────────
+  if (orderType === 'tasting') {
+    if (formData.tasting_type) lines.push(`**Type:** ${prettyLabel(String(formData.tasting_type))}`);
+    if (formData.box_name) lines.push(`**Cake Box:** ${formData.box_name}`);
+    if (formData.box_count) lines.push(`**Cake Count:** ${formData.box_count}`);
+    if (formData.cookie_box_name) lines.push(`**Cookie Box:** ${formData.cookie_box_name}`);
+    const cakes = formData.cakes as Array<{name: string; cake: string; filling: string}> | undefined;
+    if (cakes && cakes.length > 0) {
+      lines.push('**Mini Cakes:**');
+      for (const c of cakes) {
+        lines.push(`  • ${c.name} (${c.cake} + ${c.filling})`);
+      }
+    }
+    const cookieFlavors = formData.cookie_flavors as string[] | undefined;
+    if (cookieFlavors && cookieFlavors.length > 0) {
+      lines.push(`**Cookie Flavors:** ${cookieFlavors.join(', ')}`);
+    }
+    const addOns = formData.add_on_cakes as Array<{name: string; cake: string; filling: string}> | undefined;
+    if (addOns && addOns.length > 0) {
+      lines.push('**Add-On Cakes:**');
+      for (const c of addOns) {
+        lines.push(`  • ${c.name} (${c.cake} + ${c.filling})`);
+      }
+    }
+    if (formData.wedding_date) lines.push(`**Wedding Date:** ${formatDate(String(formData.wedding_date))}`);
   }
 
   return lines.join('\n');
@@ -319,13 +443,26 @@ export function orderConfirmationEmail(data: {
   orderType: string;
   pickupDate?: string;
   pickupTime?: string;
+  totalAmount?: number;
+  formData?: Record<string, unknown>;
 }): string {
   const orderTypeLabels: Record<string, string> = {
     cookies: 'Cookie Order',
     cookies_large: 'Large Cookie Order',
     cake: 'Custom Cake',
     wedding: 'Wedding Inquiry',
+    tasting: 'Tasting Order',
+    easter_collection: 'Limited Collection Order',
+    cookie_cups: 'Cookie Cups & Cakes Order',
   };
+
+  const orderDetails = data.formData ? formatOrderDetails(data.orderType, data.formData) : '';
+  const detailsHtml = orderDetails
+    ? orderDetails
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/---\s*(.*?)\s*---/g, '<hr style="border:none;border-top:1px solid #EAD6D6;margin:16px 0"><strong style="color:#541409">$1</strong>')
+        .replace(/\n/g, '<br>')
+    : '';
 
   return `
     <!DOCTYPE html>
@@ -339,6 +476,7 @@ export function orderConfirmationEmail(data: {
         .content { background: #fff; padding: 30px; border: 1px solid #EAD6D6; border-top: none; }
         .footer { background: #EAD6D6; padding: 20px; text-align: center; font-size: 14px; color: #541409; border-radius: 0 0 8px 8px; }
         .order-number { font-size: 24px; font-weight: bold; color: #541409; }
+        .details { background: #F7F3ED; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 14px; }
       </style>
     </head>
     <body>
@@ -348,7 +486,7 @@ export function orderConfirmationEmail(data: {
         </div>
         <div class="content">
           <h2>Thank you for your order, ${escapeHtml(data.customerName)}!</h2>
-          <p>We've received your ${orderTypeLabels[data.orderType] || 'order'} and will be in touch soon.</p>
+          <p>I've received your ${orderTypeLabels[data.orderType] || 'order'} and will be in touch soon.</p>
 
           <p><strong>Order Number:</strong></p>
           <p class="order-number">${escapeHtml(data.orderNumber)}</p>
@@ -359,11 +497,20 @@ export function orderConfirmationEmail(data: {
           ${data.pickupTime ? ` at ${formatTime(data.pickupTime)}` : ''}</p>
           ` : ''}
 
-          <p>We'll review your order and send you a confirmation or follow up with any questions within 24-48 hours.</p>
+          ${data.totalAmount ? `<p><strong>Total:</strong> ${formatPrice(data.totalAmount)}</p>` : ''}
+
+          ${detailsHtml ? `
+          <div class="details">
+            <p style="margin-top:0"><strong style="color:#541409">Your Order Details</strong></p>
+            ${detailsHtml}
+          </div>
+          ` : ''}
+
+          <p>I'll review your order and follow up with any questions within 24-48 hours.</p>
 
           <p style="margin-top: 30px;">
             <strong>Questions?</strong><br>
-            Reply to this email or contact us at <a href="mailto:coral@bakesbycoral.com">coral@bakesbycoral.com</a>
+            Reply to this email or text me at <a href="mailto:coral@bakesbycoral.com">coral@bakesbycoral.com</a>
           </p>
         </div>
         <div class="footer">
@@ -419,11 +566,14 @@ export function adminNewOrderEmail(data: {
           <p><span class="label">Phone:</span> <a href="tel:${escapeHtml(data.customerPhone)}">${escapeHtml(data.customerPhone)}</a></p>
           ${data.pickupDate ? `<p><span class="label">Requested Pickup:</span> ${data.pickupDate}</p>` : ''}
 
-          ${data.formData ? `
-          <hr>
-          <p><span class="label">Order Details:</span></p>
-          <pre style="background: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto;">${JSON.stringify(data.formData, null, 2)}</pre>
-          ` : ''}
+          ${data.formData ? (() => {
+            const details = formatOrderDetails(data.orderType, data.formData);
+            const detailsHtml = details
+              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+              .replace(/---\s*(.*?)\s*---/g, '<hr style="border:none;border-top:1px solid #EAD6D6;margin:12px 0"><strong style="color:#541409">$1</strong>')
+              .replace(/\n/g, '<br>');
+            return `<hr><p><span class="label">Order Details:</span></p><div style="background:#F7F3ED;padding:16px;border-radius:8px;font-size:14px;">${detailsHtml}</div>`;
+          })() : ''}
 
           <a href="https://bakesbycoral.com/admin/orders" class="btn">View in Dashboard</a>
         </div>

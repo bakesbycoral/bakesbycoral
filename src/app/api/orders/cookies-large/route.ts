@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar, upsertClientFromOrder } from '@/lib/db';
 import { sanitizeInput } from '@/lib/validation';
-import { sendEmail, buildLargeCookieOrderNotification } from '@/lib/email';
+import { sendEmail, buildLargeCookieOrderNotification, orderConfirmationEmail } from '@/lib/email';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 interface LargeCookieOrderData {
@@ -141,6 +141,25 @@ export async function POST(request: NextRequest) {
           html: emailContent.html,
           replyTo: data.email,
         });
+
+        // Customer confirmation
+        const largeFormData = {
+          quantity: data.quantity, flavors: data.flavors, packaging: data.packaging,
+          event_type: data.event_type, allergies: data.allergies, how_did_you_hear: data.how_did_you_hear,
+        };
+        sendEmail(resendApiKey, {
+          to: data.email,
+          subject: `Large Cookie Order Received - ${orderNumber}`,
+          html: orderConfirmationEmail({
+            customerName: data.name,
+            orderNumber,
+            orderType: 'cookies_large',
+            pickupDate: data.pickup_date || undefined,
+            pickupTime: data.pickup_time || undefined,
+            formData: largeFormData,
+          }),
+          replyTo: 'coral@bakesbycoral.com',
+        }).catch(err => console.error('Failed to send customer email:', err));
       } catch (emailError) {
         console.error('Email sending error:', emailError);
       }

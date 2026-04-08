@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDB, getEnvVar, upsertClientFromOrder } from '@/lib/db';
-import { parseAdminEmails, sendEmail, textToHtmlEmail } from '@/lib/email';
+import { parseAdminEmails, sendEmail, textToHtmlEmail, orderConfirmationEmail } from '@/lib/email';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { uploadInspirationImages } from '@/lib/uploads';
 import { sanitizeInput } from '@/lib/validation';
@@ -309,6 +309,22 @@ export async function POST(request: NextRequest) {
           html: textToHtmlEmail(detailLines.join('\n'), emailTitle),
           replyTo: email,
         });
+
+        // Customer confirmation
+        sendEmail(resendApiKey, {
+          to: email,
+          subject: `Order Received - ${orderNumber}`,
+          html: orderConfirmationEmail({
+            customerName: name,
+            orderNumber,
+            orderType: 'cookie_cups',
+            pickupDate: pickupDate || undefined,
+            pickupTime: pickupTime || undefined,
+            totalAmount: totalAmount,
+            formData: formData,
+          }),
+          replyTo: recipients[0],
+        }).catch(err => console.error('Failed to send customer email:', err));
       } catch (emailError) {
         console.error('Cookie cups/cakes email error:', emailError);
       }
