@@ -813,6 +813,24 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                   </>
                 )}
 
+                {/* Cookie Cups */}
+                {(() => {
+                  const cups = formData.cookie_cups as Record<string, unknown> | undefined;
+                  if (!cups || !cups.quantity) return null;
+                  return (
+                    <>
+                      <div className="pt-3 border-t border-[#EAD6D6]">
+                        <dt className="text-sm font-semibold text-[#541409]">Cookie Cups</dt>
+                      </div>
+                      {renderField('Quantity', `${cups.quantity} dozen`)}
+                      {cups.chocolate_molds && renderField('Chocolate Molds', 'Yes')}
+                      {cups.edible_glitter && renderField('Edible Glitter', 'Yes')}
+                      {renderField('Notes', cups.notes as string)}
+                      {renderImages(cups.inspiration_image_urls as string[] | undefined, cups.inspiration_image_count as number | undefined)}
+                    </>
+                  );
+                })()}
+
                 {/* Additional Info */}
                 {renderField('Dietary Restrictions', formData.dietary_restrictions as string)}
                 {renderField('How They Found Us', formData.how_found_us as string)}

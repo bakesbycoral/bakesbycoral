@@ -56,6 +56,10 @@ export async function POST(request: NextRequest) {
     const tieredCakeMessageStyle = formData.get('tiered_cake_message_style') as string || '';
     const tieredCakeToppings = formData.get('tiered_cake_toppings') as string || '[]';
     const tieredCakeDesignNotes = formData.get('tiered_cake_design_notes') as string || '';
+    const cookieCupsQuantity = formData.get('cookie_cups_quantity') as string || '';
+    const cookieCupsChocolateMolds = formData.get('cookie_cups_chocolate_molds') === 'true';
+    const cookieCupsEdibleGlitter = formData.get('cookie_cups_edible_glitter') === 'true';
+    const cookieCupsNotes = formData.get('cookie_cups_notes') as string || '';
     const dietaryRestrictions = formData.get('dietary_restrictions') as string || '';
     const howFoundUs = formData.get('how_found_us') as string || '';
 
@@ -86,6 +90,12 @@ export async function POST(request: NextRequest) {
     const validTieredCakeImages = tieredCakeImages.filter(f => f && f.size > 0);
     const tieredCakeImageUrls = await uploadInspirationImages(validTieredCakeImages, 'wedding');
     const tieredCakeImageCount = validTieredCakeImages.length;
+
+    // Upload cookie cups inspiration images to R2
+    const cookieCupsImages = formData.getAll('cookie_cups_inspiration_images') as File[];
+    const validCookieCupsImages = cookieCupsImages.filter(f => f && f.size > 0);
+    const cookieCupsImageUrls = await uploadInspirationImages(validCookieCupsImages, 'wedding');
+    const cookieCupsImageCount = validCookieCupsImages.length;
 
     // Create inquiry in database
     const orderId = crypto.randomUUID();
@@ -157,6 +167,14 @@ export async function POST(request: NextRequest) {
           design_notes: sanitizeInput(tieredCakeDesignNotes),
           inspiration_image_urls: tieredCakeImageUrls,
           inspiration_image_count: tieredCakeImageCount,
+        },
+        cookie_cups: {
+          quantity: cookieCupsQuantity,
+          chocolate_molds: cookieCupsChocolateMolds,
+          edible_glitter: cookieCupsEdibleGlitter,
+          notes: sanitizeInput(cookieCupsNotes),
+          inspiration_image_urls: cookieCupsImageUrls,
+          inspiration_image_count: cookieCupsImageCount,
         },
         dietary_restrictions: sanitizeInput(dietaryRestrictions),
         how_found_us: sanitizeInput(howFoundUs),
