@@ -680,67 +680,148 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
               </dl>
             )}
 
-            {order.order_type === 'wedding' && (
+            {order.order_type === 'wedding' && (() => {
+              const cake = formData.cake as Record<string, unknown> | undefined;
+              const cookies = formData.cookies as Record<string, unknown> | undefined;
+              const tiered = formData.tiered_cake as Record<string, unknown> | undefined;
+              const services = String(formData.services_needed || '').split(',').map((s: string) => s.trim().replace(/_/g, ' ')).filter(Boolean);
+              const renderField = (label: string, value: unknown): React.ReactNode => value ? (
+                <div>
+                  <dt className="text-sm text-[#541409]/60">{label}</dt>
+                  <dd className="font-medium text-[#541409] capitalize">{String(value).replace(/_/g, ' ').replace(/-/g, ' ')}</dd>
+                </div>
+              ) : null as React.ReactNode;
+              const renderImages = (urls: string[] | undefined, count: number | undefined) => (
+                <>
+                  {urls && urls.length > 0 && (
+                    <div>
+                      <dt className="text-sm text-[#541409]/60 mb-2">Inspiration Photos ({urls.length})</dt>
+                      <dd className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {urls.map((url: string, i: number) => (
+                          <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="block aspect-square rounded-lg overflow-hidden border border-[#EAD6D6] hover:border-[#541409] transition-colors">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={url} alt={`Inspiration photo ${i + 1}`} className="w-full h-full object-cover" />
+                          </a>
+                        ))}
+                      </dd>
+                    </div>
+                  )}
+                  {count && count > 0 && (!urls || urls.length === 0) && (
+                    <div>
+                      <dt className="text-sm text-[#541409]/60">Inspiration Photos</dt>
+                      <dd className="text-[#541409]/60 italic">{count} photo(s) uploaded</dd>
+                    </div>
+                  )}
+                </>
+              );
+              return (
               <dl className="space-y-3">
-                <div>
-                  <dt className="text-sm text-[#541409]/60">Services</dt>
-                  <dd className="font-medium text-[#541409] capitalize">{formData.services_needed?.replace('_', ' ')}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm text-[#541409]/60">Guest Count</dt>
-                  <dd className="font-medium text-[#541409]">{formData.guest_count}</dd>
-                </div>
-                {formData.venue_name && (
-                  <div>
-                    <dt className="text-sm text-[#541409]/60">Venue</dt>
-                    <dd className="text-[#541409]">{formData.venue_name}</dd>
-                  </div>
+                {/* General Info */}
+                {renderField('Services', services.join(', ') || null)}
+                {renderField('Partner Name', formData.partner_name as string)}
+                {renderField('Guest Count', formData.guest_count as string)}
+                {renderField('Venue', formData.venue_name as string)}
+                {renderField('Venue Address', formData.venue_address as string)}
+                {renderField('Start Time', formData.start_time as string)}
+                {renderField('On-Site Contact', formData.onsite_contact as string)}
+                {renderField('Pickup / Delivery', formData.pickup_or_delivery as string)}
+                {renderField('Setup Requirements', formData.setup_requirements as string)}
+
+                {/* Cutting Cake */}
+                {cake && (cake.size as string || cake.flavor as string) && (
+                  <>
+                    <div className="pt-3 border-t border-[#EAD6D6]">
+                      <dt className="text-sm font-semibold text-[#541409]">Cutting Cake</dt>
+                    </div>
+                    {renderField('Size', cake.size)}
+                    {renderField('Shape', cake.shape)}
+                    {renderField('Flavor', cake.flavor)}
+                    {renderField('Filling', cake.filling)}
+                    {renderField('Base Color', cake.base_color)}
+                    {renderField('Piping Colors', cake.piping_colors)}
+                    {renderField('Message', cake.custom_messaging)}
+                    {renderField('Message Style', cake.message_style)}
+                    {Array.isArray(cake.toppings) && cake.toppings.length > 0 && renderField('Toppings', (cake.toppings as string[]).join(', '))}
+                  </>
                 )}
-                {formData.theme && (
-                  <div>
-                    <dt className="text-sm text-[#541409]/60">Theme</dt>
-                    <dd className="text-[#541409]">{formData.theme}</dd>
-                  </div>
+
+                {/* Tiered Wedding Cake */}
+                {tiered && (tiered.tiers as string || tiered.size as string) && (
+                  <>
+                    <div className="pt-3 border-t border-[#EAD6D6]">
+                      <dt className="text-sm font-semibold text-[#541409]">Tiered Wedding Cake</dt>
+                    </div>
+                    {renderField('Tiers', tiered.tiers)}
+                    {renderField('Size', tiered.size)}
+                    {renderField('Shape', tiered.shape)}
+                    {(() => {
+                      const flavors = tiered.flavors as Record<string, string> | undefined;
+                      const fillings = tiered.fillings as Record<string, string> | undefined;
+                      return (
+                        <>
+                          {flavors && Object.entries(flavors).map(([tier, flavor]) => flavor ? (
+                            <div key={`flavor-${tier}`}>
+                              <dt className="text-sm text-[#541409]/60">{tier.replace('tier', 'Tier ')} Flavor</dt>
+                              <dd className="font-medium text-[#541409] capitalize">{flavor.replace(/-/g, ' ')}</dd>
+                            </div>
+                          ) : null)}
+                          {fillings && Object.entries(fillings).map(([tier, filling]) => filling ? (
+                            <div key={`filling-${tier}`}>
+                              <dt className="text-sm text-[#541409]/60">{tier.replace('tier', 'Tier ')} Filling</dt>
+                              <dd className="font-medium text-[#541409] capitalize">{filling.replace(/-/g, ' ')}</dd>
+                            </div>
+                          ) : null)}
+                        </>
+                      );
+                    })()}
+                    {renderField('Base Color', tiered.base_color)}
+                    {renderField('Piping Colors', tiered.piping_colors)}
+                    {renderField('Message', tiered.messaging)}
+                    {renderField('Message Style', tiered.message_style)}
+                    {Array.isArray(tiered.toppings) && tiered.toppings.length > 0 && renderField('Toppings', (tiered.toppings as string[]).join(', '))}
+                    {renderField('Design Notes', tiered.design_notes)}
+                    {renderImages(tiered.inspiration_image_urls as string[] | undefined, tiered.inspiration_image_count as number | undefined)}
+                  </>
                 )}
-                {formData.color_palette && (
-                  <div>
-                    <dt className="text-sm text-[#541409]/60">Color Palette</dt>
-                    <dd className="text-[#541409]">{formData.color_palette}</dd>
-                  </div>
+
+                {/* Cookies */}
+                {cookies && (cookies.quantity as string || cookies.packaging as string) && (
+                  <>
+                    <div className="pt-3 border-t border-[#EAD6D6]">
+                      <dt className="text-sm font-semibold text-[#541409]">Cookies</dt>
+                    </div>
+                    {renderField('Quantity', cookies.quantity ? `${cookies.quantity} dozen` : null)}
+                    {renderField('Packaging', cookies.packaging)}
+                    {(() => {
+                      const flavors = cookies.flavors as Record<string, number> | undefined;
+                      if (!flavors) return null;
+                      const selected = Object.entries(flavors).filter(([, v]) => v > 0);
+                      if (selected.length === 0) return null;
+                      return (
+                        <div>
+                          <dt className="text-sm text-[#541409]/60">Flavors</dt>
+                          <dd className="font-medium text-[#541409]">
+                            <ul className="space-y-0.5">
+                              {selected.map(([flavor, count]) => (
+                                <li key={flavor}>{flavor.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}: {count}</li>
+                              ))}
+                            </ul>
+                          </dd>
+                        </div>
+                      );
+                    })()}
+                  </>
                 )}
-                {formData.inspiration_image_urls?.length > 0 && (
-                  <div>
-                    <dt className="text-sm text-[#541409]/60 mb-2">Inspiration Photos ({formData.inspiration_image_urls.length})</dt>
-                    <dd className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      {formData.inspiration_image_urls.map((url: string, i: number) => (
-                        <a
-                          key={i}
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block aspect-square rounded-lg overflow-hidden border border-[#EAD6D6] hover:border-[#541409] transition-colors"
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={url}
-                            alt={`Inspiration photo ${i + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </a>
-                      ))}
-                    </dd>
-                  </div>
-                )}
-                {formData.inspiration_image_count > 0 && !formData.inspiration_image_urls?.length && (
-                  <div>
-                    <dt className="text-sm text-[#541409]/60">Inspiration Photos</dt>
-                    <dd className="text-[#541409]/60 italic">
-                      {formData.inspiration_image_count} photo(s) were uploaded but not stored (submitted before image storage was enabled)
-                    </dd>
-                  </div>
-                )}
+
+                {/* Additional Info */}
+                {renderField('Dietary Restrictions', formData.dietary_restrictions as string)}
+                {renderField('How They Found Us', formData.how_found_us as string)}
+
+                {/* Main Inspiration Photos */}
+                {renderImages(formData.inspiration_image_urls, formData.inspiration_image_count)}
               </dl>
-            )}
+              );
+            })()}
 
             {order.notes && (
               <div className="mt-4 pt-4 border-t border-[#EAD6D6]">
