@@ -130,7 +130,49 @@ export function OrderEditForm({ order, onCancel, onSave }: OrderEditFormProps) {
   const [notes, setNotes] = useState(order.notes || '');
 
   // Form data (order-type specific)
-  const [formData, setFormData] = useState(initialFormData);
+  // Flatten nested wedding data for editing
+  const flattenedInitial = (() => {
+    const d = { ...initialFormData };
+    if (order.order_type === 'wedding') {
+      const cake = d.cake || {};
+      d.cake_size = cake.size || d.cake_size || '';
+      d.cake_shape = cake.shape || d.cake_shape || '';
+      d.cake_flavor = cake.flavor || d.cake_flavor || '';
+      d.cake_filling = cake.filling || d.cake_filling || '';
+      d.base_color = cake.base_color || d.base_color || '';
+      d.piping_colors = cake.piping_colors || d.piping_colors || '';
+      d.custom_messaging = cake.custom_messaging || d.custom_messaging || '';
+      d.message_style = cake.message_style || d.message_style || '';
+      d.cake_toppings = cake.toppings || d.cake_toppings || [];
+      d.cake_design_notes = d.tiered_cake?.design_notes || d.cake_design_notes || '';
+
+      const cookies = d.cookies || {};
+      d.cookie_quantity = cookies.quantity || d.cookie_quantity || '';
+      d.cookie_packaging = cookies.packaging || d.cookie_packaging || '';
+      d.cookieFlavors = cookies.flavors || d.cookieFlavors || {};
+
+      const tiered = d.tiered_cake || {};
+      d.tiered_tiers = tiered.tiers || '';
+      d.tiered_size = tiered.size || '';
+      d.tiered_shape = tiered.shape || '';
+      d.tiered_flavor_tier1 = tiered.flavors?.tier1 || '';
+      d.tiered_flavor_tier2 = tiered.flavors?.tier2 || '';
+      d.tiered_flavor_tier3 = tiered.flavors?.tier3 || '';
+      d.tiered_filling_tier1 = tiered.fillings?.tier1 || '';
+      d.tiered_filling_tier2 = tiered.fillings?.tier2 || '';
+      d.tiered_filling_tier3 = tiered.fillings?.tier3 || '';
+      d.tiered_base_color = tiered.base_color || '';
+      d.tiered_piping_colors = tiered.piping_colors || '';
+      d.tiered_messaging = tiered.messaging || '';
+      d.tiered_message_style = tiered.message_style || '';
+      d.tiered_toppings = tiered.toppings || [];
+      d.tiered_design_notes = tiered.design_notes || '';
+
+      d.cookie_cups_quantity = d.cookie_cups?.quantity || '';
+    }
+    return d;
+  })();
+  const [formData, setFormData] = useState(flattenedInitial);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -792,16 +834,14 @@ export function OrderEditForm({ order, onCancel, onSave }: OrderEditFormProps) {
 
                 <div>
                   <label className="block text-sm text-[#541409]/70 mb-1">Services Needed</label>
-                  <select
+                  <input
+                    type="text"
                     value={formData.services_needed || ''}
                     onChange={(e) => updateFormData('services_needed', e.target.value)}
+                    placeholder="e.g. cutting_cake,cookie_cups,cookies"
                     className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
-                  >
-                    <option value="">Select</option>
-                    <option value="cutting_cake">Cutting Cake</option>
-                    <option value="cookies">Cookies</option>
-                    <option value="cake_and_cookies">Cake + Cookies</option>
-                  </select>
+                  />
+                  <p className="text-xs text-[#541409]/50 mt-1">Options: cutting_cake, tiered_cake, cookies, cookie_cups (comma-separated)</p>
                 </div>
 
                 <div>
@@ -893,7 +933,7 @@ export function OrderEditForm({ order, onCancel, onSave }: OrderEditFormProps) {
           </div>
 
           {/* Wedding Cake Details */}
-          {['cutting_cake', 'cake_and_cookies'].includes(formData.services_needed || '') && (
+          {(formData.services_needed || '').includes('cutting_cake') && (
             <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
               <h2 className="font-semibold text-[#541409] mb-4">Cutting Cake Details</h2>
               <div className="space-y-4">
@@ -906,9 +946,9 @@ export function OrderEditForm({ order, onCancel, onSave }: OrderEditFormProps) {
                       className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
                     >
                       <option value="">Select</option>
-                      <option value="6-inch">6" - $115</option>
-                      <option value="8-inch">8" - $155</option>
-                      <option value="10-inch">10" - $195</option>
+                      <option value="6-inch">6" - $100</option>
+                      <option value="8-inch">8" - $140</option>
+                      <option value="10-inch">10" - $180</option>
                       <option value="unsure">Not sure</option>
                     </select>
                   </div>
@@ -1036,8 +1076,95 @@ export function OrderEditForm({ order, onCancel, onSave }: OrderEditFormProps) {
             </div>
           )}
 
+          {/* Wedding Cookie Cups */}
+          {(formData.services_needed || '').includes('cookie_cups') && (
+            <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+              <h2 className="font-semibold text-[#541409] mb-4">Cookie Cups Details</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm text-[#541409]/70 mb-1">Quantity (dozen)</label>
+                  <select
+                    value={formData.cookie_cups_quantity || ''}
+                    onChange={(e) => updateFormData('cookie_cups_quantity', e.target.value)}
+                    className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg focus:ring-2 focus:ring-[#541409] focus:border-[#541409] outline-none text-[#541409]"
+                  >
+                    <option value="">Select</option>
+                    {[1,2,3,4,5,6,7,8,9,10,12,15,20].map(n => (
+                      <option key={n} value={n}>{n} Dozen</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Wedding Tiered Cake */}
+          {(formData.services_needed || '').includes('tiered_cake') && (
+            <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
+              <h2 className="font-semibold text-[#541409] mb-4">Tiered Wedding Cake Details</h2>
+              <div className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Tiers</label>
+                    <input type="text" value={formData.tiered_tiers || ''} onChange={(e) => updateFormData('tiered_tiers', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Size</label>
+                    <input type="text" value={formData.tiered_size || ''} onChange={(e) => updateFormData('tiered_size', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Shape</label>
+                    <input type="text" value={formData.tiered_shape || ''} onChange={(e) => updateFormData('tiered_shape', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                  </div>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Tier 1 Flavor</label>
+                    <input type="text" value={formData.tiered_flavor_tier1 || ''} onChange={(e) => updateFormData('tiered_flavor_tier1', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Tier 1 Filling</label>
+                    <input type="text" value={formData.tiered_filling_tier1 || ''} onChange={(e) => updateFormData('tiered_filling_tier1', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Tier 2 Flavor</label>
+                    <input type="text" value={formData.tiered_flavor_tier2 || ''} onChange={(e) => updateFormData('tiered_flavor_tier2', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Tier 2 Filling</label>
+                    <input type="text" value={formData.tiered_filling_tier2 || ''} onChange={(e) => updateFormData('tiered_filling_tier2', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Tier 3 Flavor</label>
+                    <input type="text" value={formData.tiered_flavor_tier3 || ''} onChange={(e) => updateFormData('tiered_flavor_tier3', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[#541409]/70 mb-1">Tier 3 Filling</label>
+                    <input type="text" value={formData.tiered_filling_tier3 || ''} onChange={(e) => updateFormData('tiered_filling_tier3', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm text-[#541409]/70 mb-1">Base Color</label>
+                  <input type="text" value={formData.tiered_base_color || ''} onChange={(e) => updateFormData('tiered_base_color', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                </div>
+                <div>
+                  <label className="block text-sm text-[#541409]/70 mb-1">Piping Colors</label>
+                  <input type="text" value={formData.tiered_piping_colors || ''} onChange={(e) => updateFormData('tiered_piping_colors', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                </div>
+                <div>
+                  <label className="block text-sm text-[#541409]/70 mb-1">Message</label>
+                  <input type="text" value={formData.tiered_messaging || ''} onChange={(e) => updateFormData('tiered_messaging', e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                </div>
+                <div>
+                  <label className="block text-sm text-[#541409]/70 mb-1">Design Notes</label>
+                  <textarea value={formData.tiered_design_notes || ''} onChange={(e) => updateFormData('tiered_design_notes', e.target.value)} rows={3} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409]" />
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Wedding Cookie Details */}
-          {['cookies', 'cake_and_cookies'].includes(formData.services_needed || '') && (
+          {(formData.services_needed || '').includes('cookies') && !(formData.services_needed || '').includes('cookie_cups') && (
             <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
               <h2 className="font-semibold text-[#541409] mb-4">Cookie Details</h2>
               <div className="space-y-4">
