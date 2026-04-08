@@ -84,6 +84,10 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [recordingPayment, setRecordingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+  const [editingPricing, setEditingPricing] = useState(false);
+  const [pricingTotal, setPricingTotal] = useState(order.total_amount ? (order.total_amount / 100).toFixed(2) : '');
+  const [pricingDeposit, setPricingDeposit] = useState(order.deposit_amount ? (order.deposit_amount / 100).toFixed(2) : '');
+  const [savingPricing, setSavingPricing] = useState(false);
   const router = useRouter();
 
   const handleRecordPayment = async (type: 'deposit' | 'full') => {
@@ -110,6 +114,29 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
       setPaymentError('Something went wrong');
     } finally {
       setRecordingPayment(false);
+    }
+  };
+
+  const handleSavePricing = async () => {
+    setSavingPricing(true);
+    try {
+      const response = await fetch(`/api/admin/orders/${order.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          total_amount: pricingTotal ? Math.round(parseFloat(pricingTotal) * 100) : null,
+          deposit_amount: pricingDeposit ? Math.round(parseFloat(pricingDeposit) * 100) : null,
+        }),
+      });
+      const data = await response.json() as { success?: boolean; error?: string };
+      if (data.success) {
+        setEditingPricing(false);
+        router.refresh();
+      }
+    } catch {
+      // silent fail
+    } finally {
+      setSavingPricing(false);
     }
   };
 
@@ -896,8 +923,8 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
           {/* Internal Notes */}
           <OrderNotes orderId={order.id} notes={notes} />
 
-          {/* Quotes & Invoices - Show for large cookie orders, cakes, weddings */}
-          {['cookies_large', 'cake', 'wedding'].includes(order.order_type) && (
+          {/* Quotes & Invoices - Show for inquiry-based orders */}
+          {['cookies_large', 'cake', 'wedding', 'cookie_cups'].includes(order.order_type) && (
             <QuotesList orderId={order.id} orderStatus={order.status} />
           )}
 
@@ -915,10 +942,39 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
           {/* Payment */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-[#EAD6D6]">
             <h2 className="font-semibold text-[#541409] mb-4">Payment</h2>
+
+            {/* Quick pricing editor for inquiry orders */}
+            {editingPricing ? (
+              <div className="space-y-3 mb-4 pb-4 border-b border-[#EAD6D6]">
+                <div>
+                  <label className="text-xs text-[#541409]/60 block mb-1">Total Amount ($)</label>
+                  <input type="number" step="0.01" min="0" value={pricingTotal} onChange={e => setPricingTotal(e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409] text-sm" placeholder="0.00" />
+                </div>
+                <div>
+                  <label className="text-xs text-[#541409]/60 block mb-1">Deposit Amount ($)</label>
+                  <input type="number" step="0.01" min="0" value={pricingDeposit} onChange={e => setPricingDeposit(e.target.value)} className="w-full px-3 py-2 border border-[#EAD6D6] rounded-lg text-[#541409] text-sm" placeholder="0.00" />
+                  <p className="text-[10px] text-[#541409]/40 mt-1">Set deposit = total for full upfront payment</p>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={handleSavePricing} disabled={savingPricing} className="flex-1 px-3 py-2 bg-[#541409] text-[#EAD6D6] rounded-lg text-sm hover:opacity-80 disabled:opacity-50">{savingPricing ? 'Saving...' : 'Save'}</button>
+                  <button onClick={() => setEditingPricing(false)} className="px-3 py-2 border border-[#541409] text-[#541409] rounded-lg text-sm hover:bg-[#EAD6D6]/30">Cancel</button>
+                </div>
+              </div>
+            ) : !order.total_amount ? (
+              <button onClick={() => setEditingPricing(true)} className="w-full mb-4 px-4 py-3 border-2 border-dashed border-[#EAD6D6] text-[#541409]/60 rounded-lg text-sm hover:border-[#541409] hover:text-[#541409] transition-colors">
+                Set pricing to enable payments
+              </button>
+            ) : null}
+
             <dl className="space-y-3">
               <div className="flex justify-between">
                 <dt className="text-[#541409]/60">Total</dt>
-                <dd className="font-semibold text-[#541409]">{formatCurrency(order.total_amount)}</dd>
+                <dd className="font-semibold text-[#541409]">
+                  {formatCurrency(order.total_amount)}
+                  {order.total_amount && !editingPricing && (
+                    <button onClick={() => setEditingPricing(true)} className="ml-2 text-xs text-[#541409]/40 hover:text-[#541409]">edit</button>
+                  )}
+                </dd>
               </div>
               {order.deposit_amount && order.deposit_amount !== order.total_amount && (
                 <>
