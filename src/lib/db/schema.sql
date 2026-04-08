@@ -17,7 +17,7 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE TABLE IF NOT EXISTS orders (
   id TEXT PRIMARY KEY,
   order_number TEXT NOT NULL UNIQUE,
-  order_type TEXT NOT NULL CHECK (order_type IN ('cookies', 'cookies_large', 'cake', 'wedding', 'tasting')),
+  order_type TEXT NOT NULL CHECK (order_type IN ('cookies', 'cookies_large', 'cake', 'wedding', 'tasting', 'easter_collection', 'custom_cookies', 'cookie_cups')),
   status TEXT NOT NULL DEFAULT 'inquiry' CHECK (status IN (
     'inquiry', 'pending_payment', 'deposit_paid', 'confirmed',
     'completed', 'cancelled'

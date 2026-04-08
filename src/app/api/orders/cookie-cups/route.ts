@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     await db.prepare(`
       INSERT INTO orders (
         id, order_number, order_type, status, customer_name, customer_email, customer_phone,
-        pickup_date, pickup_time, total_cents, notes, form_data, created_at
+        pickup_date, pickup_time, total_amount, notes, form_data, created_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `).bind(
       orderId,
