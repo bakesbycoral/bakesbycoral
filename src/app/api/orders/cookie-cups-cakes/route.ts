@@ -4,6 +4,7 @@ import { parseAdminEmails, sendEmail, textToHtmlEmail, orderConfirmationEmail } 
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { uploadInspirationImages } from '@/lib/uploads';
 import { sanitizeInput } from '@/lib/validation';
+import Stripe from 'stripe';
 
 const COOKIE_CAKE_PRICING: Record<string, Record<string, { price: number; servings: string }>> = {
   '6-inch': {
@@ -279,38 +280,39 @@ export async function POST(request: NextRequest) {
     await db.prepare(`
       INSERT INTO orders (
         id, order_number, order_type, status, customer_name, customer_email, customer_phone,
-        pickup_date, pickup_time, total_amount, notes, form_data, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+        pickup_date, pickup_time, total_amount, deposit_amount, notes, form_data, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `).bind(
       orderId,
       orderNumber,
       'cookie_cups',
-      'inquiry',
+      'pending_payment',
       sanitizeInput(name),
       sanitizeInput(email),
       sanitizeInput(phone),
       pickupDate,
       pickupTime,
       totalAmount,
+      totalAmount, // full payment upfront
       sanitizeInput(notes),
       JSON.stringify(formData)
     ).run();
 
     await upsertClientFromOrder(sanitizeInput(name), sanitizeInput(email), sanitizeInput(phone));
 
+    // Send emails (non-blocking)
     const resendApiKey = getEnvVar('bakesbycoral_resend_api_key');
     if (resendApiKey) {
       try {
         const adminEmailSetting = await db.prepare('SELECT value FROM settings WHERE key = ?').bind('admin_email').first<{ value: string }>();
         const recipients = parseAdminEmails(adminEmailSetting?.value);
-        await sendEmail(resendApiKey, {
+        sendEmail(resendApiKey, {
           to: recipients,
           subject: `${emailTitle} - ${orderNumber}`,
           html: textToHtmlEmail(detailLines.join('\n'), emailTitle),
           replyTo: email,
-        });
+        }).catch(err => console.error('Admin email error:', err));
 
-        // Customer confirmation
         sendEmail(resendApiKey, {
           to: email,
           subject: `Order Received - ${orderNumber}`,
@@ -324,16 +326,78 @@ export async function POST(request: NextRequest) {
             formData: formData,
           }),
           replyTo: recipients[0],
-        }).catch(err => console.error('Failed to send customer email:', err));
+        }).catch(err => console.error('Customer email error:', err));
       } catch (emailError) {
         console.error('Cookie cups/cakes email error:', emailError);
       }
     }
 
+    // Create Stripe checkout session
+    const stripeKey = getEnvVar('bakesbycoral_stripe_secret_key');
+    if (!stripeKey) {
+      return NextResponse.json({ error: 'Payment system not configured' }, { status: 500 });
+    }
+
+    const stripe = new Stripe(stripeKey, { httpClient: Stripe.createFetchHttpClient() });
+
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+
+    if (includesCookieCups && cookieCupsTotal > 0) {
+      const dozensCount = parseInt(quantity, 10) / 12;
+      const addOns = [
+        chocolateMolds ? 'chocolate molds' : '',
+        edibleGlitter ? 'edible glitter' : '',
+      ].filter(Boolean).join(', ');
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `Cookie Cups (${quantity} ct)`,
+            description: `${dozensCount} dozen cookie cups${addOns ? ` with ${addOns}` : ''}`,
+          },
+          unit_amount: cookieCupsTotal,
+        },
+        quantity: 1,
+      });
+    }
+
+    if (includesCookieCake && cookieCakeTotal > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `Cookie Cake (${size}, ${layers}-layer)`,
+            description: `${toTitleCase(shape)} cookie cake, serves ${cookieCakeServings}${toppings.length > 0 ? ` + ${toppings.map(toTitleCase).join(', ')}` : ''}`,
+          },
+          unit_amount: cookieCakeTotal,
+        },
+        quantity: 1,
+      });
+    }
+
+    const siteUrl = getEnvVar('NEXT_PUBLIC_SITE_URL') || 'https://bakesbycoral.com';
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: 'payment',
+      success_url: `${siteUrl}/order/success?order=${orderNumber}`,
+      cancel_url: `${siteUrl}/cookie-cups-cakes?cancelled=true`,
+      customer_email: email,
+      metadata: {
+        order_id: orderId,
+        order_number: orderNumber,
+        order_type: 'cookie_cups',
+      },
+    });
+
+    await db.prepare('UPDATE orders SET stripe_session_id = ? WHERE id = ?')
+      .bind(session.id, orderId).run();
+
     return NextResponse.json({
       success: true,
       orderNumber,
-      message: 'Inquiry submitted successfully',
+      checkoutUrl: session.url,
     });
   } catch (error) {
     console.error('Cookie cups/cakes order error:', error);

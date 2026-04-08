@@ -261,12 +261,17 @@ function CookieCupsAndCakesContent() {
         body: submitData,
       });
 
+      const data = await response.json() as { error?: string; checkoutUrl?: string };
+
       if (!response.ok) {
-        const data = await response.json() as { error?: string };
-        throw new Error(data.error || 'Failed to submit inquiry');
+        throw new Error(data.error || 'Failed to submit order');
       }
 
-      window.location.href = '/';
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        window.location.href = '/order/success';
+      }
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
@@ -752,7 +757,7 @@ function CookieCupsAndCakesContent() {
               {submitError && <div className="p-4 bg-red-50 border border-red-200 rounded-sm text-red-700 text-sm">{submitError}</div>}
 
               <button type="submit" disabled={submitting} className="w-full px-8 py-4 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
-                {submitting ? 'Submitting...' : `Submit ${includesCookieCups && includesCookieCake ? 'Cookie Cups + Cake' : includesCookieCake ? 'Cookie Cake' : 'Cookie Cup'} Inquiry`}
+                {submitting ? 'Processing...' : 'Proceed to Payment'}
               </button>
 
               <p className="text-sm text-stone-500 text-center">I&apos;ll respond within 24-48 hours with availability and next steps.</p>
