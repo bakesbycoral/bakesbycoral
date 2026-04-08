@@ -564,6 +564,18 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                         <dd className="text-[#541409] whitespace-pre-wrap">{String(formData.design_details)}</dd>
                       </div>
                     )}
+                    {formData.allergies && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Allergies</dt>
+                        <dd className="text-[#541409]">{String(formData.allergies)}</dd>
+                      </div>
+                    )}
+                    {formData.how_did_you_hear && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">How Did They Hear About Us</dt>
+                        <dd className="text-[#541409]">{String(formData.how_did_you_hear)}</dd>
+                      </div>
+                    )}
                   </>
                 ) : isCookieCakeFormData(formData) ? (
                   <>
@@ -619,36 +631,68 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                         <dd className="text-[#541409] whitespace-pre-wrap">{String(formData.design_details)}</dd>
                       </div>
                     )}
+                    {formData.allergies && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Allergies</dt>
+                        <dd className="text-[#541409]">{String(formData.allergies)}</dd>
+                      </div>
+                    )}
+                    {formData.how_did_you_hear && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">How Did They Hear About Us</dt>
+                        <dd className="text-[#541409]">{String(formData.how_did_you_hear)}</dd>
+                      </div>
+                    )}
                   </>
                 ) : hasCookieCupsFormData(formData) ? (
                   <>
-                    <div>
-                      <dt className="text-sm text-[#541409]/60">Quantity</dt>
-                      <dd className="font-medium text-[#541409]">{String(formData.quantity || '-')} cookie cups</dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm text-[#541409]/60">Event Type</dt>
-                      <dd className="font-medium text-[#541409] capitalize">{String(formData.event_type || '-').replace('-', ' ')}</dd>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Quantity</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.quantity || '-')} cookie cups</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Event Type</dt>
+                        <dd className="font-medium text-[#541409] capitalize">{String(formData.event_type || '-').replace(/-/g, ' ')}</dd>
+                      </div>
                     </div>
                     <div>
                       <dt className="text-sm text-[#541409]/60">Add-Ons</dt>
                       <dd className="text-[#541409]">
                         {[
-                          formData.chocolate_molds ? 'Chocolate Molds' : '',
-                          formData.edible_glitter ? 'Edible Glitter' : '',
+                          formData.chocolate_molds ? 'Chocolate Molds (+$4/dozen)' : '',
+                          formData.edible_glitter ? 'Edible Glitter (+$2/dozen)' : '',
                         ].filter(Boolean).join(', ') || 'None'}
                       </dd>
                     </div>
                     {formData.colors && (
                       <div>
-                        <dt className="text-sm text-[#541409]/60">Colors</dt>
+                        <dt className="text-sm text-[#541409]/60">Custom Colors</dt>
                         <dd className="text-[#541409]">{String(formData.colors)}</dd>
                       </div>
                     )}
                     {formData.design_details && (
                       <div>
-                        <dt className="text-sm text-[#541409]/60">Design Notes</dt>
+                        <dt className="text-sm text-[#541409]/60">Design Details</dt>
                         <dd className="text-[#541409] whitespace-pre-wrap">{String(formData.design_details)}</dd>
+                      </div>
+                    )}
+                    {formData.occasion && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Occasion</dt>
+                        <dd className="text-[#541409]">{String(formData.occasion)}</dd>
+                      </div>
+                    )}
+                    {formData.allergies && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Allergies</dt>
+                        <dd className="text-[#541409]">{String(formData.allergies)}</dd>
+                      </div>
+                    )}
+                    {formData.how_did_you_hear && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">How Did They Hear About Us</dt>
+                        <dd className="text-[#541409]">{String(formData.how_did_you_hear)}</dd>
                       </div>
                     )}
                   </>
