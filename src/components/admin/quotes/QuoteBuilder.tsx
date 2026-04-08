@@ -26,6 +26,7 @@ export function QuoteBuilder({ orderId, quote, onClose }: QuoteBuilderProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -380,6 +381,95 @@ export function QuoteBuilder({ orderId, quote, onClose }: QuoteBuilderProps) {
         </div>
       </div>
 
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            {/* Preview Header */}
+            <div className="bg-[#541409] text-[#EAD6D6] p-5 rounded-t-xl text-center">
+              <h3 className="text-lg font-serif">Bakes by Coral</h3>
+              <p className="text-sm text-[#EAD6D6]/70 mt-1">Quote Preview — What your customer will see</p>
+            </div>
+
+            <div className="p-6 space-y-4 text-sm text-[#541409]">
+              <p>Hi there,</p>
+              <p>Thank you for your inquiry! Here&apos;s your personalized quote:</p>
+
+              {customerMessage && (
+                <div className="bg-[#F7F3ED] p-4 rounded-lg whitespace-pre-wrap">
+                  {customerMessage}
+                </div>
+              )}
+
+              {/* Line Items Table */}
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-[#EAD6D6]">
+                    <th className="text-left py-2 text-[#541409]/60 font-medium">Item</th>
+                    <th className="text-center py-2 text-[#541409]/60 font-medium w-12">Qty</th>
+                    <th className="text-right py-2 text-[#541409]/60 font-medium w-20">Price</th>
+                    <th className="text-right py-2 text-[#541409]/60 font-medium w-20">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lineItems.filter(item => item.description.trim()).map((item, i) => (
+                    <tr key={i} className="border-b border-[#EAD6D6]/50">
+                      <td className="py-2">{item.description}</td>
+                      <td className="text-center py-2">{item.quantity}</td>
+                      <td className="text-right py-2">${(item.unit_price / 100).toFixed(2)}</td>
+                      <td className="text-right py-2">${(item.total_price / 100).toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Totals */}
+              <div className="pt-2 space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#541409]/60">Subtotal:</span>
+                  <span className="font-medium">${(subtotal / 100).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between font-semibold">
+                  <span>Deposit ({depositPercentage}%):</span>
+                  <span>${(depositAmount / 100).toFixed(2)}</span>
+                </div>
+              </div>
+
+              {validUntil && (
+                <p className="text-[#541409]/60 text-xs">This quote is valid until {validUntil}.</p>
+              )}
+
+              <p>To approve this quote and pay your deposit, click the button below.</p>
+
+              <div className="text-center">
+                <span className="inline-block px-6 py-3 bg-[#541409] text-[#EAD6D6] rounded-lg text-sm font-medium">
+                  View & Approve Quote
+                </span>
+              </div>
+
+              <p className="text-[#541409]/60 text-xs">Questions? Reply to this email or text me at coral@bakesbycoral.com</p>
+            </div>
+
+            {/* Preview Footer */}
+            <div className="p-4 border-t border-[#EAD6D6] flex justify-end gap-3">
+              <button
+                onClick={() => setShowPreview(false)}
+                className="px-4 py-2 text-[#541409] border border-[#EAD6D6] rounded-lg hover:bg-gray-50"
+              >
+                Close Preview
+              </button>
+              <button
+                onClick={() => { setShowPreview(false); handleSend(); }}
+                disabled={isSending || lineItems.length === 0}
+                className="px-4 py-2 bg-[#541409] text-[#EAD6D6] rounded-lg hover:opacity-90 disabled:opacity-50"
+              >
+                Looks Good — Send It
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <div className="p-6 border-t border-[#EAD6D6] flex justify-end gap-3">
         <button
@@ -396,6 +486,13 @@ export function QuoteBuilder({ orderId, quote, onClose }: QuoteBuilderProps) {
               className="px-4 py-2 bg-[#EAD6D6] text-[#541409] rounded-lg hover:bg-[#EAD6D6]/70 transition-colors disabled:opacity-50"
             >
               {isSaving ? 'Saving...' : 'Save Draft'}
+            </button>
+            <button
+              onClick={() => setShowPreview(true)}
+              disabled={isSaving || isSending || lineItems.length === 0}
+              className="px-4 py-2 border border-[#541409] text-[#541409] rounded-lg hover:bg-[#EAD6D6]/30 transition-colors disabled:opacity-50"
+            >
+              Preview
             </button>
             <button
               onClick={handleSend}
