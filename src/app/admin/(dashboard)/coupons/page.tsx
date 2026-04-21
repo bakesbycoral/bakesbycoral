@@ -25,6 +25,7 @@ const ORDER_TYPE_OPTIONS = [
   { value: 'wedding', label: 'Wedding' },
   { value: 'tasting', label: 'Tasting Box' },
   { value: 'easter_collection', label: 'Limited Collection' },
+  { value: 'mothers_day_collection', label: "Mother's Day Collection" },
   { value: 'cookie_cups', label: 'Cookie Cups' },
 ];
 

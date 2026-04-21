@@ -154,6 +154,7 @@ export default function NewOrderPage() {
               <option value="tasting">Tasting Box</option>
               <option value="cookie_cups">Cookie Cups</option>
               <option value="easter_collection">Limited Collection</option>
+              <option value="mothers_day_collection">Mother&apos;s Day Collection</option>
             </select>
           </div>
 

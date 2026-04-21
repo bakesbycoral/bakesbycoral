@@ -69,6 +69,7 @@ const orderTypeColors: Record<string, string> = {
   wedding: 'bg-[#d0f0ff] text-[#1a4a5c]',
   tasting: 'bg-[#d6e2ff] text-[#2a3a5c]',
   easter_collection: 'bg-[#fce4ec] text-[#5c1a2a]',
+  mothers_day_collection: 'bg-[#fce4ec] text-[#5c1a2a]',
   cookie_cups: 'bg-[#fff3e0] text-[#5c3a1a]',
 };
 
@@ -746,6 +747,75 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
                         </a>
                       ))}
                     </dd>
+                  </div>
+                )}
+              </dl>
+            )}
+
+            {(order.order_type === 'mothers_day_collection' || order.order_type === 'easter_collection') && (
+              <dl className="space-y-3">
+                {formData.items && Array.isArray(formData.items) ? (
+                  (formData.items as Array<Record<string, unknown>>).map((item, idx) => (
+                    <div key={idx} className="border border-[#EAD6D6] rounded-lg p-4">
+                      <dt className="font-medium text-[#541409] mb-2">{String(item.label)}</dt>
+                      <dd className="space-y-1 text-sm text-[#541409]/80">
+                        {item.cake_flavor_label && <p>Flavor: {String(item.cake_flavor_label)}</p>}
+                        {item.filling_label && <p>Filling: {String(item.filling_label)}</p>}
+                        {item.cookie_flavor_label && <p>Cookie Flavor: {String(item.cookie_flavor_label)}</p>}
+                        {item.cake_message && <p>Message: &quot;{String(item.cake_message)}&quot;</p>}
+                      </dd>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    {formData.item_label && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Item</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.item_label)}</dd>
+                      </div>
+                    )}
+                    {formData.cake_flavor_label && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Cake Flavor</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.cake_flavor_label)}</dd>
+                      </div>
+                    )}
+                    {formData.cookie_flavor_label && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Cookie Flavor</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.cookie_flavor_label)}</dd>
+                      </div>
+                    )}
+                    {formData.filling_label && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Filling</dt>
+                        <dd className="font-medium text-[#541409]">{String(formData.filling_label)}</dd>
+                      </div>
+                    )}
+                    {formData.cake_message && (
+                      <div>
+                        <dt className="text-sm text-[#541409]/60">Cake Message</dt>
+                        <dd className="font-medium text-[#541409]">&quot;{String(formData.cake_message)}&quot;</dd>
+                      </div>
+                    )}
+                  </>
+                )}
+                {formData.rush_order && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60">Rush Order</dt>
+                    <dd className="font-medium text-[#541409]">Yes (+$20)</dd>
+                  </div>
+                )}
+                {formData.allergies && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60">Allergies</dt>
+                    <dd className="text-[#541409]">{String(formData.allergies)}</dd>
+                  </div>
+                )}
+                {formData.how_did_you_hear && (
+                  <div>
+                    <dt className="text-sm text-[#541409]/60">How Did They Hear About Us</dt>
+                    <dd className="text-[#541409]">{String(formData.how_did_you_hear)}</dd>
                   </div>
                 )}
               </dl>

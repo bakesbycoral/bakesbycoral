@@ -339,6 +339,7 @@ export function TimeSlotPicker({
         {orderType === 'cake' && 'Cake orders require at least 14 days notice.'}
         {orderType === 'wedding' && 'Wedding orders require at least 30 days notice.'}
         {orderType === 'easter_collection' && 'Easter collection orders require at least 7 days notice. Rush orders may be available for a $10 fee — just ask!'}
+        {orderType === 'mothers_day_collection' && "Mother's Day collection orders require at least 4 days notice. Rush orders may be available for an additional $20."}
       </p>
     </div>
   );

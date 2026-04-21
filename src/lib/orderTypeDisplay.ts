@@ -35,6 +35,7 @@ export function getDisplayOrderTypeLabel(orderType: string, formData: Record<str
     wedding: 'Wedding',
     tasting: 'Tasting',
     easter_collection: 'Limited Collection',
+    mothers_day_collection: "Mother's Day Collection",
   };
 
   return orderTypeLabels[orderType] || orderType;

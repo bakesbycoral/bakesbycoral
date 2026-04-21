@@ -211,6 +211,7 @@ const ORDER_TYPE_LABELS: Record<string, string> = {
   wedding: 'Wedding Inquiry',
   tasting: 'Tasting Order',
   easter_collection: 'Limited Collection Order',
+  mothers_day_collection: "Mother's Day Collection Order",
   cookie_cups: 'Cookie Cups & Cakes Order',
 };
 
@@ -384,6 +385,23 @@ export function formatOrderDetails(orderType: string, formData: Record<string, u
     if (formData.wedding_date) lines.push(`**Wedding Date:** ${formatDate(String(formData.wedding_date))}`);
   }
 
+  // ── Mother's Day Collection ──────────────────────────────────
+  if (orderType === 'mothers_day_collection') {
+    const items = formData.items as Array<Record<string, unknown>> | undefined;
+    if (items && items.length > 0) {
+      for (const item of items) {
+        lines.push(`**${item.label}**`);
+        if (item.cake_flavor_label) lines.push(`  Flavor: ${item.cake_flavor_label}`);
+        if (item.filling_label) lines.push(`  Filling: ${item.filling_label}`);
+        if (item.cookie_flavor_label) lines.push(`  Cookie Flavor: ${item.cookie_flavor_label}`);
+        if (item.cake_message) lines.push(`  Message: ${item.cake_message}`);
+      }
+    }
+    if (formData.rush_order) lines.push(`**Rush Order:** Yes (+$20)`);
+    if (formData.allergies) lines.push(`**Allergies:** ${formData.allergies}`);
+    if (formData.how_did_you_hear) lines.push(`**How did you hear about us:** ${formData.how_did_you_hear}`);
+  }
+
   return lines.join('\n');
 }
 
@@ -453,6 +471,7 @@ export function orderConfirmationEmail(data: {
     wedding: 'Wedding Inquiry',
     tasting: 'Tasting Order',
     easter_collection: 'Limited Collection Order',
+    mothers_day_collection: "Mother's Day Collection Order",
     cookie_cups: 'Cookie Cups & Cakes Order',
   };
 

@@ -41,6 +41,7 @@ const orderTypeLabels: Record<string, string> = {
   wedding: 'Wedding',
   tasting: 'Tasting Box',
   easter_collection: 'Limited Collection',
+  mothers_day_collection: "Mother's Day Collection",
   cookie_cups: 'Cookie Cups/Cakes',
 };
 
@@ -51,6 +52,7 @@ const orderTypeColors: Record<string, string> = {
   wedding: 'bg-[#d0f0ff] text-[#1a4a5c]',
   tasting: 'bg-[#d6e2ff] text-[#2a3a5c]',
   easter_collection: 'bg-[#fce4ec] text-[#5c1a2a]',
+  mothers_day_collection: 'bg-[#fce4ec] text-[#5c1a2a]',
   cookie_cups: 'bg-[#fff3e0] text-[#5c3a1a]',
 };
 
