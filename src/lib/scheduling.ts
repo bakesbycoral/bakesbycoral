@@ -28,6 +28,7 @@ const DEFAULT_LEAD_TIMES: Record<OrderType, number> = {
   tasting: 14,
   cookie_cups: 7,
   easter_collection: 7,
+  mothers_day_collection: 4,
 };
 
 // Generate time slots with configurable duration
