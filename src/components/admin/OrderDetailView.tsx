@@ -755,14 +755,14 @@ export function OrderDetailView({ order, notes }: OrderDetailViewProps) {
             {(order.order_type === 'mothers_day_collection' || order.order_type === 'easter_collection') && (
               <dl className="space-y-3">
                 {formData.items && Array.isArray(formData.items) ? (
-                  (formData.items as Array<Record<string, unknown>>).map((item, idx) => (
+                  (formData.items as Array<Record<string, string>>).map((item: Record<string, string>, idx: number) => (
                     <div key={idx} className="border border-[#EAD6D6] rounded-lg p-4">
-                      <dt className="font-medium text-[#541409] mb-2">{String(item.label)}</dt>
+                      <dt className="font-medium text-[#541409] mb-2">{item.label}</dt>
                       <dd className="space-y-1 text-sm text-[#541409]/80">
-                        {item.cake_flavor_label && <p>Flavor: {String(item.cake_flavor_label)}</p>}
-                        {item.filling_label && <p>Filling: {String(item.filling_label)}</p>}
-                        {item.cookie_flavor_label && <p>Cookie Flavor: {String(item.cookie_flavor_label)}</p>}
-                        {item.cake_message && <p>Message: &quot;{String(item.cake_message)}&quot;</p>}
+                        {item.cake_flavor_label && <p>Flavor: {item.cake_flavor_label}</p>}
+                        {item.filling_label && <p>Filling: {item.filling_label}</p>}
+                        {item.cookie_flavor_label && <p>Cookie Flavor: {item.cookie_flavor_label}</p>}
+                        {item.cake_message && <p>Message: &quot;{item.cake_message}&quot;</p>}
                       </dd>
                     </div>
                   ))
