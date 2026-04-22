@@ -15,6 +15,7 @@ const menuLinks = [
   { href: '/cakes', label: 'Cakes' },
   { href: '/cookies', label: 'Cookies' },
   { href: '/cookie-cups-cakes', label: 'Cookie Cups & Cakes' },
+  { href: '/collection/mothers-day', label: "Mother's Day Collection" },
 ];
 
 const moreLinks = [

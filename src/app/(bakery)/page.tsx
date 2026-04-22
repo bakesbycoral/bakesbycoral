@@ -49,6 +49,72 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Mother's Day Limited Collection Banner */}
+      <section className="py-12 sm:py-16 bg-[#F7F3ED] border-b border-[#EAD6D6]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <Link href="/collection/mothers-day" className="block group">
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+                {/* Image collage */}
+                <div className="grid grid-cols-2 gap-1 aspect-[4/3] md:aspect-auto">
+                  <div className="overflow-hidden">
+                    <img
+                      src="/mom-day-floral-cake.jpg"
+                      alt="Floral Mini Cake"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="overflow-hidden">
+                    <img
+                      src="/mom-day-vin-cake.jpg"
+                      alt="Vintage Mini Cake"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="overflow-hidden">
+                    <img
+                      src="/mom-day-floral-cups.jpg"
+                      alt="Floral Cookie Cups"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="overflow-hidden">
+                    <img
+                      src="/mom-day-vin-cups.jpg"
+                      alt="Vintage Cookie Cups"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                </div>
+
+                {/* Text content */}
+                <div className="p-8 sm:p-10 flex flex-col justify-center">
+                  <span className="inline-block self-start px-3 py-1 bg-[#541409] text-[#EAD6D6] text-xs font-medium rounded-full mb-4">
+                    Limited Collection
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl font-serif text-[#541409] mb-3">
+                    Mother&apos;s Day Collection
+                  </h2>
+                  <p className="text-stone-600 mb-4">
+                    Mini cakes &amp; cookie cups in two matching designs: Floral &amp; Vintage.
+                    The sweetest way to spoil Mom.
+                  </p>
+                  <p className="text-sm text-[#541409]/70 mb-6">
+                    Pickup May 8 &amp; 9 only. Starting at $30.
+                  </p>
+                  <span className="inline-flex items-center self-start px-6 py-3 bg-[#541409] text-[#EAD6D6] font-medium rounded-sm group-hover:opacity-80 transition-opacity">
+                    Shop the Collection
+                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </section>
+
       {/* About Me Section */}
       <section className="py-16 sm:py-24 bg-[#EAD6D6]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
